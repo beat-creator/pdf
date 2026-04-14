@@ -2,151 +2,165 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Secure PDF</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>セキュアPDF変換 - ローカル完結型</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
-        :root { --accent: #007AFF; --bg: #F2F2F7; --card: #FFFFFF; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg); margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; -webkit-tap-highlight-color: transparent; }
-        
-        /* アプリのようなカード UI */
-        .app-container { background: var(--card); width: 100%; max-width: 420px; min-height: 100vh; display: flex; flex-direction: column; padding: 40px 24px; box-sizing: border-box; }
-        @media (min-width: 421px) { .app-container { min-height: auto; border-radius: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); } }
-
-        h2 { font-size: 24px; font-weight: 700; letter-spacing: -0.5px; margin: 0 0 8px 0; }
-        .subtitle { color: #8E8E93; font-size: 14px; margin-bottom: 32px; }
-
-        /* 直感的なドロップエリア */
-        .drop-zone { background: #FAFafa; border: 2px dashed #D1D1D6; border-radius: 20px; padding: 40px 20px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; color: var(--accent); font-weight: 600; }
-        .drop-zone.dragover { border-color: var(--accent); background: #E5F1FF; transform: scale(0.98); }
-
-        .file-list { margin-top: 24px; font-size: 13px; text-align: left; }
-        .file-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 0.5px solid #E5E5EA; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-
-        .settings { margin-top: 32px; text-align: left; }
-        label { display: block; font-size: 12px; font-weight: 600; color: #8E8E93; text-transform: uppercase; margin-bottom: 8px; margin-left: 4px; }
-        input, select { width: 100%; background: #F2F2F7; border: none; border-radius: 12px; padding: 14px; font-size: 16px; margin-bottom: 20px; outline: none; }
-
-        /* 押し心地の良いボタン */
-        button { width: 100%; padding: 18px; background: var(--accent); color: white; border: none; border-radius: 16px; font-size: 17px; font-weight: 600; cursor: pointer; transition: all 0.2s; margin-top: 10px; }
-        button:active { transform: scale(0.96); opacity: 0.9; }
-        button:disabled { background: #D1D1D6; cursor: not-allowed; transform: none; }
-
-        .footer { font-size: 11px; color: #AEAEB2; margin-top: auto; padding-top: 30px; line-height: 1.6; }
+        :root { --primary: #2563eb; --bg: #f8fafc; }
+        body { font-family: sans-serif; background: var(--bg); color: #1e293b; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .container { max-width: 500px; width: 100%; background: white; padding: 24px; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        h1 { font-size: 1.25rem; margin-bottom: 1rem; text-align: center; }
+        .drop-zone { border: 2px dashed #cbd5e1; border-radius: 12px; padding: 40px 20px; text-align: center; cursor: pointer; transition: 0.2s; }
+        .drop-zone:hover { border-color: var(--primary); background: #eff6ff; }
+        #file-list { margin-top: 20px; list-style: none; padding: 0; }
+        .file-item { display: flex; align-items: center; background: #f1f5f9; margin-bottom: 8px; padding: 8px 12px; border-radius: 8px; font-size: 0.9rem; }
+        .file-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .controls { display: flex; gap: 4px; margin-left: 8px; }
+        .btn-sm { border: none; background: #e2e8f0; cursor: pointer; padding: 4px 8px; border-radius: 4px; }
+        .btn-sm:hover { background: #cbd5e1; }
+        .config { margin-top: 20px; border-top: 1px solid #e2e8f0; padding-top: 16px; }
+        input, select { width: 100%; padding: 8px; margin: 8px 0; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; }
+        .main-btn { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 16px; transition: 0.3s; }
+        .main-btn:disabled { background: #94a3b8; cursor: not-allowed; }
+        #status-msg { margin-top: 12px; text-align: center; font-weight: bold; min-height: 1.2rem; }
+        .success { color: #059669; }
     </style>
-    <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
 </head>
 <body>
 
-<div class="app-container">
-    <h2 id="title">Secure PDF</h2>
-    <div id="subtitle" class="subtitle">Private & Fast Local Conversion</div>
-
-    <div class="drop-zone" id="drop-zone">Tap to select photos</div>
-    <input type="file" id="file-input" multiple accept="image/jpeg,image/png" style="display: none;">
-
-    <div class="file-list" id="file-list"></div>
-
-    <div class="settings">
-        <label id="l-name">File Name</label>
-        <input type="text" id="output-name">
-
-        <label id="l-quality">Quality</label>
-        <select id="quality"></select>
+<div class="container">
+    <h1>📄 セキュアPDF変換</h1>
+    <p style="font-size: 0.8rem; color: #64748b; text-align: center; margin-top: -10px;">サーバー通信なし。デバイス内で完結。</p>
+    
+    <div class="drop-zone" onclick="document.getElementById('file-input').click()">
+        画像をタップまたはドラッグ
+        <input type="file" id="file-input" multiple accept="image/*" style="display:none" onchange="handleFiles(this.files)">
     </div>
 
-    <button id="convert-btn" disabled>Create PDF</button>
+    <ul id="file-list"></ul>
 
-    <div id="footer" class="footer">Local process: Your photos never leave this device.</div>
+    <div class="config">
+        <label>保存ファイル名</label>
+        <input type="text" id="pdf-name" placeholder="example (自動で.pdfが付きます)">
+        
+        <label>画質設定</label>
+        <select id="quality">
+            <option value="1.0">最高画質 (100%)</option>
+            <option value="0.7">標準 (70%)</option>
+            <option value="0.4">極限圧縮 (40%)</option>
+        </select>
+    </div>
+
+    <button id="convert-btn" class="main-btn" onclick="generatePDF()" disabled>PDFを作成・保存</button>
+    <div id="status-msg"></div>
 </div>
 
 <script>
-    const i18n = {
-        ja: { title: "セキュアPDF", subtitle: "端末内で安全にPDF変換", drop: "写真をえらぶ", empty: "写真が選択されていません", lName: "ファイル名", lQuality: "画質", btn: "PDFを作成する", working: "作成中...", total: "合計:", q1: "最高画質 (重い)", q7: "標準 (おすすめ)", q4: "軽量 (メール用)", q10: "最小 (超軽量)", footer: "すべての処理はブラウザ内で完結します。画像データが送信されることはありません。" },
-        en: { title: "Secure PDF", subtitle: "Private & Fast Local Conversion", drop: "Select Photos", empty: "No photos selected", lName: "File Name", lQuality: "Quality", btn: "Create PDF", working: "Processing...", total: "Total:", q1: "Best (Large)", q7: "Balanced (Rec.)", q4: "Light (Email)", q10: "Tiny (Smallest)", footer: "All processing happens in your browser. No data leaves your device." }
-    };
+    let filesArray = [];
 
-    const lang = navigator.language.startsWith('ja') ? 'ja' : 'en';
-    const t = i18n[lang];
+    // ファイル選択時の処理
+    function handleFiles(files) {
+        const newFiles = Array.from(files);
+        filesArray = [...filesArray, ...newFiles];
+        updateList();
+        clearStatus();
+    }
 
-    // 言語反映
-    document.getElementById('title').innerText = t.title;
-    document.getElementById('subtitle').innerText = t.subtitle;
-    document.getElementById('drop-zone').innerText = t.drop;
-    document.getElementById('l-name').innerText = t.lName;
-    document.getElementById('l-quality').innerText = t.lQuality;
-    document.getElementById('convert-btn').innerText = t.btn;
-    document.getElementById('footer').innerText = t.footer;
+    // リストの更新（並び替えボタン付与）
+    function updateList() {
+        const list = document.getElementById('file-list');
+        const btn = document.getElementById('convert-btn');
+        list.innerHTML = '';
+        
+        filesArray.forEach((file, index) => {
+            const li = document.createElement('li');
+            li.className = 'file-item';
+            li.innerHTML = `
+                <span class="file-name">${file.name}</span>
+                <div class="controls">
+                    <button class="btn-sm" onclick="moveItem(${index}, -1)">↑</button>
+                    <button class="btn-sm" onclick="moveItem(${index}, 1)">↓</button>
+                    <button class="btn-sm" style="color:red" onclick="removeItem(${index})">✕</button>
+                </div>
+            `;
+            list.appendChild(li);
+        });
 
-    const qSelect = document.getElementById('quality');
-    const opts = [{v:"1.0",t:t.q1},{v:"0.7",t:t.q7,s:true},{v:"0.4",t:t.q4},{v:"0.1",t:t.q10}];
-    opts.forEach(o => { const opt = document.createElement('option'); opt.value=o.v; opt.text=o.t; if(o.s)opt.selected=true; qSelect.add(opt); });
+        btn.disabled = filesArray.length === 0;
+    }
 
-    const input = document.getElementById('file-input');
-    const zone = document.getElementById('drop-zone');
-    const btn = document.getElementById('convert-btn');
-    const list = document.getElementById('file-list');
-    const nameInput = document.getElementById('output-name');
-    let files = [];
+    // 並び替えロジック
+    function moveItem(index, direction) {
+        const newIndex = index + direction;
+        if (newIndex >= 0 && newIndex < filesArray.length) {
+            [filesArray[index], filesArray[newIndex]] = [filesArray[newIndex], filesArray[index]];
+            updateList();
+        }
+    }
 
-    // 初期ファイル名
-    const d = new Date();
-    nameInput.value = `PDF_${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}_${String(d.getHours()).padStart(2,'0')}${String(d.getMinutes()).padStart(2,'0')}`;
+    // 削除ロジック
+    function removeItem(index) {
+        filesArray.splice(index, 1);
+        updateList();
+    }
 
-    // ドラッグ＆ドロップ演出
-    zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('dragover'); });
-    zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
-    zone.addEventListener('drop', (e) => { e.preventDefault(); zone.classList.remove('dragover'); input.files = e.dataTransfer.files; input.dispatchEvent(new Event('change')); });
+    function clearStatus() {
+        document.getElementById('status-msg').innerHTML = '';
+    }
 
-    zone.onclick = () => input.click();
-    input.onchange = (e) => {
-        files = Array.from(e.target.files);
-        if (files.length > 0) {
-            let total = 0;
-            list.innerHTML = files.map(f => {
-                total += f.size;
-                return `<div class="file-item"><span>${f.name.slice(0,25)}</span><span style="color:#8E8E93">${(f.size/1024/1024).toFixed(1)}MB</span></div>`;
-            }).join('') + `<div style="text-align:right; margin-top:12px; font-weight:700; color:var(--accent);">${t.total} ${(total/1024/1024).toFixed(1)}MB</div>`;
+    // PDF生成メインロジック
+    async function generatePDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        const btn = document.getElementById('convert-btn');
+        const status = document.getElementById('status-msg');
+        const quality = parseFloat(document.getElementById('quality').value);
+        
+        btn.disabled = true;
+        status.innerText = "作成中...";
+
+        try {
+            for (let i = 0; i < filesArray.length; i++) {
+                const imgData = await readFileAsDataURL(filesArray[i], quality);
+                const imgProps = doc.getImageProperties(imgData);
+                const pdfWidth = doc.internal.pageSize.getWidth();
+                const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+                if (i > 0) doc.addPage();
+                doc.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+            }
+
+            // ファイル名補完
+            let fileName = document.getElementById('pdf-name').value.trim() || "converted";
+            if (!fileName.toLowerCase().endsWith('.pdf')) fileName += '.pdf';
+
+            doc.save(fileName);
+            status.innerHTML = '<span class="success">✅ 作成完了しました！</span>';
+        } catch (e) {
+            status.innerText = "エラーが発生しました。";
+            console.error(e);
+        } finally {
             btn.disabled = false;
         }
-    };
+    }
 
-    btn.onclick = async () => {
-        btn.innerText = t.working; btn.disabled = true;
-        try {
-            const { PDFDocument } = PDFLib;
-            const pdf = await PDFDocument.create();
-            const q = parseFloat(qSelect.value);
-            for (const f of files) {
-                let b = await f.arrayBuffer();
-                if (q < 1.0) b = await compress(f, q);
-                const img = (f.type==="image/png"&&q===1.0)?await pdf.embedPng(b):await pdf.embedJpg(b);
-                const p = pdf.addPage([595.28, 841.89]);
-                const { width, height } = img.scaleToFit(545, 792);
-                p.drawImage(img, { x:(p.getWidth()-width)/2, y:(p.getHeight()-height)/2, width, height });
-            }
-            const res = await pdf.save();
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(new Blob([res], {type:'application/pdf'}));
-            a.download = `${nameInput.value}.pdf`; a.click();
-        } catch(e) { alert("Error"); }
-        btn.innerText = t.btn; btn.disabled = false;
-    };
-
-    function compress(f, q) {
-        return new Promise(r => {
+    // 画像読み込みとリサイズ（圧縮対応）
+    function readFileAsDataURL(file, quality) {
+        return new Promise((resolve) => {
             const reader = new FileReader();
             reader.onload = (e) => {
                 const img = new Image();
                 img.onload = () => {
-                    const c = document.createElement('canvas');
-                    c.width = img.width; c.height = img.height;
-                    c.getContext('2d').drawImage(img, 0, 0);
-                    c.toBlob(b => b.arrayBuffer().then(r), 'image/jpeg', q);
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0);
+                    resolve(canvas.toDataURL('image/jpeg', quality));
                 };
                 img.src = e.target.result;
             };
-            reader.readAsDataURL(f);
+            reader.readAsDataURL(file);
         });
     }
 </script>
