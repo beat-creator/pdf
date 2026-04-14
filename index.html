@@ -3,38 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>セキュアPDF変換 - ローカル完結型</title>
+    <title>セキュア画像PDF変換 - 1枚から複数結合まで</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root { --primary: #2563eb; --bg: #f8fafc; }
         body { font-family: sans-serif; background: var(--bg); color: #1e293b; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
         .container { max-width: 500px; width: 100%; background: white; padding: 24px; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
-        h1 { font-size: 1.25rem; margin-bottom: 1rem; text-align: center; }
-        .drop-zone { border: 2px dashed #cbd5e1; border-radius: 12px; padding: 40px 20px; text-align: center; cursor: pointer; transition: 0.2s; }
-        .drop-zone:hover { border-color: var(--primary); background: #eff6ff; }
+        h1 { font-size: 1.25rem; margin-bottom: 0.5rem; text-align: center; color: #0f172a; }
+        .sub-text { font-size: 0.8rem; color: #64748b; text-align: center; margin-bottom: 20px; line-height: 1.5; }
+        .drop-zone { border: 2px dashed #2563eb; border-radius: 12px; padding: 35px 20px; text-align: center; cursor: pointer; transition: 0.2s; background: #eff6ff; }
+        .drop-zone:hover { background: #dbeafe; }
+        .drop-zone strong { color: #1d4ed8; font-size: 1rem; }
+        #add-more { font-size: 0.75rem; color: #2563eb; font-weight: bold; margin-top: 10px; display: none; background: white; padding: 4px 10px; border-radius: 20px; display: inline-block; border: 1px solid #2563eb; }
         #file-list { margin-top: 20px; list-style: none; padding: 0; }
-        .file-item { display: flex; align-items: center; background: #f1f5f9; margin-bottom: 8px; padding: 8px 12px; border-radius: 8px; font-size: 0.9rem; }
+        .file-item { display: flex; align-items: center; background: #f1f5f9; margin-bottom: 8px; padding: 8px 12px; border-radius: 8px; font-size: 0.85rem; border: 1px solid #e2e8f0; }
+        .page-num { font-weight: bold; color: #64748b; margin-right: 10px; min-width: 45px; font-size: 0.7rem; background: #fff; padding: 2px 6px; border-radius: 4px; text-align: center; border: 1px solid #cbd5e1; }
         .file-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .controls { display: flex; gap: 4px; margin-left: 8px; }
-        .btn-sm { border: none; background: #e2e8f0; cursor: pointer; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; }
-        .btn-sm:hover { background: #cbd5e1; }
+        .btn-sm { border: none; background: #fff; cursor: pointer; padding: 5px 8px; border-radius: 4px; font-size: 0.8rem; border: 1px solid #cbd5e1; display: flex; align-items: center; justify-content: center; }
         .config { margin-top: 20px; border-top: 1px solid #e2e8f0; padding-top: 16px; }
         label { font-size: 0.85rem; font-weight: bold; color: #475569; }
         input, select { width: 100%; padding: 10px; margin: 8px 0 16px 0; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; font-size: 1rem; }
-        .main-btn { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 1rem; }
-        .main-btn:disabled { background: #94a3b8; cursor: not-allowed; }
-        #status-msg { margin-top: 12px; text-align: center; font-weight: bold; min-height: 1.2rem; }
-        .success { color: #059669; }
+        .main-btn { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 1.1rem; box-shadow: 0 4px 10px -2px rgba(37, 99, 235, 0.3); }
+        .main-btn:disabled { background: #94a3b8; cursor: not-allowed; box-shadow: none; }
+        #status-msg { margin-top: 15px; text-align: center; font-weight: bold; min-height: 1.2rem; }
+        .success { color: #059669; background: #ecfdf5; padding: 8px 16px; border-radius: 8px; display: inline-block; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>📄 セキュアPDF変換</h1>
-    <p style="font-size: 0.8rem; color: #64748b; text-align: center; margin-top: -10px;">ブラウザ内で完結。外部送信なし。</p>
+    <h1>🖼️ セキュア画像PDF変換</h1>
+    <p class="sub-text">
+        1枚からでもOK。複数枚なら「1つのPDF」に結合。<br>
+        データは端末内で安全に処理（外部送信なし）
+    </p>
     
     <div class="drop-zone" onclick="document.getElementById('file-input').click()">
-        画像をタップして追加
+        <strong>画像をえらぶ</strong><br>
+        <span style="font-size: 0.8rem; color: #1e40af;">（1枚でも、複数をまとめてでもOK）</span>
+        <div id="add-more-container" style="display:none; margin-top:10px;">
+            <span id="add-more">＋ さらに画像を追加する</span>
+        </div>
         <input type="file" id="file-input" multiple accept="image/*" style="display:none" onchange="handleFiles(this.files)">
     </div>
 
@@ -47,62 +57,60 @@
         <label>画質設定</label>
         <select id="quality">
             <option value="1.0">最高画質 (100%)</option>
-            <option value="0.7" selected>標準 (70%)</option>
+            <option value="0.7" selected>標準 (70%) - 推奨</option>
             <option value="0.4">極限圧縮 (40%)</option>
         </select>
     </div>
 
-    <button id="convert-btn" class="main-btn" onclick="generatePDF()" disabled>PDFを作成・保存</button>
+    <button id="convert-btn" class="main-btn" onclick="generatePDF()" disabled>PDFを作成して保存</button>
     <div id="status-msg"></div>
 </div>
 
 <script>
     let filesArray = [];
 
-    // ページ読み込み時にデフォルトのファイル名をセット
     window.onload = () => {
         const now = new Date();
-        const dateStr = now.getFullYear() +
-            ('0' + (now.getMonth() + 1)).slice(-2) +
-            ('0' + now.getDate()).slice(-2) + "_" +
-            ('0' + now.getHours()).slice(-2) +
-            ('0' + now.getMinutes()).slice(-2);
-        
+        const dateStr = now.getFullYear() + ('0' + (now.getMonth() + 1)).slice(-2) + ('0' + now.getDate()).slice(-2) + "_" + ('0' + now.getHours()).slice(-2) + ('0' + now.getMinutes()).slice(-2);
         document.getElementById('pdf-name').value = "PDF_" + dateStr;
     };
 
-    // ファイル選択時の処理
     function handleFiles(files) {
-        const newFiles = Array.from(files);
-        filesArray = [...filesArray, ...newFiles];
+        filesArray = [...filesArray, ...Array.from(files)];
         updateList();
         clearStatus();
     }
 
-    // リストの表示更新
     function updateList() {
         const list = document.getElementById('file-list');
         const btn = document.getElementById('convert-btn');
+        const addMore = document.getElementById('add-more-container');
         list.innerHTML = '';
         
         filesArray.forEach((file, index) => {
             const li = document.createElement('li');
             li.className = 'file-item';
             li.innerHTML = `
+                <span class="page-num">${index + 1}ページ</span>
                 <span class="file-name">${file.name}</span>
                 <div class="controls">
-                    <button class="btn-sm" onclick="moveItem(${index}, -1)">↑</button>
-                    <button class="btn-sm" onclick="moveItem(${index}, 1)">↓</button>
-                    <button class="btn-sm" style="color:#ef4444" onclick="removeItem(${index})">✕</button>
+                    ${filesArray.length > 1 ? `
+                        <button class="btn-sm" onclick="event.stopPropagation(); moveItem(${index}, -1)">↑</button>
+                        <button class="btn-sm" onclick="event.stopPropagation(); moveItem(${index}, 1)">↓</button>
+                    ` : ''}
+                    <button class="btn-sm" style="color:#ef4444" onclick="event.stopPropagation(); removeItem(${index})">✕</button>
                 </div>
             `;
             list.appendChild(li);
         });
-
+        
         btn.disabled = filesArray.length === 0;
+        addMore.style.display = filesArray.length > 0 ? 'block' : 'none';
+        
+        // 1枚の時と複数枚の時でボタンの文言を微調整
+        btn.innerText = filesArray.length > 1 ? "まとめてPDF結合・保存" : "PDFに変換して保存";
     }
 
-    // 並び替え処理
     function moveItem(index, direction) {
         const newIndex = index + direction;
         if (newIndex >= 0 && newIndex < filesArray.length) {
@@ -111,23 +119,19 @@
         }
     }
 
-    // 削除処理
     function removeItem(index) {
         filesArray.splice(index, 1);
         updateList();
     }
 
-    function clearStatus() {
-        document.getElementById('status-msg').innerHTML = '';
-    }
+    function clearStatus() { document.getElementById('status-msg').innerHTML = ''; }
 
-    // PDF生成メインロジック
     async function generatePDF() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         const btn = document.getElementById('convert-btn');
         const status = document.getElementById('status-msg');
-        const quality = parseFloat(document.getElementById('quality').value);
+        const quality = parseFloat(document.getElementById('quality').value || 0.7);
         
         btn.disabled = true;
         status.innerText = "PDF作成中...";
@@ -138,17 +142,13 @@
                 const imgProps = doc.getImageProperties(imgData);
                 const pdfWidth = doc.internal.pageSize.getWidth();
                 const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
                 if (i > 0) doc.addPage();
                 doc.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
             }
-
-            // ファイル名補完ロジック
-            let fileName = document.getElementById('pdf-name').value.trim() || "converted";
+            let fileName = document.getElementById('pdf-name').value.trim() || "output";
             if (!fileName.toLowerCase().endsWith('.pdf')) fileName += '.pdf';
-
             doc.save(fileName);
-            status.innerHTML = '<span class="success">✅ 作成完了しました！</span>';
+            status.innerHTML = '<span class="success">✅ 完了しました！</span>';
         } catch (e) {
             status.innerText = "エラーが発生しました。";
             console.error(e);
@@ -157,7 +157,6 @@
         }
     }
 
-    // 画像圧縮処理
     function readFileAsDataURL(file, quality) {
         return new Promise((resolve) => {
             const reader = new FileReader();
@@ -165,8 +164,7 @@
                 const img = new Image();
                 img.onload = () => {
                     const canvas = document.createElement('canvas');
-                    canvas.width = img.width;
-                    canvas.height = img.height;
+                    canvas.width = img.width; canvas.height = img.height;
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0);
                     resolve(canvas.toDataURL('image/jpeg', quality));
