@@ -43,3 +43,140 @@
     <div class="config">
         <label>保存ファイル名</label>
         <input type="text" id="pdf-name" placeholder="ファイル名を入力">
+        
+        <label>画質設定</label>
+        <select id="quality">
+            <option value="1.0">最高画質 (100%)</option>
+            <option value="0.7" selected>標準 (70%)</option>
+            <option value="0.4">極限圧縮 (40%)</option>
+        </select>
+    </div>
+
+    <button id="convert-btn" class="main-btn" onclick="generatePDF()" disabled>PDFを作成・保存</button>
+    <div id="status-msg"></div>
+</div>
+
+<script>
+    let filesArray = [];
+
+    // ページ読み込み時にデフォルトのファイル名をセット
+    window.onload = () => {
+        const now = new Date();
+        const dateStr = now.getFullYear() +
+            ('0' + (now.getMonth() + 1)).slice(-2) +
+            ('0' + now.getDate()).slice(-2) + "_" +
+            ('0' + now.getHours()).slice(-2) +
+            ('0' + now.getMinutes()).slice(-2);
+        
+        document.getElementById('pdf-name').value = "PDF_" + dateStr;
+    };
+
+    // ファイル選択時の処理
+    function handleFiles(files) {
+        const newFiles = Array.from(files);
+        filesArray = [...filesArray, ...newFiles];
+        updateList();
+        clearStatus();
+    }
+
+    // リストの表示更新
+    function updateList() {
+        const list = document.getElementById('file-list');
+        const btn = document.getElementById('convert-btn');
+        list.innerHTML = '';
+        
+        filesArray.forEach((file, index) => {
+            const li = document.createElement('li');
+            li.className = 'file-item';
+            li.innerHTML = `
+                <span class="file-name">${file.name}</span>
+                <div class="controls">
+                    <button class="btn-sm" onclick="moveItem(${index}, -1)">↑</button>
+                    <button class="btn-sm" onclick="moveItem(${index}, 1)">↓</button>
+                    <button class="btn-sm" style="color:#ef4444" onclick="removeItem(${index})">✕</button>
+                </div>
+            `;
+            list.appendChild(li);
+        });
+
+        btn.disabled = filesArray.length === 0;
+    }
+
+    // 並び替え処理
+    function moveItem(index, direction) {
+        const newIndex = index + direction;
+        if (newIndex >= 0 && newIndex < filesArray.length) {
+            [filesArray[index], filesArray[newIndex]] = [filesArray[newIndex], filesArray[index]];
+            updateList();
+        }
+    }
+
+    // 削除処理
+    function removeItem(index) {
+        filesArray.splice(index, 1);
+        updateList();
+    }
+
+    function clearStatus() {
+        document.getElementById('status-msg').innerHTML = '';
+    }
+
+    // PDF生成メインロジック
+    async function generatePDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        const btn = document.getElementById('convert-btn');
+        const status = document.getElementById('status-msg');
+        const quality = parseFloat(document.getElementById('quality').value);
+        
+        btn.disabled = true;
+        status.innerText = "PDF作成中...";
+
+        try {
+            for (let i = 0; i < filesArray.length; i++) {
+                const imgData = await readFileAsDataURL(filesArray[i], quality);
+                const imgProps = doc.getImageProperties(imgData);
+                const pdfWidth = doc.internal.pageSize.getWidth();
+                const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+                if (i > 0) doc.addPage();
+                doc.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+            }
+
+            // ファイル名補完ロジック
+            let fileName = document.getElementById('pdf-name').value.trim() || "converted";
+            if (!fileName.toLowerCase().endsWith('.pdf')) fileName += '.pdf';
+
+            doc.save(fileName);
+            status.innerHTML = '<span class="success">✅ 作成完了しました！</span>';
+        } catch (e) {
+            status.innerText = "エラーが発生しました。";
+            console.error(e);
+        } finally {
+            btn.disabled = false;
+        }
+    }
+
+    // 画像圧縮処理
+    function readFileAsDataURL(file, quality) {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0);
+                    resolve(canvas.toDataURL('image/jpeg', quality));
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+</script>
+
+</body>
+</html>
