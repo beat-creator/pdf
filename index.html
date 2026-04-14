@@ -16,11 +16,12 @@
         .file-item { display: flex; align-items: center; background: #f1f5f9; margin-bottom: 8px; padding: 8px 12px; border-radius: 8px; font-size: 0.9rem; }
         .file-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .controls { display: flex; gap: 4px; margin-left: 8px; }
-        .btn-sm { border: none; background: #e2e8f0; cursor: pointer; padding: 4px 8px; border-radius: 4px; }
+        .btn-sm { border: none; background: #e2e8f0; cursor: pointer; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; }
         .btn-sm:hover { background: #cbd5e1; }
         .config { margin-top: 20px; border-top: 1px solid #e2e8f0; padding-top: 16px; }
-        input, select { width: 100%; padding: 8px; margin: 8px 0; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; }
-        .main-btn { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 16px; transition: 0.3s; }
+        label { font-size: 0.85rem; font-weight: bold; color: #475569; }
+        input, select { width: 100%; padding: 10px; margin: 8px 0 16px 0; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; font-size: 1rem; }
+        .main-btn { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 1rem; }
         .main-btn:disabled { background: #94a3b8; cursor: not-allowed; }
         #status-msg { margin-top: 12px; text-align: center; font-weight: bold; min-height: 1.2rem; }
         .success { color: #059669; }
@@ -30,10 +31,10 @@
 
 <div class="container">
     <h1>📄 セキュアPDF変換</h1>
-    <p style="font-size: 0.8rem; color: #64748b; text-align: center; margin-top: -10px;">サーバー通信なし。デバイス内で完結。</p>
+    <p style="font-size: 0.8rem; color: #64748b; text-align: center; margin-top: -10px;">ブラウザ内で完結。外部送信なし。</p>
     
     <div class="drop-zone" onclick="document.getElementById('file-input').click()">
-        画像をタップまたはドラッグ
+        画像をタップして追加
         <input type="file" id="file-input" multiple accept="image/*" style="display:none" onchange="handleFiles(this.files)">
     </div>
 
@@ -41,129 +42,4 @@
 
     <div class="config">
         <label>保存ファイル名</label>
-        <input type="text" id="pdf-name" placeholder="example (自動で.pdfが付きます)">
-        
-        <label>画質設定</label>
-        <select id="quality">
-            <option value="1.0">最高画質 (100%)</option>
-            <option value="0.7">標準 (70%)</option>
-            <option value="0.4">極限圧縮 (40%)</option>
-        </select>
-    </div>
-
-    <button id="convert-btn" class="main-btn" onclick="generatePDF()" disabled>PDFを作成・保存</button>
-    <div id="status-msg"></div>
-</div>
-
-<script>
-    let filesArray = [];
-
-    // ファイル選択時の処理
-    function handleFiles(files) {
-        const newFiles = Array.from(files);
-        filesArray = [...filesArray, ...newFiles];
-        updateList();
-        clearStatus();
-    }
-
-    // リストの更新（並び替えボタン付与）
-    function updateList() {
-        const list = document.getElementById('file-list');
-        const btn = document.getElementById('convert-btn');
-        list.innerHTML = '';
-        
-        filesArray.forEach((file, index) => {
-            const li = document.createElement('li');
-            li.className = 'file-item';
-            li.innerHTML = `
-                <span class="file-name">${file.name}</span>
-                <div class="controls">
-                    <button class="btn-sm" onclick="moveItem(${index}, -1)">↑</button>
-                    <button class="btn-sm" onclick="moveItem(${index}, 1)">↓</button>
-                    <button class="btn-sm" style="color:red" onclick="removeItem(${index})">✕</button>
-                </div>
-            `;
-            list.appendChild(li);
-        });
-
-        btn.disabled = filesArray.length === 0;
-    }
-
-    // 並び替えロジック
-    function moveItem(index, direction) {
-        const newIndex = index + direction;
-        if (newIndex >= 0 && newIndex < filesArray.length) {
-            [filesArray[index], filesArray[newIndex]] = [filesArray[newIndex], filesArray[index]];
-            updateList();
-        }
-    }
-
-    // 削除ロジック
-    function removeItem(index) {
-        filesArray.splice(index, 1);
-        updateList();
-    }
-
-    function clearStatus() {
-        document.getElementById('status-msg').innerHTML = '';
-    }
-
-    // PDF生成メインロジック
-    async function generatePDF() {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        const btn = document.getElementById('convert-btn');
-        const status = document.getElementById('status-msg');
-        const quality = parseFloat(document.getElementById('quality').value);
-        
-        btn.disabled = true;
-        status.innerText = "作成中...";
-
-        try {
-            for (let i = 0; i < filesArray.length; i++) {
-                const imgData = await readFileAsDataURL(filesArray[i], quality);
-                const imgProps = doc.getImageProperties(imgData);
-                const pdfWidth = doc.internal.pageSize.getWidth();
-                const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-                if (i > 0) doc.addPage();
-                doc.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
-            }
-
-            // ファイル名補完
-            let fileName = document.getElementById('pdf-name').value.trim() || "converted";
-            if (!fileName.toLowerCase().endsWith('.pdf')) fileName += '.pdf';
-
-            doc.save(fileName);
-            status.innerHTML = '<span class="success">✅ 作成完了しました！</span>';
-        } catch (e) {
-            status.innerText = "エラーが発生しました。";
-            console.error(e);
-        } finally {
-            btn.disabled = false;
-        }
-    }
-
-    // 画像読み込みとリサイズ（圧縮対応）
-    function readFileAsDataURL(file, quality) {
-        return new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const img = new Image();
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    canvas.width = img.width;
-                    canvas.height = img.height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0);
-                    resolve(canvas.toDataURL('image/jpeg', quality));
-                };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        });
-    }
-</script>
-
-</body>
-</html>
+        <input type="text" id="pdf-name" placeholder="ファイル名を入力">
