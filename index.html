@@ -5,28 +5,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>セキュア便利ツール集 | スマホ・PC両対応</title>
     <style>
-        :root { --primary: #2563eb; --text: #1e293b; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.5; color: var(--text); max-width: 600px; margin: 0 auto; padding: 20px; background: #f8fafc; }
-        .card { background: white; padding: 24px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        :root { --primary: #2563eb; --primary-dark: #1d4ed8; --text: #1e293b; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.5; color: var(--text); max-width: 600px; margin: 0 auto; padding: 20px; background: #f1f5f9; }
+        .card { background: white; padding: 24px; border-radius: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
         
-        /* ヘッダーをスリム化 */
         header { text-align: center; margin-bottom: 24px; }
-        h1 { font-size: 1.4rem; color: var(--primary); margin: 0 0 8px 0; }
-        .badge-container { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
-        .badge { font-size: 0.7rem; font-weight: bold; padding: 4px 10px; border-radius: 20px; background: #eff6ff; color: var(--primary); border: 1px solid #dbeafe; }
+        h1 { font-size: 1.4rem; color: var(--primary); margin: 0 0 12px 0; }
+        .badge-container { display: flex; justify-content: center; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+        .badge { font-size: 0.7rem; font-weight: bold; padding: 4px 12px; border-radius: 20px; background: #eff6ff; color: var(--primary); border: 1px solid #dbeafe; }
         
-        /* メイン説明をコンパクトに */
-        .hero-text { font-size: 0.85rem; color: #64748b; margin-bottom: 20px; text-align: center; border-bottom: 1px solid #f1f5f9; padding-bottom: 15px; }
+        .hero-text { font-size: 0.85rem; color: #64748b; margin-bottom: 24px; text-align: center; line-height: 1.6; }
 
-        .tool-link { display: flex; align-items: center; padding: 20px; background: #fff; border: 2px solid #e2e8f0; border-radius: 16px; text-decoration: none; transition: 0.2s; }
-        .tool-link:hover { border-color: var(--primary); background: #f0f7ff; transform: translateY(-2px); }
-        .tool-icon { font-size: 2rem; margin-right: 16px; }
+        /* ボタンデザインの大幅改善 */
+        .tool-link { 
+            display: flex; 
+            align-items: center; 
+            padding: 20px; 
+            background: var(--primary); /* 青背景で「押せる感」を強調 */
+            color: white; 
+            border-radius: 18px; 
+            text-decoration: none; 
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+            border: none;
+        }
+        .tool-link:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: 0 6px 15px rgba(37, 99, 235, 0.3); }
+        .tool-link:active { transform: scale(0.98); }
+        
+        .tool-icon { font-size: 2.2rem; margin-right: 16px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
         .tool-info { flex: 1; }
-        .tool-title { display: block; color: #0f172a; font-weight: bold; font-size: 1rem; margin-bottom: 4px; }
-        .tool-desc { display: block; color: #64748b; font-size: 0.75rem; }
+        .tool-title { display: block; color: white; font-weight: bold; font-size: 1.1rem; margin-bottom: 4px; }
+        .tool-desc { display: block; color: rgba(255,255,255,0.9); font-size: 0.75rem; line-height: 1.4; }
 
-        .trust-box { background: #1e293b; color: #f8fafc; padding: 15px; border-radius: 12px; margin-top: 24px; font-size: 0.8rem; }
-        .trust-box strong { color: #60a5fa; display: block; margin-bottom: 4px; }
+        /* デバイス対応表示 */
+        .device-support { display: flex; align-items: center; justify-content: center; gap: 15px; margin-top: 20px; padding: 10px; background: #f8fafc; border-radius: 12px; font-size: 0.8rem; color: #64748b; }
+        .device-item { display: flex; align-items: center; gap: 4px; }
+
+        .trust-box { background: #f8fafc; padding: 18px; border-radius: 16px; margin-top: 24px; font-size: 0.8rem; border: 1px solid #e2e8f0; }
+        .trust-box strong { color: var(--primary); display: block; margin-bottom: 6px; font-size: 0.85rem; }
 
         .footer { margin-top: 30px; font-size: 0.7rem; color: #94a3b8; text-align: center; }
     </style>
@@ -36,24 +52,33 @@
         <header>
             <h1>🛠️ セキュア便利ツール集</h1>
             <div class="badge-container">
-                <span class="badge">スマホ・PC両対応</span>
                 <span class="badge">完全無料</span>
                 <span class="badge">登録不要</span>
+                <span class="badge">インストール不要</span>
             </div>
-            <p class="hero-text">ブラウザで動く、インストール不要のアプリ集。<br>1枚から複数結合まで、手軽に安全に処理できます。</p>
+            <p class="hero-text">
+                プライバシーを第一に考えた、ブラウザ完結のツールサイト。<br>
+                データは外部へ送信されず、端末内で安全に処理されます。
+            </p>
         </header>
 
         <a href="./img-pdf/" class="tool-link">
             <span class="tool-icon">🖼️</span>
             <div class="tool-info">
                 <span class="tool-title">画像PDF変換・結合</span>
-                <span class="tool-desc">1枚の変換も、複数枚の結合もこれひとつで。スマホカメラからの直接取り込みも対応。</span>
+                <span class="tool-desc">1枚の高速変換から、複数枚のスマート結合まで対応。</span>
             </div>
         </a>
 
+        <div class="device-support">
+            <div class="device-item">📱 スマホ対応</div>
+            <div class="device-item">💻 PC対応</div>
+            <div class="device-item">📶 オフライン可</div>
+        </div>
+
         <div class="trust-box">
-            <strong>🛡️ 100% 端末内処理（プライバシー重視）</strong>
-            サーバーへデータを送りません。読み込み後は【オフライン（機内モード）】でも動作するため、機密書類も安心して扱えます。
+            <strong>🛡️ 安心の「100% 端末内処理」</strong>
+            一度ページを開いた後は、ネットを遮断した状態（機内モード）でも全機能が使えます。これが、データを外部に一切送信していない最大の証拠です。
         </div>
 
         <div class="footer">
