@@ -3,53 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>セキュア便利ツール集 | プライバシー保護型ツールサイト</title>
+    <title>セキュア便利ツール集 | サーバー送信なしで安全に作業</title>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.6; color: #1e293b; max-width: 800px; margin: 0 auto; padding: 40px 20px; background: #f8fafc; }
-        .card { background: white; padding: 30px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        h1 { color: #2563eb; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px; margin-top: 0; }
-        h2 { font-size: 1.2rem; margin-top: 30px; color: #334155; }
-        .tool-link { display: block; padding: 25px; background: #eff6ff; border: 1px solid #dbeafe; border-radius: 12px; text-decoration: none; color: #1e40af; font-weight: bold; transition: 0.2s; }
-        .tool-link:hover { background: #dbeafe; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(37,99,235,0.1); }
-        .info-box { background: #f1f5f9; padding: 20px; border-radius: 12px; margin-top: 20px; font-size: 0.95rem; border-left: 4px solid #2563eb; }
-        .info-box strong { color: #2563eb; }
-        .description { color: #64748b; margin-bottom: 25px; }
-        .footer { margin-top: 40px; font-size: 0.8rem; color: #94a3b8; text-align: center; border-top: 1px solid #eee; padding-top: 20px; }
+        .card { background: white; padding: 35px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        h1 { color: #2563eb; font-size: 1.75rem; margin-bottom: 10px; }
+        .tagline { color: #64748b; font-size: 0.95rem; margin-bottom: 25px; }
+        .tool-card { display: block; padding: 25px; background: #ffffff; border: 2px solid #eff6ff; border-radius: 16px; text-decoration: none; color: #1e40af; transition: 0.3s; box-shadow: 0 4px 6px rgba(37,99,235,0.05); }
+        .tool-card:hover { border-color: #2563eb; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(37,99,235,0.1); }
+        .tool-title { font-size: 1.2rem; font-weight: bold; display: flex; align-items: center; gap: 8px; }
+        .tool-desc { font-size: 0.85rem; color: #475569; margin-top: 8px; font-weight: normal; }
+        .feature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 30px 0; }
+        .feature-item { background: #f1f5f9; padding: 15px; border-radius: 12px; font-size: 0.85rem; }
+        .feature-item strong { color: #2563eb; display: block; margin-bottom: 4px; }
+        .footer-links { margin-top: 50px; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 20px; font-size: 0.85rem; }
+        .footer-links a { color: #64748b; text-decoration: none; margin: 0 10px; }
+        .footer-links a:hover { color: #2563eb; }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h1>🛠️ セキュア便利ツール集</h1>
-        <p class="description">
-            「プライバシーを守りながら、手軽に作業を。」<br>
-            当サイトのツールはすべて、お使いの端末内だけで完結する最新のWeb技術（クライアントサイド処理）を採用しています。
-        </p>
 
-        <div class="info-box">
-            <strong>🛡️ データの安全性について</strong><br>
-            当サイトでは、画像や書類をサーバーへ送信することは一切ありません。その証拠として、**一度ページを読み込んだ後は、インターネットを遮断（オフライン状態に）しても全ての機能が利用可能**です。機密性の高い書類も安心して処理いただけます。
+<div class="card">
+    <h1>🛠️ セキュア便利ツール集</h1>
+    <p class="tagline">プライバシーを第一に考えた、インストール不要のWebツール群</p>
+
+    <div class="feature-grid">
+        <div class="feature-item">
+            <strong>🛡️ 100% サーバー送信なし</strong>
+            ページを読み込んだ後は「機内モード（オフライン）」でも動作します。
         </div>
-
-        <h2>公開中のツール</h2>
-        <a href="./img-pdf/" class="tool-link">
-            🖼️ 画像PDF変換・結合ツール<br>
-            <span style="font-weight:normal; font-size:0.85rem; color: #475569; display: block; margin-top: 8px;">
-                1枚の画像をサクッとPDFに変換するのはもちろん、複数の画像を1つのPDFに結合することも可能です。
-            </span>
-        </a>
-
-        <div style="margin-top: 40px;">
-            <h2>当サイトの特徴</h2>
-            <ul style="font-size: 0.9rem; color: #475569;">
-                <li><b>ログイン不要:</b> 面倒な登録なしで、開いた瞬間に使えます。</li>
-                <li><b>爆速処理:</b> サーバーとの通信を待たないので、巨大な画像も瞬時に処理。</li>
-                <li><b>マルチデバイス:</b> PCはもちろん、スマホの「ホーム画面に追加」でアプリのようにも使えます。</li>
-            </ul>
-        </div>
-
-        <div class="footer">
-            <p>© 2026 セキュア便利ツール集. All rights reserved.</p>
+        <div class="feature-item">
+            <strong>⚡ 爆速・登録不要</strong>
+            サーバー通信がないため、巨大なファイルも瞬時に処理。ログインも不要です。
         </div>
     </div>
+
+    <h2>公開中のツール</h2>
+    <a href="./img-pdf/" class="tool-card">
+        <div class="tool-title">🖼️ 画像PDF変換・結合</div>
+        <div class="tool-desc">
+            1枚の画像をPDFにするのはもちろん、複数の画像を1つのPDFに安全に結合できます。スマホのカメラ画像にも対応。
+        </div>
+    </a>
+
+    <div style="margin-top: 40px;">
+        <h2 style="font-size: 1.1rem;">当サイトのポリシー</h2>
+        <p style="font-size: 0.9rem; color: #64748b;">
+            私たちは、ユーザーのデータを預かるリスクを最小限に抑えるため、最新のWeb技術を用いて「すべての処理をユーザーの手元（ブラウザ）」で行うことにこだわっています。
+        </p>
+    </div>
+
+    <div class="footer-links">
+        <a href="./privacy.html">プライバシーポリシー</a>
+        <span style="color: #e2e8f0;">|</span>
+        <span style="color: #94a3b8;">© 2026 Secure Tool Lab.</span>
+    </div>
+</div>
+
 </body>
 </html>
