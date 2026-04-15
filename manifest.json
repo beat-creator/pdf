@@ -1,0 +1,16 @@
+{
+  "name": "セキュア圧縮ツール",
+  "short_name": "セキュア圧縮",
+  "description": "サーバー送信なしで安全にファイルを圧縮するツール",
+  "start_url": "./zip/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#059669",
+  "icons": [
+    {
+      "src": "../icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
