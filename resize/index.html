@@ -39,11 +39,11 @@
     </header>
 
     <div class="container">
-        <h1 style="font-size: 1.3rem; margin-bottom: 20px; text-align:center;">🖼️ 画像をリサイズする</h1>
+        <h1 style="font-size: 1.3rem; margin-bottom: 20px; text-align:center;">↔️ セキュア画像リサイズ</h1>
         
         <div class="info-box">
             <span>🔒</span>
-            <div style="margin-left:8px;"><strong>プライバシー保護:</strong> 画像データは一切サーバーに送信されません。ブラウザ内で安全に縮小されます。</div>
+            <div style="margin-left:8px;"><strong>プライバシー保護:</strong> 画像データは一切サーバーに送信されません。ブラウザ内で安全にリサイズされます。</div>
         </div>
         
         <div class="drop-zone" onclick="document.getElementById('file-input').click()">
@@ -54,7 +54,7 @@
         <div id="file-list"></div>
 
         <div class="config-card" id="config-area" style="display:none;">
-            <label>リサイズ設定（横幅）</label>
+            <label>リサイズ設定（横幅基準）</label>
             <select id="size-preset">
                 <option value="1920">フルHD (横1920px)</option>
                 <option value="1280" selected>標準 (横1280px)</option>
@@ -122,6 +122,8 @@
             status.innerText = "⏳ 処理中...";
 
             const targetWidth = sizePreset.value === 'custom' ? parseInt(customWidth.value) : parseInt(sizePreset.value);
+            if (!targetWidth) { alert("横幅を指定してください"); btn.disabled = false; return; }
+            
             const format = document.getElementById('file-format').value;
 
             for (let item of filesArray) {
@@ -131,8 +133,12 @@
 
                 const canvas = document.createElement('canvas');
                 const ctx = canvas.getContext('2d');
-                const scale = targetWidth / img.width;
-                canvas.width = targetWidth;
+                
+                // 元画像が指定幅より小さい場合は拡大せずそのままのサイズにする処理（オプション）
+                const finalWidth = img.width < targetWidth ? img.width : targetWidth;
+                const scale = finalWidth / img.width;
+                
+                canvas.width = finalWidth;
                 canvas.height = img.height * scale;
 
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
