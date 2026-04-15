@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>セキュアZIP作成 | Secure Toolkit</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <style>
+        :root { --primary: #059669; --bg: #f0fdf4; }
+        body { font-family: sans-serif; background: var(--bg); color: #1e293b; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .container { max-width: 500px; width: 100%; background: white; padding: 24px; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        h1 { font-size: 1.25rem; text-align: center; margin-bottom: 0.5rem; }
+        .description { font-size: 0.8rem; color: #64748b; text-align: center; margin-bottom: 1.5rem; }
+        .drop-zone { border: 2px dashed #6ee7b7; border-radius: 12px; padding: 40px 20px; text-align: center; cursor: pointer; transition: 0.2s; background: #fff; }
+        .drop-zone:hover { border-color: var(--primary); background: #f0fdf4; }
+        #file-list { margin-top: 20px; list-style: none; padding: 0; max-height: 200px; overflow-y: auto; }
+        .file-item { display: flex; align-items: center; background: #f1f5f9; margin-bottom: 8px; padding: 8px 12px; border-radius: 8px; font-size: 0.85rem; }
+        .file-name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .remove-btn { color: #ef4444; cursor: pointer; font-weight: bold; margin-left: 10px; padding: 4px; }
+        .config { margin-top: 20px; padding-top: 16px; border-top: 1px solid #e2e8f0; }
+        input { width: 100%; padding: 10px; margin-top: 8px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; }
+        .main-btn { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 16px; font-size: 1rem; }
+        .main-btn:disabled { background: #94a3b8; cursor: not-allowed; }
+        #status-msg { margin-top: 12px; text-align: center; font-weight: bold; min-height: 1.2rem; }
+        .success { color: #059669; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>📦 セキュアZIP一括作成</h1>
+    <p class="description">サーバー通信なし。スマホで複数ファイルを1つに。機密書類も安心。</p>
+    
+    <div class="drop-zone" onclick="document.getElementById('file-input').click()">
+        ファイルを選択・追加
+        <input type="file" id="file-input" multiple style="display:none" onchange="handleFiles(this.files)">
+    </div>
+
+    <ul id="file-list"></ul>
+
+    <div class="config">
+        <label style="font-size: 0.9rem; font-weight: bold;">保存ファイル名</label>
+        <input type="text" id="zip-name" placeholder="archive (自動で.zipが付きます)">
+    </div>
+
+    <button id="zip-btn" class="main-btn" onclick="generateZip()" disabled>ZIPを作成・保存</button>
+    <div id="status-msg"></div>
+</div>
+
+<script>
+    let filesArray = [];
+
+    function handleFiles(files) {
+        filesArray = [...filesArray, ...Array.from(files)];
+        updateList();
+        document.getElementById('status-msg').innerText = "";
+    }
+
+    function updateList() {
+        const list = document.getElementById('file-list');
+        const btn = document.getElementById('zip-btn');
+        list.innerHTML = '';
+        
+        filesArray.forEach((file, index) => {
+            const li = document.createElement('li');
+            li.className = 'file-item';
+            li.innerHTML = `
+                <span class="file-name">${file.name}</span>
+                <span class="remove-btn" onclick="removeFile(${index})">✕</span>
+            `;
+            list.appendChild(li);
+        });
+
+        btn.disabled = filesArray.length === 0;
+    }
+
+    function removeFile(index) {
+        filesArray.splice(index, 1);
+        updateList();
+    }
+
+    async function generateZip() {
+        const zip = new JSZip();
+        const btn = document.getElementById('zip-btn');
+        const status = document.getElementById('status-msg');
+        
+        btn.disabled = true;
+        status.innerText = "圧縮中...";
+
+        try {
+            // 全ファイルをZIPに追加
+            filesArray.forEach(file => {
+                zip.file(file.name, file);
+            });
+
+            // 圧縮処理の実行
+            const content = await zip.generateAsync({
+                type: "blob",
+                compression: "DEFLATE",
+                compressionOptions: { level: 6 }
+            });
+
+            // ファイル名補完
+            let zipName = document.getElementById('zip-name').value.trim() || "archive";
+            if (!zipName.toLowerCase().endsWith('.zip')) zipName += '.zip';
+
+            // ダウンロード処理
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(content);
+            link.download = zipName;
+            link.click();
+
+            status.innerHTML = '<span class="success">✅ ZIP作成が完了しました！</span>';
+        } catch (e) {
+            status.innerText = "エラーが発生しました。";
+            console.error(e);
+        } finally {
+            btn.disabled = false;
+        }
+    }
+</script>
+
+</body>
+</html>
