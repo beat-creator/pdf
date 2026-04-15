@@ -1,24 +1,22 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-489DX1LV2M"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-489DX1LV2M');
-</script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-489DX1LV2M"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-489DX1LV2M');
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <title>セキュア便利ツール集 | スマホ・PC両対応のブラウザ完結アプリ</title>
-    <meta name="description" content="サーバー送信一切なし！ブラウザ内で完結する安全なZIP圧縮・画像PDF変換ツール。機内モードでも動作するプライバシー保護設計。登録不要・無料でスマホからもPCからも使えます。">
+    <meta name="description" content="サーバー送信一切なし！ブラウザ内で完結する安全なZIP圧縮・画像PDF変換・リサイズツール。機内モードでも動作するプライバシー保護設計。登録不要・無料でスマホからもPCからも使えます。">
     <link rel="canonical" href="https://beat-creator.github.io/pdf/">
 
     <meta property="og:title" content="セキュア便利ツール集">
-    <meta property="og:description" content="サーバー送信なしで安全にZIP圧縮・画像PDF変換。スマホ・PC両対応。">
+    <meta property="og:description" content="サーバー送信なしで安全にZIP圧縮・画像PDF変換・リサイズ。スマホ・PC両対応。">
     <meta property="og:url" content="https://beat-creator.github.io/pdf/">
     <meta property="og:type" content="website">
     <meta property="og:image" content="https://beat-creator.github.io/pdf/icon.png"> 
@@ -68,8 +66,8 @@
         .tool-link:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: 0 6px 15px rgba(37, 99, 235, 0.3); }
         .tool-link:active { transform: scale(0.98); }
         
-        .tool-icon { font-size: 2.2rem; margin-right: 16px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
-        .tool-info { flex: 1; }
+        .tool-icon { font-size: 2.2rem; margin-right: 16px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); flex-shrink: 0; }
+        .tool-info { flex: 1; min-width: 0; }
         .tool-title { display: block; color: white; font-weight: bold; font-size: 1.1rem; margin-bottom: 4px; }
         .tool-desc { display: block; color: rgba(255,255,255,0.9); font-size: 0.75rem; line-height: 1.4; }
 
@@ -114,8 +112,16 @@
                     <span class="tool-desc">1枚の高速変換から、複数枚のスマート結合まで対応。</span>
                 </div>
             </a>
+
+            <a href="./resize/" class="tool-link">
+                <span class="tool-icon">↔️</span>
+                <div class="tool-info">
+                    <span class="tool-title">セキュア画像リサイズ</span>
+                    <span class="tool-desc">画像の横幅を端末内でサクサク調整。SNS投稿やメール添付の前の軽量化に。</span>
+                </div>
+            </a>
         </div>
-          
+        
 
         <div class="device-support">
             <div class="device-item">📱 スマホ対応</div>
