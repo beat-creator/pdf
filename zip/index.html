@@ -44,4 +44,95 @@
     <div class="container">
         <h1 style="font-size: 1.25rem; text-align: center; margin-top: 0;">📦 セキュアZIP一括作成</h1>
         
-        <div class="
+        <div class="info-box">
+            <strong>このツールについて:</strong><br>
+            複数のファイルを1つのZIP形式にまとめます。<strong>ブラウザ内で処理を行うため、ファイルがサーバーに送信されることはありません。</strong>機密書類やプライベートな写真も安心して圧縮できます。
+        </div>
+        
+        <div class="drop-zone" onclick="document.getElementById('file-input').click()">
+            ファイルを選択・追加
+            <input type="file" id="file-input" multiple style="display:none" onchange="handleFiles(this.files)">
+        </div>
+
+        <ul id="file-list"></ul>
+
+        <div class="config">
+            <label style="font-size: 0.85rem; font-weight: bold; color: #475569;">保存ファイル名</label>
+            <input type="text" id="zip-name" placeholder="空欄で日付が付きます">
+        </div>
+
+        <button id="zip-btn" class="main-btn" onclick="generateZip()" disabled>ZIPを作成して保存</button>
+        <div id="status-msg"></div>
+    </div>
+
+    <script>
+        let filesArray = [];
+
+        function handleFiles(files) {
+            filesArray = [...filesArray, ...Array.from(files)];
+            updateList();
+            document.getElementById('status-msg').innerText = "";
+        }
+
+        function updateList() {
+            const list = document.getElementById('file-list');
+            const btn = document.getElementById('zip-btn');
+            list.innerHTML = '';
+            filesArray.forEach((file, index) => {
+                const li = document.createElement('li');
+                li.className = 'file-item';
+                li.innerHTML = `<span class="file-name">${file.name}</span><span class="remove-btn" onclick="removeFile(${index})">✕</span>`;
+                list.appendChild(li);
+            });
+            btn.disabled = filesArray.length === 0;
+        }
+
+        function removeFile(index) {
+            filesArray.splice(index, 1);
+            updateList();
+        }
+
+        function getTimestamp() {
+            const n = new Date();
+            return `${n.getFullYear()}${String(n.getMonth()+1).padStart(2,'0')}${String(n.getDate()).padStart(2,'0')}_${String(n.getHours()).padStart(2,'0')}${String(n.getMinutes()).padStart(2,'0')}`;
+        }
+
+        async function generateZip() {
+            const zip = new JSZip();
+            const btn = document.getElementById('zip-btn');
+            const status = document.getElementById('status-msg');
+            
+            btn.disabled = true;
+            status.innerText = "圧縮処理中...";
+
+            try {
+                filesArray.forEach(file => {
+                    zip.file(file.name, file, { binary: true });
+                });
+
+                const content = await zip.generateAsync({
+                    type: "blob",
+                    compression: "DEFLATE",
+                    compressionOptions: { level: 6 }
+                });
+
+                let zipName = document.getElementById('zip-name').value.trim();
+                if (!zipName) zipName = `archive_${getTimestamp()}`;
+                if (!zipName.toLowerCase().endsWith('.zip')) zipName += '.zip';
+
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(content);
+                link.download = zipName;
+                link.click();
+
+                status.innerHTML = '<span style="color: #059669;">✅ 保存が完了しました</span>';
+            } catch (e) {
+                status.innerText = "エラーが発生しました。";
+                console.error(e);
+            } finally {
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
