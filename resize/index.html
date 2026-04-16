@@ -1,51 +1,70 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-489DX1LV2M"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-489DX1LV2M');
+    </script>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>セキュア画像リサイズ | Secure Toolkit</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <title>セキュア画像リサイズ｜Secure Toolkit - 通信量を節約して一括加工</title>
+
     <style>
-        :root { --primary: #0ea5e9; 
-    --primary-hover: #0284c7; 
-    --bg: #f0f9ff; --card-bg: #ffffff; --text: #1e293b; --border: #e2e8f0; }
+        :root { 
+            --primary: #0ea5e9; 
+            --primary-hover: #0284c7; 
+            --bg: #f0f9ff; 
+            --card-bg: #ffffff;
+            --text: #1e293b; 
+            --border: #e2e8f0;
+        }
         body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
         
+        /* 共通ヘッダー */
         .app-header { width: 100%; background: var(--card-bg); border-bottom: 1px solid var(--border); padding: 12px 20px; display: flex; align-items: center; position: sticky; top: 0; z-index: 100; box-sizing: border-box; }
-        .back-btn { display: flex; align-items: center; text-decoration: none; color: var(--text); font-size: 0.9rem; font-weight: 600; background: #f1f5f9; padding: 6px 12px; border-radius: 20px; }
+        .back-btn { text-decoration: none; color: var(--text); font-size: 0.85rem; font-weight: 600; background: #f1f5f9; padding: 8px 16px; border-radius: 20px; }
 
-        .container { max-width: 500px; width: 95%; background: var(--card-bg); margin: 20px 0; padding: 24px; border-radius: 20px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); box-sizing: border-box; }
-        .info-box { background: #ecfdf5; border-radius: 12px; padding: 12px; margin-bottom: 20px; font-size: 0.8rem; line-height: 1.5; color: var(--primary-hover); display: flex; align-items: flex-start; }
+        .container { max-width: 500px; width: 95%; background: var(--card-bg); margin: 20px 0; padding: 24px; border-radius: 24px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); box-sizing: border-box; }
         
-        .drop-zone { border: 2px dashed var(--primary); border-radius: 16px; padding: 30px 20px; text-align: center; cursor: pointer; background: #fff; color: var(--primary); font-weight: bold; }
+        .info-box { background: var(--bg); border-radius: 12px; padding: 12px; margin-bottom: 20px; font-size: 0.8rem; line-height: 1.5; color: var(--primary-hover); display: flex; align-items: flex-start; }
+        .drop-zone { border: 2px dashed var(--primary); border-radius: 16px; padding: 35px 20px; text-align: center; cursor: pointer; background: #fff; color: var(--primary); font-weight: bold; }
         
-        #file-list { margin: 20px 0; padding: 0; }
-        .file-item { display: flex; align-items: center; background: #f8fafc; margin-bottom: 10px; padding: 10px; border-radius: 12px; border: 1px solid var(--border); }
-        .thumb { width: 50px; height: 50px; border-radius: 6px; object-fit: cover; margin-right: 12px; background: #e2e8f0; }
-        .file-info { flex: 1; min-width: 0; font-size: 0.85rem; }
-        .file-name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+        #file-list { margin: 20px 0; padding: 0; list-style: none; width: 100%; }
+        .file-item { display: flex; align-items: center; background: #f8fafc; margin-bottom: 10px; padding: 10px; border-radius: 12px; border: 1px solid var(--border); font-size: 0.85rem; }
+        .file-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         
         .config-card { background: #f8fafc; padding: 16px; border-radius: 16px; margin-bottom: 20px; }
         label { font-size: 0.8rem; font-weight: bold; color: #64748b; margin-bottom: 6px; display: block; }
-        select, input { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px; box-sizing: border-box; font-size: 1rem; margin-bottom: 12px; }
+        input, select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px; box-sizing: border-box; font-size: 1rem; margin-bottom: 12px; background: #fff; }
         
         .main-btn { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 1rem; transition: 0.2s; }
-        .main-btn:disabled { background: #cbd5e1; cursor: not-allowed; }
-        #status-msg { margin-top: 15px; text-align: center; font-weight: bold; color: var(--primary); }
+        .main-btn:disabled { background: #cbd5e1; }
+
+        /* SEO・回遊エリア */
+        .tool-info { margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border); text-align: left; }
+        .tool-info h2 { font-size: 1rem; color: var(--text); margin-bottom: 10px; }
+        .tool-info p { font-size: 0.8rem; line-height: 1.6; color: #64748b; margin-bottom: 15px; }
+        .nav-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
+        .nav-item { text-decoration: none; padding: 10px; background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; font-size: 0.7rem; color: var(--text); text-align: center; }
     </style>
 </head>
 <body>
 
     <header class="app-header">
         <a href="../" class="back-btn">🏠 ツール一覧</a>
-        <div style="flex:1; text-align:center; font-weight:bold; margin-right:60px;">セキュア画像リサイズ</div>
+        <div style="flex:1; text-align:center; font-weight:bold; margin-right:80px;">画像リサイズ</div>
     </header>
 
     <div class="container">
         <h1 style="font-size: 1.3rem; margin-bottom: 20px; text-align:center;">↔️ セキュア画像リサイズ</h1>
         
         <div class="info-box">
-            <span>🔒</span>
-            <div style="margin-left:8px;"><strong>プライバシー保護:</strong> 画像データは一切サーバーに送信されません。ブラウザ内で安全にリサイズされます。</div>
+            <span>🛡️</span>
+            <div style="margin-left:8px;"><strong>一括処理も安全:</strong> サーバーへの送信なし。ブラウザ内ですべての画像をリサイズします。</div>
         </div>
         
         <div class="drop-zone" onclick="document.getElementById('file-input').click()">
@@ -53,108 +72,110 @@
             <input type="file" id="file-input" multiple accept="image/*" style="display:none" onchange="handleFiles(this.files)">
         </div>
 
-        <div id="file-list"></div>
+        <ul id="file-list"></ul>
 
-        <div class="config-card" id="config-area" style="display:none;">
-            <label>リサイズ設定（横幅基準）</label>
-            <select id="size-preset">
-                <option value="1920">フルHD (横1920px)</option>
-                <option value="1280" selected>標準 (横1280px)</option>
-                <option value="800">小さめ (横800px)</option>
-                <option value="custom">カスタム指定</option>
-            </select>
-            <input type="number" id="custom-width" placeholder="横幅(px)を入力" style="display:none;">
+        <div class="config-card">
+            <label>リサイズ設定（横幅 px）</label>
+            <input type="number" id="width-input" value="1200" placeholder="例: 1200">
             
-            <label>保存形式</label>
-            <select id="file-format">
-                <option value="image/jpeg">JPEG (軽量)</option>
+            <label>出力形式</label>
+            <select id="format">
+                <option value="image/jpeg" selected>JPEG (軽量)</option>
                 <option value="image/png">PNG (高品質)</option>
             </select>
         </div>
 
-        <button id="exec-btn" class="main-btn" onclick="processImages()" disabled>リサイズして保存</button>
-        <div id="status-msg"></div>
+        <button id="process-btn" class="main-btn" onclick="processImages()" disabled>一括リサイズして保存</button>
+        <div id="status-msg" style="margin-top:15px; text-align:center; font-weight:bold;"></div>
+
+        <div class="tool-info">
+            <h2>🔒 通信量を大幅カット、爆速リサイズ</h2>
+            <p>
+                大きな写真をSNSやブログ用に<span style="font-weight:bold;">一括リサイズ</span>。サーバー送信がないため、スマホのギガを消費せず、プライバシーも完全に守られます。
+            </p>
+            <p style="font-size:0.75rem; color:#64748b; margin-bottom:10px; text-align:center;">こちらのツールもおすすめ</p>
+            <div class="nav-grid">
+                <a href="../zip/" class="nav-item">📦 ZIP圧縮</a>
+                <a href="../pdf/" class="nav-item">🖼️ PDF変換</a>
+                <a href="../" class="nav-item">🏠 一覧へ</a>
+            </div>
+        </div>
     </div>
 
-    <script>
-        let filesArray = [];
-        const sizePreset = document.getElementById('size-preset');
-        const customWidth = document.getElementById('custom-width');
+    <footer style="padding:20px; font-size:0.7rem; color:#94a3b8; text-align:center;">
+        &copy; 2026 Secure Toolkit
+    </footer>
 
-        sizePreset.onchange = () => {
-            customWidth.style.display = sizePreset.value === 'custom' ? 'block' : 'none';
-        };
+<script>
+    let filesArray = [];
 
-        function handleFiles(files) {
-            for (let file of files) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    filesArray.push({ file, src: e.target.result });
-                    updateList();
-                };
-                reader.readAsDataURL(file);
-            }
-        }
+    function handleFiles(files) {
+        filesArray = [...filesArray, ...Array.from(files)];
+        updateList();
+    }
 
-        function updateList() {
-            const list = document.getElementById('file-list');
-            const config = document.getElementById('config-area');
-            const btn = document.getElementById('exec-btn');
-            list.innerHTML = '';
-            filesArray.forEach((item, index) => {
-                const div = document.createElement('div');
-                div.className = 'file-item';
-                div.innerHTML = `<img src="${item.src}" class="thumb"><div class="file-info"><span class="file-name">${item.file.name}</span></div><button style="border:none;background:none;color:#ef4444;cursor:pointer;" onclick="removeFile(${index})">✕</button>`;
-                list.appendChild(div);
-            });
-            const hasFiles = filesArray.length > 0;
-            config.style.display = hasFiles ? 'block' : 'none';
-            btn.disabled = !hasFiles;
-        }
+    function updateList() {
+        const list = document.getElementById('file-list');
+        const btn = document.getElementById('process-btn');
+        list.innerHTML = '';
+        filesArray.forEach((file, index) => {
+            const li = document.createElement('li');
+            li.className = 'file-item';
+            li.innerHTML = `<span class="file-name">${file.name}</span><button class="btn-sm" style="color:#ef4444;border:none;background:none;margin-left:auto;cursor:pointer;" onclick="removeItem(${index})">✕</button>`;
+            list.appendChild(li);
+        });
+        btn.disabled = filesArray.length === 0;
+    }
 
-        function removeFile(index) {
-            filesArray.splice(index, 1);
-            updateList();
-        }
+    function removeItem(index) {
+        filesArray.splice(index, 1);
+        updateList();
+    }
 
-        async function processImages() {
-            const btn = document.getElementById('exec-btn');
-            const status = document.getElementById('status-msg');
-            btn.disabled = true;
-            status.innerText = "⏳ 処理中...";
+    async function processImages() {
+        const btn = document.getElementById('process-btn');
+        const status = document.getElementById('status-msg');
+        const targetWidth = parseInt(document.getElementById('width-input').value);
+        const format = document.getElementById('format').value;
+        
+        btn.disabled = true;
+        status.innerText = "⏳ 処理中...";
 
-            const targetWidth = sizePreset.value === 'custom' ? parseInt(customWidth.value) : parseInt(sizePreset.value);
-            if (!targetWidth) { alert("横幅を指定してください"); btn.disabled = false; return; }
-            
-            const format = document.getElementById('file-format').value;
-
-            for (let item of filesArray) {
-                const img = new Image();
-                img.src = item.src;
-                await img.decode();
-
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                
-                // 元画像が指定幅より小さい場合は拡大せずそのままのサイズにする処理（オプション）
-                const finalWidth = img.width < targetWidth ? img.width : targetWidth;
-                const scale = finalWidth / img.width;
-                
-                canvas.width = finalWidth;
-                canvas.height = img.height * scale;
-
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                
-                const blob = await new Promise(res => canvas.toBlob(res, format, 0.85));
+        try {
+            for (let file of filesArray) {
+                const resizedData = await resizeImage(file, targetWidth, format);
                 const link = document.createElement('a');
-                link.href = URL.createObjectURL(blob);
-                link.download = `resized_${item.file.name.split('.')[0]}${format === 'image/jpeg' ? '.jpg' : '.png'}`;
+                link.href = resizedData;
+                link.download = `resized_${file.name}`;
                 link.click();
             }
-
-            status.innerText = "✅ 完了しました！";
+            status.innerHTML = '<span style="color:#0ea5e9">✅ すべて保存しました！</span>';
+        } catch (e) {
+            status.innerText = "❌ エラーが発生しました。";
+        } finally {
             btn.disabled = false;
         }
-    </script>
+    }
+
+    function resizeImage(file, width, format) {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const aspect = img.height / img.width;
+                    canvas.width = width;
+                    canvas.height = width * aspect;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    resolve(canvas.toDataURL(format, 0.85));
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+</script>
 </body>
 </html>
