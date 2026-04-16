@@ -8,203 +8,205 @@
       gtag('js', new Date());
       gtag('config', 'G-489DX1LV2M');
     </script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <title>セキュア便利ツール集 | スマホ・PC両対応のブラウザ完結アプリ</title>
-    <meta name="description" content="サーバー送信一切なし！ブラウザ内で完結する安全なZIP圧縮・画像PDF変換・リサイズツール。機内モードでも動作するプライバシー保護設計。登録不要・無料でスマホからもPCからも使えます。">
-    <link rel="canonical" href="https://beat-creator.github.io/pdf/">
-
-    <meta property="og:title" content="セキュア便利ツール集">
-    <meta property="og:description" content="サーバー送信なしで安全にZIP圧縮・画像PDF変換・リサイズ。スマホ・PC両対応。">
-    <meta property="og:url" content="https://beat-creator.github.io/pdf/">
-    <meta property="og:type" content="website">
-    <meta property="og:image" content="https://beat-creator.github.io/pdf/icon.png"> 
-    <meta name="twitter:card" content="summary">
-
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "SoftwareApplication",
-      "name": "セキュア便利ツール集",
-      "operatingSystem": "Windows, macOS, Android, iOS",
-      "applicationCategory": "UtilitiesApplication",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "JPY"
-      }
-    }
-    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <title>セキュア便利ツール集｜Secure Toolkit - 登録不要・サーバー送信なしで安全</title>
+    <meta name="description" content="日本発の完全ローカル処理ツール集。画像圧縮、PDF変換、リサイズなどが、ファイルをサーバーに送らずブラウザ内だけで完結。通信量（ギガ）も節約できます。">
 
     <style>
-        :root { --primary: #2563eb; --primary-dark: #1d4ed8; --text: #1e293b; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.5; color: var(--text); max-width: 600px; margin: 0 auto; padding: 20px; background: #f1f5f9; }
-        .card { background: white; padding: 24px; border-radius: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
-        
-        header { text-align: center; margin-bottom: 24px; }
-        h1 { font-size: 1.4rem; color: var(--primary); margin: 0 0 12px 0; }
-        .badge-container { display: flex; justify-content: center; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
-        .badge { font-size: 0.7rem; font-weight: bold; padding: 4px 12px; border-radius: 20px; background: #eff6ff; color: var(--primary); border: 1px solid #dbeafe; }
-        
-        .hero-text { font-size: 0.85rem; color: #64748b; margin-bottom: 24px; text-align: center; line-height: 1.6; }
-
-        .tool-list { display: flex; flex-direction: column; gap: 16px; }
-        
-        .tool-link { 
-            display: flex; 
-            align-items: center; 
-            padding: 20px; 
-            background: var(--primary); 
-            color: white; 
-            border-radius: 18px; 
-            text-decoration: none; 
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
-            border: none;
+        :root {
+            --primary: #059669;
+            --text-main: #1e293b;
+            --text-sub: #64748b;
+            --bg-site: #f8fafc;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
         }
-        .tool-link:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: 0 6px 15px rgba(37, 99, 235, 0.3); }
-        .tool-link:active { transform: scale(0.98); }
-        
-        .tool-icon { font-size: 2.2rem; margin-right: 16px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); flex-shrink: 0; }
-        .tool-info { flex: 1; min-width: 0; }
-        .tool-title { display: block; color: white; font-weight: bold; font-size: 1.1rem; margin-bottom: 4px; }
-        .tool-desc { display: block; color: rgba(255,255,255,0.9); font-size: 0.75rem; line-height: 1.4; }
 
-        .device-support { display: flex; align-items: center; justify-content: center; gap: 15px; margin-top: 20px; padding: 10px; background: #f8fafc; border-radius: 12px; font-size: 0.8rem; color: #64748b; }
-        .device-item { display: flex; align-items: center; gap: 4px; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-site);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-        .trust-box { background: #f8fafc; padding: 18px; border-radius: 16px; margin-top: 24px; font-size: 0.8rem; border: 1px solid #e2e8f0; }
-        .trust-box strong { color: var(--primary); display: block; margin-bottom: 6px; font-size: 0.85rem; }
+        /* ヘッダー：スマホでもスッキリ見える2段構成 */
+        header {
+            width: 100%;
+            padding: 30px 20px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        .seo-tagline {
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: var(--text-sub);
+            margin-bottom: 4px;
+            letter-spacing: 0.05em;
+        }
+        h1 {
+            font-size: 1.8rem;
+            margin: 0;
+            color: var(--text-main);
+            letter-spacing: -0.5px;
+        }
 
-        .footer { margin-top: 30px; font-size: 0.7rem; color: #94a3b8; text-align: center; }
+        /* メインコンテナ */
+        .container {
+            max-width: 600px;
+            width: 95%;
+            padding-bottom: 40px;
+        }
+
+        /* ツールグリッド：スマホで横2並びにして視認性アップ */
+        .tool-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .tool-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 20px 10px;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+        .tool-card:active {
+            transform: scale(0.96);
+            background: #f1f5f9;
+        }
+        .tool-emoji {
+            font-size: 2.2rem;
+            margin-bottom: 12px;
+        }
+        .tool-name {
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: var(--text-main);
+            text-align: center;
+        }
+
+        /* メリットセクション（SEO & 信頼獲得） */
+        .benefits-section {
+            margin-top: 60px;
+            padding: 0 10px;
+        }
+        .benefits-section h2 {
+            font-size: 1.3rem;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .benefit-item {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border);
+        }
+        .benefit-item h3 {
+            font-size: 1rem;
+            margin: 0 0 8px 0;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+        }
+        .benefit-item h3::before {
+            content: "✓";
+            margin-right: 8px;
+            color: #059669;
+            font-weight: bold;
+        }
+        .benefit-item p {
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: var(--text-sub);
+            margin: 0;
+        }
+        .keyword {
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        footer {
+            padding: 40px 20px;
+            font-size: 0.75rem;
+            color: var(--text-sub);
+            text-align: center;
+        }
     </style>
 </head>
 <body>
-    <div class="card">
-        <header>
-            <h1>🛠️ セキュア便利ツール集</h1>
-            <div class="badge-container">
-                <span class="badge">完全無料</span>
-                <span class="badge">登録不要</span>
-                <span class="badge">インストール不要</span>
-            </div>
-            <p class="hero-text">
-                プライバシーを第一に考えた、ブラウザ完結のツールサイト。<br>
-                データは外部へ送信されず、端末内で安全に処理されます。
-            </p>
-        </header>
 
+<header>
+    <div class="seo-tagline">セキュア便利ツール集</div>
+    <h1>🛠️ Secure Toolkit</h1>
+</header>
 
-        <div class="tool-list">
-            <a href="./zip/" class="tool-link">
-                <span class="tool-icon">📦</span>
-                <div class="tool-info">
-                    <span class="tool-title">セキュア圧縮ツール</span>
-                    <span class="tool-desc">複数ファイルを端末内でZIP圧縮。フォルダ構造を保ったまま一つにまとめます。</span>
-                </div>
-            </a>
-
-            <a href="./img-pdf/" class="tool-link">
-                <span class="tool-icon">🖼️</span>
-                <div class="tool-info">
-                    <span class="tool-title">セキュア画像PDF変換</span>
-                    <span class="tool-desc">1枚の高速変換から、複数枚のスマート結合まで対応。</span>
-                </div>
-            </a>
-
-            <a href="./resize/" class="tool-link">
-                <span class="tool-icon">↔️</span>
-                <div class="tool-info">
-                    <span class="tool-title">セキュア画像リサイズ</span>
-                    <span class="tool-desc">画像の横幅を端末内でサクサク調整。SNS投稿やメール添付の前の軽量化に。</span>
-                </div>
-            </a>
+<div class="container">
+    <div class="tool-grid">
+        <a href="./zip/" class="tool-card" style="border-top: 4px solid #059669;">
+            <span class="tool-emoji">📦</span>
+            <span class="tool-name">セキュア圧縮</span>
+        </a>
+        <a href="./pdf/" class="tool-card" style="border-top: 4px solid #e11d48;">
+            <span class="tool-emoji">🖼️</span>
+            <span class="tool-name">画像PDF変換</span>
+        </a>
+        <a href="./resize/" class="tool-card" style="border-top: 4px solid #0ea5e9;">
+            <span class="tool-emoji">↔️</span>
+            <span class="tool-name">画像リサイズ</span>
+        </a>
+        <div class="tool-card" style="opacity: 0.5; border-style: dashed;">
+            <span class="tool-emoji">📚</span>
+            <span class="tool-name">PDF結合<br><small>(準備中)</small></span>
         </div>
+    </div>
+
+    <section class="benefits-section">
+        <h2>なぜ Secure Toolkit なのか？</h2>
         
-
-        <div class="device-support">
-            <div class="device-item">📱 スマホ対応</div>
-            <div class="device-item">💻 PC対応</div>
-            <div class="device-item">📶 オフライン可</div>
+        <div class="benefit-item">
+            <h3>🇯🇵 安心の国内開発・完全無料</h3>
+            <p>
+                Secure Toolkitは<span class="keyword">日本国内で設計・開発</span>されています。海外製ツールと違い、データの行き先が不透明な心配はありません。登録不要で、すべての機能をすぐにご利用いただけます。
+            </p>
         </div>
 
-        <div class="trust-box">
-            <strong>🛡️ 安心の「100% 端末内処理」</strong>
-            一度ページを開いた後は、ネットを遮断した状態（機内モード）でも全機能が使えます。これが、データを外部に一切送信していない最大の証拠です。
+        <div class="benefit-item">
+            <h3>📡 通信量（ギガ）を消費しない</h3>
+            <p>
+                ファイルをサーバーにアップロードしないため、<span class="keyword">画像圧縮</span>や<span class="keyword">PDF変換</span>を行っても通信データ量を大幅に節約できます。外出先での作業や、大容量ファイルの処理に最適です。
+            </p>
         </div>
-<style>
-    .seo-content {
-        max-width: 600px;
-        width: 90%;
-        margin: 60px auto;
-        text-align: left;
-        color: #1e293b;
-    }
-    .seo-content h2 {
-        text-align: center;
-        font-size: 1.4rem;
-        margin-bottom: 30px;
-        color: #0f172a;
-    }
-    .seo-card {
-        margin-bottom: 25px;
-        padding: 24px;
-        background: #ffffff;
-        border-radius: 20px;
-        border: 1px solid #e2e8f0;
-        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-    }
-    .seo-card h3 {
-        margin: 0 0 12px 0;
-        font-size: 1.1rem;
-        color: #059669; /* エメラルド */
-        display: flex;
-        align-items: center;
-    }
-    .seo-card p {
-        margin: 0;
-        font-size: 0.9rem;
-        line-height: 1.7;
-        color: #475569;
-    }
-    .keyword-bold {
-        font-weight: bold;
-        color: #0f172a;
-        text-decoration: underline cubic-bezier(.4,0,.2,1) var(--primary);
-    }
-</style>
 
-<section class="seo-content">
-    <h2>🇯🇵 日本発・次世代のセキュアツール集</h2>
+        <div class="benefit-item">
+            <h3>🔒 サーバーに送らない究極の安全</h3>
+            <p>
+                すべての処理はブラウザ内で完結します。あなたのファイルが外部サーバーに送信・保存されることは一切ありません。<span class="keyword">機密書類の加工</span>やプライベートな写真も安心して処理できます。
+            </p>
+        </div>
+    </section>
+</div>
 
-    <div class="seo-card">
-        <h3>📡 通信量（ギガ）を消費しない爆速処理</h3>
-        <p>
-            一般的なオンラインの<span class="keyword-bold">画像圧縮</span>や<span class="keyword-bold">PDF変換</span>ツールとは異なり、Secure Toolkitはブラウザ内で処理を完結させます。大容量ファイルのアップロードが発生しないため、<span class="keyword-bold">通信制限（ギガ不足）</span>を気にせず、外出先でも爆速で<span class="keyword-bold">画像リサイズ</span>が可能です。
-        </p>
-    </div>
-
-    <div class="seo-card">
-        <h3>🔒 サーバーに送らない究極の安全設計</h3>
-        <p>
-            ビジネスの<span class="keyword-bold">機密書類のPDF化</span>や、個人情報の含まれる<span class="keyword-bold">写真の加工</span>に最適です。データは一瞬たりとも外部サーバーへ送信・保存されません。国内開発の「サーバーレス」設計により、世界基準のプライバシー保護を完全無料で提供します。
-        </p>
-    </div>
-
-    <div class="seo-card">
-        <h3>📱 インストール不要・一括変換も無料</h3>
-        <p>
-            面倒なソフトのインストールや会員登録は一切不要。スマホやPCのブラウザを開くだけで、<span class="keyword-bold">JPGからPDFへの変換</span>や、複数ファイルの<span class="keyword-bold">一括リサイズ・圧縮</span>がすぐに行えます。日本国内の環境に最適化された、もっとも身近なセキュアユーティリティです。
-        </p>
-    </div>
-</section>
         <div class="footer">
             <p>
                 <a href="./privacy.html" style="color: #94a3b8; text-decoration: none; margin-right: 15px;">プライバシーポリシー</a>
                 © 2026 セキュア便利ツール集
             </p>
         </div>
-    </div>
+
 </body>
 </html>
