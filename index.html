@@ -12,8 +12,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
-    <title>セキュア便利ツール集｜Secure Toolkit - 登録不要・サーバー送信なしで安全</title>
-    <meta name="description" content="日本発の完全ローカル処理ツール集。画像圧縮、PDF変換、リサイズなどが、ファイルをサーバーに送らずブラウザ内だけで完結。通信量（ギガ）も節約できます。">
+    <title id="meta-title">セキュア便利ツール集｜Secure Toolkit - 登録不要・サーバー送信なしで安全</title>
+    <meta name="description" id="meta-desc" content="日本発の完全ローカル処理ツール集。画像圧縮、PDF変換、リサイズなどが、ファイルをサーバーに送らずブラウザ内だけで完結。通信量（ギガ）も節約できます。">
+
+    <link rel="icon" href="./icon-512.png" type="image/png">
+    <link rel="apple-touch-icon" href="./icon-512.png">
+    <link rel="manifest" href="./manifest.json">
 
     <style>
         :root {
@@ -36,10 +40,9 @@
             align-items: center;
         }
 
-        /* ヘッダー：スマホでもスッキリ見える2段構成 */
         header {
             width: 100%;
-            padding: 30px 20px;
+            padding: 40px 20px 30px;
             text-align: center;
             box-sizing: border-box;
         }
@@ -57,14 +60,12 @@
             letter-spacing: -0.5px;
         }
 
-        /* メインコンテナ */
         .container {
             max-width: 600px;
             width: 95%;
             padding-bottom: 40px;
         }
 
-        /* ツールグリッド：スマホで横2並びにして視認性アップ */
         .tool-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -76,7 +77,7 @@
             background: var(--card-bg);
             border: 1px solid var(--border);
             border-radius: 20px;
-            padding: 20px 10px;
+            padding: 24px 10px;
             text-decoration: none;
             display: flex;
             flex-direction: column;
@@ -89,25 +90,24 @@
             background: #f1f5f9;
         }
         .tool-emoji {
-            font-size: 2.2rem;
+            font-size: 2.5rem;
             margin-bottom: 12px;
         }
         .tool-name {
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             font-weight: bold;
             color: var(--text-main);
             text-align: center;
         }
 
-        /* メリットセクション（SEO & 信頼獲得） */
         .benefits-section {
-            margin-top: 60px;
-            padding: 0 10px;
+            margin-top: 50px;
+            padding: 0 5px;
         }
         .benefits-section h2 {
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
         .benefit-item {
             background: var(--card-bg);
@@ -117,7 +117,7 @@
             border: 1px solid var(--border);
         }
         .benefit-item h3 {
-            font-size: 1rem;
+            font-size: 0.95rem;
             margin: 0 0 8px 0;
             color: var(--text-main);
             display: flex;
@@ -130,14 +130,11 @@
             font-weight: bold;
         }
         .benefit-item p {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             line-height: 1.6;
             color: var(--text-sub);
             margin: 0;
-        }
-        .keyword {
-            font-weight: 600;
-            color: var(--text-main);
+            white-space: pre-wrap;
         }
 
         footer {
@@ -146,67 +143,143 @@
             color: var(--text-sub);
             text-align: center;
         }
+        footer a { color: #94a3b8; text-decoration: none; margin: 0 10px; }
     </style>
 </head>
 <body>
 
 <header>
-    <div class="seo-tagline">セキュア便利ツール集</div>
-    <h1>🛠️ Secure Toolkit</h1>
+    <div class="seo-tagline" id="tagline">セキュア便利ツール集</div>
+    <h1 id="main-title">🛠️ Secure Toolkit</h1>
 </header>
 
 <div class="container">
     <div class="tool-grid">
         <a href="./zip/" class="tool-card" style="border-top: 4px solid #059669;">
             <span class="tool-emoji">📦</span>
-            <span class="tool-name">セキュア圧縮</span>
+            <span class="tool-name" id="tool-zip">圧縮ツール</span>
         </a>
         <a href="./img-pdf/" class="tool-card" style="border-top: 4px solid #e11d48;">
             <span class="tool-emoji">🖼️</span>
-            <span class="tool-name">画像PDF変換</span>
+            <span class="tool-name" id="tool-pdf">PDF変換</span>
         </a>
         <a href="./resize/" class="tool-card" style="border-top: 4px solid #0ea5e9;">
             <span class="tool-emoji">↔️</span>
-            <span class="tool-name">画像リサイズ</span>
+            <span class="tool-name" id="tool-resize">画像リサイズ</span>
         </a>
-        <div class="tool-card" style="opacity: 0.5; border-style: dashed;">
+        <a href="./pdf-tool/" class="tool-card" style="border-top: 4px solid #6366f1;">
             <span class="tool-emoji">📚</span>
-            <span class="tool-name">PDF結合<br><small>(準備中)</small></span>
-        </div>
+            <span class="tool-name" id="tool-pdf-split">PDF結合・分割</span>
+        </a>
     </div>
 
     <section class="benefits-section">
-        <h2>なぜ Secure Toolkit なのか？</h2>
+        <h2 id="why-title">なぜ Secure Toolkit なのか？</h2>
         
         <div class="benefit-item">
-            <h3>🇯🇵 安心の国内開発・完全無料</h3>
-            <p>
-                Secure Toolkitは<span class="keyword">日本国内で設計・開発</span>されています。海外製ツールと違い、データの行き先が不透明な心配はありません。登録不要で、すべての機能をすぐにご利用いただけます。
-            </p>
+            <h3 id="benefit1-h">🇯🇵 安心の国内開発・完全無料</h3>
+            <p id="benefit1-p">Secure Toolkitは日本国内で設計・開発されています。海外製ツールと違い、データの行き先が不透明な心配はありません。</p>
         </div>
 
         <div class="benefit-item">
-            <h3>📡 通信量（ギガ）を消費しない</h3>
-            <p>
-                ファイルをサーバーにアップロードしないため、<span class="keyword">画像圧縮</span>や<span class="keyword">PDF変換</span>を行っても通信データ量を大幅に節約できます。外出先での作業や、大容量ファイルの処理に最適です。
-            </p>
+            <h3 id="benefit2-h">📡 通信量を消費しない</h3>
+            <p id="benefit2-p">ファイルをサーバーにアップロードしないため、ギガを大幅に節約できます。外出先での作業に最適です。</p>
         </div>
 
         <div class="benefit-item">
-            <h3>🔒 サーバーに送らない究極の安全</h3>
-            <p>
-                すべての処理はブラウザ内で完結します。あなたのファイルが外部サーバーに送信・保存されることは一切ありません。<span class="keyword">機密書類の加工</span>やプライベートな写真も安心して処理できます。
-            </p>
+            <h3 id="benefit3-h">🔒 サーバーに送らない究極の安全</h3>
+            <p id="benefit3-p">すべての処理はブラウザ内で完結します。機密書類も安心して処理できます。</p>
         </div>
     </section>
 </div>
 
-        <div class="footer">
-            <p>
-                <a href="./privacy.html" style="color: #94a3b8; text-decoration: none; margin-right: 15px;">プライバシーポリシー</a>
-                © 2026 SecureToolkit
-            </p>
-        </div>
+<footer>
+    <a href="./privacy.html" id="privacy-link">プライバシーポリシー</a>
+    <p>© 2026 Secure Toolkit</p>
+</footer>
 
+<script>
+const i18n = {
+    ja: {
+        title: "セキュア便利ツール集｜Secure Toolkit - 登録不要・サーバー送信なしで安全",
+        desc: "日本発の完全ローカル処理ツール集。画像圧縮、PDF変換、リサイズなどがブラウザ内だけで完結。",
+        tagline: "セキュア便利ツール集",
+        mainTitle: "🛠️ Secure Toolkit",
+        zip: "圧縮ツール",
+        pdf: "PDF変換",
+        resize: "画像リサイズ",
+        pdfSplit: "PDF結合・分割",
+        why: "なぜ Secure Toolkit なのか？",
+        b1h: "🇯🇵 安心の国内開発・完全無料",
+        b1p: "Secure Toolkitは日本国内で設計・開発されています。海外製ツールと違い、データの行き先が不透明な心配はありません。",
+        b2h: "📡 通信量を消費しない",
+        b2p: "ファイルをサーバーにアップロードしないため、ギガを大幅に節約できます。外出先での作業に最適です。",
+        b3h: "🔒 サーバーに送らない究極の安全",
+        b3p: "すべての処理はブラウザ内で完結します。機密書類も安心して処理できます。",
+        privacy: "プライバシーポリシー"
+    },
+    en: {
+        title: "Secure Toolkit | No Upload, Browser-based Secure Tools",
+        desc: "Local processing tools. Compress images, convert PDFs, and resize photos entirely in your browser without uploading to a server.",
+        tagline: "Secure Toolkit",
+        mainTitle: "🛠️ Secure Toolkit",
+        zip: "Zip Tool",
+        pdf: "PDF Conv",
+        resize: "Resize",
+        pdfSplit: "PDF Merge/Split",
+        why: "Why Secure Toolkit?",
+        b1h: "🇯🇵 Developed in Japan & Free",
+        b1p: "Secure Toolkit is designed and developed in Japan. No worry about where your data goes.",
+        b2h: "📡 Save Your Data",
+        b2p: "Since files are not uploaded to a server, you can significantly save data. Ideal for working on the go.",
+        b3h: "🔒 Ultimate Privacy",
+        b3p: "All processing is completed within your browser. Safely process confidential documents.",
+        privacy: "Privacy Policy"
+    },
+    zh: {
+        title: "安全工具集 | 无需上传，浏览器端安全处理",
+        desc: "日本开发的完全本地处理工具集。在浏览器内完成压缩、PDF转换和调整大小，不上传服务器。",
+        tagline: "安全工具集",
+        mainTitle: "🛠️ Secure Toolkit",
+        zip: "压缩工具",
+        pdf: "PDF转换",
+        resize: "画像リサイズ",
+        pdfSplit: "PDF合并/拆分",
+        why: "为什么选择 Secure Toolkit？",
+        b1h: "🇯🇵 日本国内开发・完全免费",
+        b1p: "Secure Toolkit 在日本国内设计和开发。与国外工具不同，不用担心数据去向不明。",
+        b2h: "📡 不消耗流量",
+        b2p: "由于文件不上传到服务器，可以大幅节省数据流量。非常适合在外出办公時使用。",
+        b3h: "🔒 终极安全",
+        b3p: "所有处理都在浏览器内完成。可以放心处理机密文件。",
+        privacy: "隐私政策"
+    }
+};
+
+function applyLanguage() {
+    const lang = (navigator.language || navigator.userLanguage).split('-')[0];
+    const t = i18n[lang] || i18n.en; // 該当なしは英語
+
+    document.title = t.title;
+    document.getElementById('meta-title').innerText = t.title;
+    document.getElementById('meta-desc').setAttribute('content', t.desc);
+    document.getElementById('tagline').innerText = t.tagline;
+    document.getElementById('main-title').innerText = t.mainTitle;
+    document.getElementById('tool-zip').innerText = t.zip;
+    document.getElementById('tool-pdf').innerText = t.pdf;
+    document.getElementById('tool-resize').innerText = t.resize;
+    document.getElementById('tool-pdf-split').innerText = t.pdfSplit;
+    document.getElementById('why-title').innerText = t.why;
+    document.getElementById('benefit1-h').innerText = t.b1h;
+    document.getElementById('benefit1-p').innerText = t.b1p;
+    document.getElementById('benefit2-h').innerText = t.b2h;
+    document.getElementById('benefit2-p').innerText = t.b2p;
+    document.getElementById('benefit3-h').innerText = t.b3h;
+    document.getElementById('benefit3-p').innerText = t.b3p;
+    document.getElementById('privacy-link').innerText = t.privacy;
+}
+
+window.onload = applyLanguage;
+</script>
 </body>
 </html>
