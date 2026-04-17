@@ -11,7 +11,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
-    <title>セキュア画像リサイズ｜Secure Toolkit - 通信量を節約して一括加工</title>
+    <title id="meta-title">セキュア画像リサイズ｜Secure Toolkit - 通信量を節約して一括加工</title>
+    <meta name="description" id="meta-desc" content="大きな写真をブラウザ内で一括リサイズ。サーバーに送信しないため、プライバシーを守りながらギガも節約できます。">
 
     <style>
         :root { 
@@ -24,7 +25,6 @@
         }
         body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
         
-        /* 共通ヘッダー */
         .app-header { width: 100%; background: var(--card-bg); border-bottom: 1px solid var(--border); padding: 12px 20px; display: flex; align-items: center; position: sticky; top: 0; z-index: 100; box-sizing: border-box; }
         .back-btn { text-decoration: none; color: var(--text); font-size: 0.85rem; font-weight: 600; background: #f1f5f9; padding: 8px 16px; border-radius: 20px; }
 
@@ -44,10 +44,9 @@
         .main-btn { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 1rem; transition: 0.2s; }
         .main-btn:disabled { background: #cbd5e1; }
 
-        /* SEO・回遊エリア */
         .tool-info { margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border); text-align: left; }
         .tool-info h2 { font-size: 1rem; color: var(--text); margin-bottom: 10px; }
-        .tool-info p { font-size: 0.8rem; line-height: 1.6; color: #64748b; margin-bottom: 15px; }
+        .tool-info p { font-size: 0.8rem; line-height: 1.6; color: #64748b; margin-bottom: 15px; white-space: pre-wrap; }
         .nav-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
         .nav-item { text-decoration: none; padding: 10px; background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; font-size: 0.7rem; color: var(--text); text-align: center; }
     </style>
@@ -55,19 +54,19 @@
 <body>
 
     <header class="app-header">
-        <a href="../" class="back-btn">🏠 ツール一覧</a>
-        <div style="flex:1; text-align:center; font-weight:bold; margin-right:80px;">画像リサイズ</div>
+        <a href="../" class="back-btn" id="nav-home">🏠 ツール一覧</a>
+        <div style="flex:1; text-align:center; font-weight:bold; margin-right:80px;" id="header-title">画像リサイズ</div>
     </header>
 
     <div class="container">
-        <h1 style="font-size: 1.3rem; margin-bottom: 20px; text-align:center;">↔️ セキュア画像リサイズ</h1>
+        <h1 style="font-size: 1.3rem; margin-bottom: 20px; text-align:center;" id="main-h1">↔️ セキュア画像リサイズ</h1>
         
         <div class="info-box">
             <span>🛡️</span>
-            <div style="margin-left:8px;"><strong>一括処理も安全:</strong> サーバーへの送信なし。ブラウザ内ですべての画像をリサイズします。</div>
+            <div style="margin-left:8px;" id="safe-msg"><strong>一括処理も安全:</strong> サーバーへの送信なし。ブラウザ内ですべての画像をリサイズします。</div>
         </div>
         
-        <div class="drop-zone" onclick="document.getElementById('file-input').click()">
+        <div class="drop-zone" onclick="document.getElementById('file-input').click()" id="drop-text">
             ➕ 画像を選択・ドロップ
             <input type="file" id="file-input" multiple accept="image/*" style="display:none" onchange="handleFiles(this.files)">
         </div>
@@ -75,13 +74,13 @@
         <ul id="file-list"></ul>
 
         <div class="config-card">
-            <label>リサイズ設定（横幅 px）</label>
+            <label id="label-width">リサイズ設定（横幅 px）</label>
             <input type="number" id="width-input" value="1200" placeholder="例: 1200">
             
-            <label>出力形式</label>
+            <label id="label-format">出力形式</label>
             <select id="format">
-                <option value="image/jpeg" selected>JPEG (軽量)</option>
-                <option value="image/png">PNG (高品質)</option>
+                <option value="image/jpeg" selected>JPEG (軽量/Small)</option>
+                <option value="image/png">PNG (高品質/High Quality)</option>
             </select>
         </div>
 
@@ -89,15 +88,13 @@
         <div id="status-msg" style="margin-top:15px; text-align:center; font-weight:bold;"></div>
 
         <div class="tool-info">
-            <h2>🔒 通信量を大幅カット、爆速リサイズ</h2>
-            <p>
-                大きな写真をSNSやブログ用に<span style="font-weight:bold;">一括リサイズ</span>。サーバー送信がないため、スマホのギガを消費せず、プライバシーも完全に守られます。
-            </p>
-            <p style="font-size:0.75rem; color:#64748b; margin-bottom:10px; text-align:center;">こちらのツールもおすすめ</p>
+            <h2 id="footer-h2">🔒 通信量を大幅カット、爆速リサイズ</h2>
+            <p id="footer-desc">大きな写真をSNSやブログ用に一括リサイズ。サーバー送信がないため、スマホのギガを消費せず、プライバシーも完全に守られます。</p>
+            <p style="font-size:0.75rem; color:#64748b; margin-bottom:10px; text-align:center;" id="recommend-text">こちらのツールもおすすめ</p>
             <div class="nav-grid">
-                <a href="../zip/" class="nav-item">📦 ZIP圧縮</a>
-                <a href="../pdf/" class="nav-item">🖼️ PDF変換</a>
-                <a href="../" class="nav-item">🏠 一覧へ</a>
+                <a href="../zip/" class="nav-item">📦 ZIP</a>
+                <a href="../img-pdf/" class="nav-item">🖼️ PDF</a>
+                <a href="../" class="nav-item" id="nav-back">🏠 Home</a>
             </div>
         </div>
     </div>
@@ -107,7 +104,86 @@
     </footer>
 
 <script>
+    const i18n = {
+        ja: {
+            title: "セキュア画像リサイズ｜Secure Toolkit - 通信量を節約して一括加工",
+            desc: "大きな写真をブラウザ内で一括リサイズ。サーバーに送信しないため、プライバシーを守りながらギガも節約できます。",
+            navHome: "🏠 ツール一覧",
+            headerTitle: "画像リサイズ",
+            mainH1: "↔️ セキュア画像リサイズ",
+            safeMsg: "<strong>一括処理も安全:</strong> サーバーへの送信なし。ブラウザ内ですべての画像をリサイズします。",
+            dropText: "➕ 画像を選択・ドロップ",
+            labelWidth: "リサイズ設定（横幅 px）",
+            labelFormat: "出力形式",
+            processBtn: "一括リサイズして保存",
+            processing: "⏳ 処理中...",
+            done: "✅ すべて保存しました！",
+            error: "❌ エラーが発生しました。",
+            footerH2: "🔒 通信量を大幅カット、爆速リサイズ",
+            footerDesc: "大きな写真をSNSやブログ用に一括リサイズ。サーバー送信がないため、スマホのギガを消費せず、プライバシーも完全に守られます。",
+            recommend: "こちらのツールもおすすめ"
+        },
+        en: {
+            title: "Secure Image Resizer | Fast Batch Resizing without Upload",
+            desc: "Resize images in your browser. No server upload means your privacy is protected and you save data usage.",
+            navHome: "🏠 All Tools",
+            headerTitle: "Image Resizer",
+            mainH1: "↔️ Secure Image Resizer",
+            safeMsg: "<strong>Safe Batch Processing:</strong> No server upload. All images are resized within your browser.",
+            dropText: "➕ Select or Drop Images",
+            labelWidth: "Resize Setting (Width px)",
+            labelFormat: "Output Format",
+            processBtn: "Batch Resize & Save",
+            processing: "⏳ Processing...",
+            done: "✅ All saved successfully!",
+            error: "❌ An error occurred.",
+            footerH2: "🔒 Cut Data Usage & Fast Resizing",
+            footerDesc: "Batch resize large photos for social media or blogs. Since no files are sent to a server, you save mobile data and keep your privacy.",
+            recommend: "Recommended Tools"
+        },
+        zh: {
+            title: "安全图像缩放 | 无需上传，极速批量处理",
+            desc: "在浏览器内批量调整图像大小。无需上传服务器，保护隐私的同时节省流量。",
+            navHome: "🏠 工具列表",
+            headerTitle: "图像缩放",
+            mainH1: "↔️ 安全图像缩放",
+            safeMsg: "<strong>批量处理更安全:</strong> 无需上传服务器。所有图像均在浏览器内完成缩放。",
+            dropText: "➕ 选择或拖放图像",
+            labelWidth: "缩放设置（宽度 px）",
+            labelFormat: "输出格式",
+            processBtn: "批量缩放并保存",
+            processing: "⏳ 处理中...",
+            done: "✅ 已全部保存！",
+            error: "❌ 发生错误。",
+            footerH2: "🔒 大幅节省流量，极速缩放",
+            footerDesc: "为社交媒体或博客批量缩放照片。由于不经过服务器处理，您可以节省手机流量并完全保护隐私。",
+            recommend: "推荐工具"
+        }
+    };
+
     let filesArray = [];
+    let currentLang = 'ja';
+
+    function applyLanguage() {
+        const lang = (navigator.language || navigator.userLanguage).split('-')[0];
+        currentLang = i18n[lang] ? lang : 'en';
+        const t = i18n[currentLang];
+
+        document.title = t.title;
+        document.getElementById('meta-title').innerText = t.title;
+        document.getElementById('meta-desc').setAttribute('content', t.desc);
+        document.getElementById('nav-home').innerText = t.navHome;
+        document.getElementById('header-title').innerText = t.headerTitle;
+        document.getElementById('main-h1').innerText = t.mainH1;
+        document.getElementById('safe-msg').innerHTML = t.safeMsg;
+        document.getElementById('drop-text').innerHTML = t.dropText + '<input type="file" id="file-input" multiple accept="image/*" style="display:none" onchange="handleFiles(this.files)">';
+        document.getElementById('label-width').innerText = t.labelWidth;
+        document.getElementById('label-format').innerText = t.labelFormat;
+        document.getElementById('process-btn').innerText = t.processBtn;
+        document.getElementById('footer-h2').innerText = t.footerH2;
+        document.getElementById('footer-desc').innerText = t.footerDesc;
+        document.getElementById('recommend-text').innerText = t.recommend;
+    }
 
     function handleFiles(files) {
         filesArray = [...filesArray, ...Array.from(files)];
@@ -121,7 +197,7 @@
         filesArray.forEach((file, index) => {
             const li = document.createElement('li');
             li.className = 'file-item';
-            li.innerHTML = `<span class="file-name">${file.name}</span><button class="btn-sm" style="color:#ef4444;border:none;background:none;margin-left:auto;cursor:pointer;" onclick="removeItem(${index})">✕</button>`;
+            li.innerHTML = `<span class="file-name">${file.name}</span><button style="color:#ef4444;border:none;background:none;margin-left:auto;cursor:pointer;" onclick="removeItem(${index})">✕</button>`;
             list.appendChild(li);
         });
         btn.disabled = filesArray.length === 0;
@@ -133,13 +209,14 @@
     }
 
     async function processImages() {
+        const t = i18n[currentLang];
         const btn = document.getElementById('process-btn');
         const status = document.getElementById('status-msg');
         const targetWidth = parseInt(document.getElementById('width-input').value);
         const format = document.getElementById('format').value;
         
         btn.disabled = true;
-        status.innerText = "⏳ 処理中...";
+        status.innerText = t.processing;
 
         try {
             for (let file of filesArray) {
@@ -149,9 +226,9 @@
                 link.download = `resized_${file.name}`;
                 link.click();
             }
-            status.innerHTML = '<span style="color:#0ea5e9">✅ すべて保存しました！</span>';
+            status.innerHTML = `<span style="color:#0ea5e9">${t.done}</span>`;
         } catch (e) {
-            status.innerText = "❌ エラーが発生しました。";
+            status.innerText = t.error;
         } finally {
             btn.disabled = false;
         }
@@ -168,6 +245,8 @@
                     canvas.width = width;
                     canvas.height = width * aspect;
                     const ctx = canvas.getContext('2d');
+                    ctx.imageSmoothingEnabled = true;
+                    ctx.imageSmoothingQuality = 'high';
                     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                     resolve(canvas.toDataURL(format, 0.85));
                 };
@@ -176,6 +255,8 @@
             reader.readAsDataURL(file);
         });
     }
+
+    window.onload = applyLanguage;
 </script>
 </body>
 </html>
