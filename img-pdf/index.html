@@ -12,8 +12,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
-    <title>セキュア画像PDF変換｜Secure Toolkit - 登録不要でJPGをPDF化</title>
-    <meta name="description" content="JPG/PNG画像をブラウザ内で安全にPDFへ変換。ファイルは一切送信されないため、プライバシーも万全です。">
+    <title id="meta-title">セキュア画像PDF変換｜Secure Toolkit - 登録不要でJPGをPDF化</title>
+    <meta name="description" id="meta-desc" content="JPG/PNG画像をブラウザ内で安全にPDFへ変換。ファイルは一切送信されないため、プライバシーも万全です。">
 
     <link rel="icon" href="../icon-512.png" type="image/png">
     <link rel="apple-touch-icon" href="../icon-512.png">
@@ -181,7 +181,6 @@
         }
         .main-btn:disabled { background: #cbd5e1; cursor: not-allowed; }
 
-        /* ツール情報・フッターナビ */
         .tool-info {
             max-width: 500px;
             width: 95%;
@@ -211,43 +210,43 @@
         }
         .nav-item:hover { background: #f1f5f9; }
 
-        #status-msg { margin-top: 15px; text-align: center; font-weight: bold; color: var(--primary); min-height: 1.2rem; }
+        #status-msg { margin-top: 15px; text-align: center; font-weight: bold; min-height: 1.2rem; }
     </style>
 </head>
 <body>
 
     <header class="app-header">
-        <a href="../" class="back-btn">🏠 ツール一覧</a>
-        <div style="flex:1; text-align:center; font-weight:bold; margin-left: 10px;">画像PDF変換</div>
+        <a href="../" class="back-btn" id="nav-home">🏠 ツール一覧</a>
+        <div style="flex:1; text-align:center; font-weight:bold; margin-left: 10px;" id="header-title">画像PDF変換</div>
         <button id="install-btn">📲 保存</button>
     </header>
 
     <div class="container">
-        <h1 style="font-size: 1.3rem; margin-bottom: 20px; text-align:center;">🖼️ 画像をPDFに変換</h1>
+        <h1 style="font-size: 1.3rem; margin-bottom: 20px; text-align:center;" id="main-h1">🖼️ 画像をPDFに変換</h1>
         
         <div class="info-box">
             <span>🔒</span>
-            <div style="margin-left:8px;">
+            <div style="margin-left:8px;" id="safe-msg">
                 <strong>サーバー送信なし:</strong> 処理はすべてブラウザ内で完結。外部にデータが漏れる心配はありません。
             </div>
         </div>
         
         <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()">
-            <div>➕ 画像を選択 または ドロップ</div>
+            <div id="drop-text">➕ 画像を選択 または ドロップ</div>
             <input type="file" id="file-input" multiple accept="image/*" style="display:none" onchange="handleFiles(this.files)">
         </div>
 
         <ul id="file-list"></ul>
 
         <div class="config-card">
-            <label>保存ファイル名</label>
+            <label id="label-filename">保存ファイル名</label>
             <input type="text" id="pdf-name" placeholder="ファイル名を入力">
             
-            <label>画質設定</label>
+            <label id="label-quality">画質設定</label>
             <select id="quality">
-                <option value="0.7" selected>標準 (推奨)</option>
-                <option value="1.0">最高画質 (ファイル大)</option>
-                <option value="0.4">圧縮優先 (ファイル小)</option>
+                <option value="0.7" id="opt-standard" selected>標準 (推奨)</option>
+                <option value="1.0" id="opt-high">最高画質 (ファイル大)</option>
+                <option value="0.4" id="opt-low">圧縮優先 (ファイル小)</option>
             </select>
         </div>
 
@@ -256,18 +255,18 @@
     </div>
 
     <div class="tool-info">
-        <h2 style="font-size: 1.1rem; color: var(--primary); margin-top: 0;">🔒 画像データは外に出しません</h2>
-        <p style="font-size: 0.85rem; line-height: 1.6; color: #475569;">
+        <h2 style="font-size: 1.1rem; color: var(--primary); margin-top: 0;" id="footer-h2">🔒 画像データは外に出しません</h2>
+        <p style="font-size: 0.85rem; line-height: 1.6; color: #475569;" id="footer-desc">
             撮影した写真やスキャン画像をブラウザ内でPDFに変換。サーバーにアップロードする待ち時間もなく、即座にダウンロード可能です。
         </p>
         
         <hr style="border: 0; border-top: 1px solid var(--border); margin: 20px 0;">
         
-        <p style="font-size: 0.75rem; color: #64748b; margin-bottom: 12px; text-align: center; font-weight: bold;">こちらのツールもおすすめ</p>
+        <p style="font-size: 0.75rem; color: #64748b; margin-bottom: 12px; text-align: center; font-weight: bold;" id="recommend-text">こちらのツールもおすすめ</p>
         <div class="nav-grid">
-            <a href="../zip/" class="nav-item">📦 ZIP圧縮</a>
-            <a href="../resize/" class="nav-item">↔️ リサイズ</a>
-            <a href="../" class="nav-item" style="background: #f1f5f9; font-weight: bold;">🏠 一覧へ</a>
+            <a href="../zip/" class="nav-item">📦 ZIP</a>
+            <a href="../resize/" class="nav-item">↔️ Resize</a>
+            <a href="../" class="nav-item" id="nav-back" style="background: #f1f5f9; font-weight: bold;">🏠 Home</a>
         </div>
     </div>
 
@@ -276,6 +275,102 @@
     </footer>
 
     <script>
+        const i18n = {
+            ja: {
+                title: "セキュア画像PDF変換｜Secure Toolkit - 登録不要でJPGをPDF化",
+                desc: "JPG/PNG画像をブラウザ内で安全にPDFへ変換。ファイルは一切送信されないため、プライバシーも万全です。",
+                navHome: "🏠 ツール一覧",
+                headerTitle: "画像PDF変換",
+                mainH1: "🖼️ 画像をPDFに変換",
+                safeMsg: "<strong>サーバー送信なし:</strong> 処理はすべてブラウザ内で完結。外部にデータが漏れる心配はありません。",
+                dropText: "➕ 画像を選択 または ドロップ",
+                labelFilename: "保存ファイル名",
+                labelQuality: "画質設定",
+                optStandard: "標準 (推奨)",
+                optHigh: "最高画質 (ファイル大)",
+                optLow: "圧縮優先 (ファイル小)",
+                convertBtn: "PDFを作成して保存",
+                processing: "⏳ 作成中...",
+                done: "✅ 完了しました！",
+                error: "❌ エラーが発生しました。",
+                footerH2: "🔒 画像データは外に出しません",
+                footerDesc: "撮影した写真やスキャン画像をブラウザ内でPDFに変換。サーバーにアップロードする待ち時間もなく、即座にダウンロード可能です。",
+                recommend: "こちらのツールもおすすめ",
+                navBack: "🏠 一覧へ"
+            },
+            en: {
+                title: "Secure Image to PDF | No Upload, Convert JPG/PNG Safely",
+                desc: "Convert images to PDF safely in your browser. No files are uploaded, ensuring complete privacy.",
+                navHome: "🏠 All Tools",
+                headerTitle: "Image to PDF",
+                mainH1: "🖼️ Convert Image to PDF",
+                safeMsg: "<strong>No Server Upload:</strong> Everything is processed in your browser. No risks of data leakage.",
+                dropText: "➕ Select or Drop Images",
+                labelFilename: "Output Filename",
+                labelQuality: "Quality Setting",
+                optStandard: "Standard (Recommended)",
+                optHigh: "High Quality (Large File)",
+                optLow: "Compress (Small File)",
+                convertBtn: "Create & Save PDF",
+                processing: "⏳ Creating...",
+                done: "✅ Completed successfully!",
+                error: "❌ An error occurred.",
+                footerH2: "🔒 Your images stay on your device",
+                footerDesc: "Convert photos or scanned images to PDF within your browser. No waiting for uploads, download instantly.",
+                recommend: "Recommended Tools",
+                navBack: "🏠 Home"
+            },
+            zh: {
+                title: "安全图像转PDF | 无需注册，本地极速转换",
+                desc: "在浏览器内将JPG/PNG安全地转换为PDF。文件不经过服务器，完全保护隐私。",
+                navHome: "🏠 工具列表",
+                headerTitle: "图像转PDF",
+                mainH1: "🖼️ 图像转换为PDF",
+                safeMsg: "<strong>无需上传服务器:</strong> 所有处理均在浏览器内完成。无需担心隐私泄露。",
+                dropText: "➕ 选择或拖放图像",
+                labelFilename: "保存文件名",
+                labelQuality: "画质设置",
+                optStandard: "标准 (推荐)",
+                optHigh: "最高画质 (文件大)",
+                optLow: "压缩优先 (文件小)",
+                convertBtn: "创建并保存PDF",
+                processing: "⏳ 正在生成...",
+                done: "✅ 完成！",
+                error: "❌ 发生错误。",
+                footerH2: "🔒 图像数据不外传",
+                footerDesc: "在浏览器内将照片或扫描图像转换为PDF。无需等待上传，即可立即下载。",
+                recommend: "推荐工具",
+                navBack: "🏠 列表"
+            }
+        };
+
+        let currentLang = 'ja';
+
+        function applyLanguage() {
+            const lang = (navigator.language || navigator.userLanguage).split('-')[0];
+            currentLang = i18n[lang] ? lang : 'en';
+            const t = i18n[currentLang];
+
+            document.title = t.title;
+            document.getElementById('meta-title').innerText = t.title;
+            document.getElementById('meta-desc').setAttribute('content', t.desc);
+            document.getElementById('nav-home').innerText = t.navHome;
+            document.getElementById('header-title').innerText = t.headerTitle;
+            document.getElementById('main-h1').innerText = t.mainH1;
+            document.getElementById('safe-msg').innerHTML = t.safeMsg;
+            document.getElementById('drop-text').innerText = t.dropText;
+            document.getElementById('label-filename').innerText = t.labelFilename;
+            document.getElementById('label-quality').innerText = t.labelQuality;
+            document.getElementById('opt-standard').innerText = t.optStandard;
+            document.getElementById('opt-high').innerText = t.optHigh;
+            document.getElementById('opt-low').innerText = t.optLow;
+            document.getElementById('convert-btn').innerText = t.convertBtn;
+            document.getElementById('footer-h2').innerText = t.footerH2;
+            document.getElementById('footer-desc').innerText = t.footerDesc;
+            document.getElementById('recommend-text').innerText = t.recommend;
+            document.getElementById('nav-back').innerText = t.navBack;
+        }
+
         // PWAインストール制御
         let deferredPrompt;
         const installBtn = document.getElementById('install-btn');
@@ -295,6 +390,7 @@
 
         let filesArray = [];
         window.onload = () => {
+            applyLanguage();
             const now = new Date();
             const dateStr = now.getFullYear() + ('0' + (now.getMonth() + 1)).slice(-2) + ('0' + now.getDate()).slice(-2);
             document.getElementById('pdf-name').value = "PDF_" + dateStr;
@@ -329,7 +425,7 @@
                             <button class="btn-sm" onclick="moveItem(${index}, -1)">↑</button>
                             <button class="btn-sm" onclick="moveItem(${index}, 1)">↓</button>
                         ` : ''}
-                        <button class="btn-sm" style="color:#ef4444" onclick="removeItem(${index})">✕</button>
+                        <button class="btn-sm" style="color:#ef4444; border:none; background:transparent; cursor:pointer;" onclick="removeItem(${index})">✕</button>
                     </div>
                 `;
                 list.appendChild(li);
@@ -348,12 +444,15 @@
         function removeItem(index) { filesArray.splice(index, 1); updateList(); }
 
         async function generatePDF() {
+            const t = i18n[currentLang];
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             const btn = document.getElementById('convert-btn');
             const status = document.getElementById('status-msg');
             btn.disabled = true; 
-            status.innerText = "⏳ 作成中...";
+            status.innerText = t.processing;
+            status.style.color = "var(--primary)";
+
             try {
                 for (let i = 0; i < filesArray.length; i++) {
                     const imgData = await readFileAsDataURL(filesArray[i], parseFloat(document.getElementById('quality').value));
@@ -367,9 +466,9 @@
                 let pdfName = document.getElementById('pdf-name').value.trim() || "document";
                 if (!pdfName.toLowerCase().endsWith('.pdf')) pdfName += '.pdf';
                 doc.save(pdfName);
-                status.innerHTML = '<span style="color:#059669">✅ 完了しました！</span>';
+                status.innerHTML = `<span style="color:#059669">${t.done}</span>`;
             } catch (e) { 
-                status.innerText = "❌ エラーが発生しました。"; 
+                status.innerText = t.error; 
                 console.error(e);
             } finally { 
                 btn.disabled = false; 
