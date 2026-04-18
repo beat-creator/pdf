@@ -10,7 +10,7 @@
       "en": "Secure Batch ZIP｜Secure Toolkit - No Server Upload",
       "zh": "安全批量ZIP压缩｜Secure Toolkit - 无需上传服务器"
     },
-    "meta_desc": {
+    "meta_description": {
       "ja": "複数のファイルをサーバーへ送らずブラウザ内で一括ZIP圧縮。機密書類も通信量を節約して安全に処理できます。",
       "en": "Compress multiple files into ZIP within your browser. Safe for confidential documents with zero server-side processing.",
       "zh": "在浏览器内完成多个文件的ZIP压缩。无需上传服务器，确保机密文件的绝对安全。"
@@ -32,7 +32,7 @@
       "en": "Secure Image to PDF｜Secure Toolkit - Combine Images",
       "zh": "安全图片转PDF｜Secure Toolkit - 多图合并PDF"
     },
-    "meta_desc": {
+    "meta_description": {
       "ja": "JPG/PNG画像をブラウザ内でPDFに変換。サーバーにアップロードしないため、プライベートな写真も安全に結合できます。",
       "en": "Convert JPG/PNG to PDF in your browser. Since no files are uploaded, your private photos stay safe and secure.",
       "zh": "在浏览器内将JPG/PNG图片转换为PDF。无需上传，即使是私密照片也能安全合并。"
@@ -43,7 +43,6 @@
       "zh": "📄 将照片或扫描图像转换为单个PDF\n只需拖放JPG、PNG等图像文件即可转换为PDF。在浏览器内完成合并，即使是私密照片也能放心处理。"
     }
   },
-  {
   "resize": {
     "emoji": "↔️",
     "top_name": { "ja": "画像リサイズ", "en": "Image Resizer", "zh": "图像缩放" },
@@ -56,6 +55,4 @@
       "zh": "🔒 大幅节省流量，极速缩放\n批量缩放照片。由于不经过服务器，您可以节省流量并保护隐私。"
     }
   }
-}
-
 }
