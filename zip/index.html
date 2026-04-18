@@ -13,7 +13,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <title id="page-title">セキュア一括ZIP圧縮｜Secure Toolkit</title>
-    <meta id="meta-desc" name="description" content="複数のファイルをサーバーへ送らずブラウザ内で一括ZIP圧縮。">
+    <meta id="meta-desc" name="description" content="">
 
     <link rel="icon" href="../icon-512.png" type="image/png">
     <link rel="apple-touch-icon" href="../icon-512.png">
@@ -30,103 +30,18 @@
             --border: #e2e8f0;
         }
         
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-            background: var(--bg); 
-            color: var(--text); 
-            margin: 0; 
-            padding: 0; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        .app-header {
-            width: 100%;
-            background: var(--card-bg);
-            border-bottom: 1px solid var(--border);
-            padding: 12px 20px;
-            display: flex;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-sizing: border-box;
-        }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .app-header { width: 100%; background: var(--card-bg); border-bottom: 1px solid var(--border); padding: 12px 20px; display: flex; align-items: center; position: sticky; top: 0; z-index: 100; box-sizing: border-box; }
+        .back-btn { display: flex; align-items: center; text-decoration: none; color: var(--text); font-size: 0.8rem; font-weight: 600; background: #f1f5f9; padding: 6px 12px; border-radius: 20px; transition: 0.2s; }
         
-        .back-btn {
-            display: flex;
-            align-items: center;
-            text-decoration: none;
-            color: var(--text);
-            font-size: 0.8rem;
-            font-weight: 600;
-            background: #f1f5f9;
-            padding: 6px 12px;
-            border-radius: 20px;
-            transition: 0.2s;
-        }
-        
-        #install-btn {
-            display: none;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 20px;
-            padding: 6px 12px;
-            font-size: 0.75rem;
-            font-weight: bold;
-            cursor: pointer;
-            margin-left: auto;
-        }
+        #install-btn { display: none; background: var(--primary); color: white; border: none; border-radius: 20px; padding: 6px 12px; font-size: 0.75rem; font-weight: bold; cursor: pointer; margin-left: auto; }
 
-        .container { 
-            max-width: 500px; 
-            width: 95%; 
-            background: var(--card-bg); 
-            margin: 20px 0;
-            padding: 24px; 
-            border-radius: 20px; 
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); 
-            box-sizing: border-box; 
-        }
-        
-        .info-box { 
-            background: #ecfdf5; 
-            border-radius: 12px;
-            padding: 12px; 
-            margin-bottom: 20px; 
-            font-size: 0.8rem; 
-            line-height: 1.5; 
-            color: var(--primary-hover);
-            display: flex;
-            align-items: flex-start;
-        }
-
-        .drop-zone { 
-            border: 2px dashed var(--primary); 
-            border-radius: 16px; 
-            padding: 30px 20px; 
-            text-align: center; 
-            cursor: pointer; 
-            background: #fff; 
-            transition: 0.3s; 
-            color: var(--primary);
-            font-weight: bold;
-        }
+        .container { max-width: 500px; width: 95%; background: var(--card-bg); margin: 20px 0; padding: 24px; border-radius: 20px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); box-sizing: border-box; }
+        .info-box { background: #ecfdf5; border-radius: 12px; padding: 12px; margin-bottom: 20px; font-size: 0.8rem; line-height: 1.5; color: var(--primary-hover); display: flex; align-items: flex-start; }
+        .drop-zone { border: 2px dashed var(--primary); border-radius: 16px; padding: 30px 20px; text-align: center; cursor: pointer; background: #fff; color: var(--primary); font-weight: bold; }
         
         #file-list { margin: 20px 0; padding: 0; }
-        .file-item { 
-            display: flex; 
-            align-items: center; 
-            background: #f8fafc; 
-            margin-bottom: 10px; 
-            padding: 10px; 
-            border-radius: 12px; 
-            border: 1px solid var(--border);
-            font-size: 0.85rem; 
-        }
+        .file-item { display: flex; align-items: center; background: #f8fafc; margin-bottom: 10px; padding: 10px; border-radius: 12px; border: 1px solid var(--border); font-size: 0.85rem; }
         .thumb { width: 40px; height: 40px; border-radius: 6px; object-fit: cover; margin-right: 12px; background: #e2e8f0; }
         .file-info { flex: 1; min-width: 0; }
         .file-name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
@@ -139,331 +54,64 @@
         label { font-size: 0.8rem; font-weight: bold; color: #64748b; margin-bottom: 6px; display: block; }
         input, select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px; box-sizing: border-box; font-size: 1rem; margin-bottom: 12px; }
         
-        .main-btn { 
-            width: 100%; 
-            padding: 16px; 
-            background: var(--primary); 
-            color: white; 
-            border: none; 
-            border-radius: 12px; 
-            font-weight: bold; 
-            cursor: pointer; 
-            font-size: 1rem;
-            transition: 0.2s;
-        }
+        .main-btn { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 1rem; transition: 0.2s; }
         .main-btn:disabled { background: #cbd5e1; cursor: not-allowed; }
         
-        .tool-info {
-            max-width: 500px;
-            width: 95%;
-            margin: 0 auto 20px;
-            padding: 24px;
-            background: var(--card-bg);
-            border-radius: 20px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-            box-sizing: border-box;
-        }
-        .nav-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-top: 15px;
-        }
-        .nav-item {
-            text-decoration: none;
-            background: #f8fafc;
-            padding: 10px;
-            border-radius: 12px;
-            text-align: center;
-            font-size: 0.75rem;
-            color: var(--text);
-            border: 1px solid var(--border);
-            transition: 0.2s;
-        }
-        .nav-item:hover { background: #f1f5f9; }
-
+        .tool-info { max-width: 500px; width: 95%; margin: 0 auto 20px; padding: 24px; background: var(--card-bg); border-radius: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); box-sizing: border-box; }
+        .nav-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
+        .nav-item { text-decoration: none; background: #f8fafc; padding: 10px; border-radius: 12px; text-align: center; font-size: 0.75rem; color: var(--text); border: 1px solid var(--border); transition: 0.2s; }
         #status-msg { margin-top: 15px; text-align: center; font-weight: bold; color: var(--primary); min-height: 1.2rem; }
     </style>
 </head>
-<body>
+<body data-tool-key="zip">
 
     <header class="app-header">
         <a href="../" id="nav-home" class="back-btn">🏠</a>
-        <div id="header-title" style="flex:1; text-align:center; font-weight:bold; margin-left: 10px;">セキュア圧縮ツール</div>
-        <button id="install-btn">📲</button>
+        <div id="header-title" style="flex:1; text-align:center; font-weight:bold; margin-left: 10px;"></div>
+        <button id="install-btn"></button>
     </header>
 
     <div class="container">
-        <h1 id="main-h1" style="font-size: 1.3rem; margin-bottom: 20px; text-align:center;">📦 セキュア圧縮ツール</h1>
+        <h1 id="main-h1" style="font-size: 1.3rem; margin-bottom: 20px; text-align:center;"></h1>
         
         <div class="info-box">
             <span>🔒</span>
-            <div id="info-text" style="margin-left:8px;">
-                <strong>サーバー送信なし:</strong> 処理はすべてブラウザ内で完結。外部にデータが漏れる心配はありません。
-            </div>
+            <div id="info-text" style="margin-left:8px;"></div>
         </div>
         
         <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()">
-            <div id="drop-text">➕ ファイルを選択 または ドロップ</div>
+            <div id="drop-text"></div>
             <input type="file" id="file-input" multiple style="display:none" onchange="handleFiles(this.files)">
         </div>
 
         <div id="file-list"></div>
 
         <div class="config-card">
-            <label id="label-filename">保存ファイル名</label>
+            <label id="label-filename"></label>
             <input type="text" id="zip-name" placeholder="">
             
-            <label id="label-comp">圧縮レベル</label>
+            <label id="label-comp"></label>
             <select id="comp-level">
-                <option value="1" id="opt-low">低圧縮 (高速)</option>
-                <option value="6" id="opt-mid" selected>標準 (推奨)</option>
-                <option value="9" id="opt-high">最高圧縮 (低速)</option>
+                <option value="1" id="opt-low"></option>
+                <option value="6" id="opt-mid" selected></option>
+                <option value="9" id="opt-high"></option>
             </select>
         </div>
 
-        <button id="zip-btn" class="main-btn" onclick="generateZip()" disabled>ZIPを作成して保存</button>
+        <button id="zip-btn" class="main-btn" onclick="generateZip()" disabled></button>
         <div id="status-msg"></div>
     </div>
 
     <div class="tool-info">
-        <h2 id="footer-h2" style="font-size: 1.1rem; color: var(--primary); margin-top: 0;">🔒 通信量を大幅カット、爆速圧縮</h2>
-        <p id="footer-desc" style="font-size: 0.85rem; line-height: 1.6; color: #475569;">
-            複数のファイルを一括でZIP形式にまとめます。サーバー送信がないため、機密書類の受け渡し準備も安心・安全に行えます。
-        </p>
-        
+        <h2 id="footer-h2" style="font-size: 1.1rem; color: var(--primary); margin-top: 0;"></h2>
+        <p id="footer-desc" style="font-size: 0.85rem; line-height: 1.6; color: #475569;"></p>
         <hr style="border: 0; border-top: 1px solid var(--border); margin: 20px 0;">
-        
-        <p id="recommend-text" style="font-size: 0.75rem; color: #64748b; margin-bottom: 12px; text-align: center; font-weight: bold;">こちらのツールもおすすめ</p>
+        <p id="recommend-text" style="font-size: 0.75rem; color: #64748b; margin-bottom: 12px; text-align: center; font-weight: bold;"></p>
         <div class="nav-grid">
-            <a href="../pdf/" id="nav-pdf" class="nav-item">🖼️ PDF変換</a>
-            <a href="../resize/" id="nav-resize" class="nav-item">↔️ リサイズ</a>
-            <a href="../" id="nav-all" class="nav-item" style="background: #f1f5f9; font-weight: bold;">🏠 一覧へ</a>
+            <a href="../img-pdf/" class="nav-item">🖼️ PDF</a>
+            <a href="../resize/" class="nav-item">↔️ Resize</a>
+            <a href="../" id="nav-all" class="nav-item" style="background: #f1f5f9; font-weight: bold;">🏠</a>
         </div>
     </div>
 
-    <footer style="padding:20px; font-size:0.7rem; color:#94a3b8; text-align:center;">
-        &copy; 2026 Secure Toolkit
-    </footer>
-
-    <script>
-        // --- 多言語設定 ---
-        const i18n = {
-            ja: {
-                title: "セキュア一括ZIP圧縮｜Secure Toolkit",
-                meta: "複数のファイルをサーバーへ送らずブラウザ内で一括ZIP圧縮。機密書類も安全に処理できます。",
-                header: "セキュア圧縮ツール",
-                h1: "📦 セキュア圧縮ツール",
-                info: "<strong>サーバー送信なし:</strong> 処理はすべてブラウザ内で完結。外部にデータが漏れる心配はありません。",
-                drop: "➕ ファイルを選択 または ドロップ",
-                label_name: "保存ファイル名",
-                label_comp: "圧縮レベル",
-                opt_low: "低圧縮 (高速)",
-                opt_mid: "標準 (推奨)",
-                opt_high: "最高圧縮 (低速)",
-                btn_run: "ZIPを作成して保存",
-                status_run: "⚡ 圧縮中...",
-                status_done: "✅ 作成が完了しました！",
-                status_err: "❌ エラーが発生しました",
-                footer_h2: "🔒 通信量を大幅カット、爆速圧縮",
-                footer_desc: "複数のファイルを一括でZIP形式にまとめます。サーバー送信がないため、機密書類の受け渡し準備も安心・安全に行えます。",
-                recommend: "こちらのツールもおすすめ",
-                nav_home: "🏠 ツール一覧",
-                nav_all: "🏠 一覧へ",
-                install: "📲 保存"
-            },
-            en: {
-                title: "Secure Batch ZIP｜Secure Toolkit",
-                meta: "Compress multiple files into ZIP within your browser. Safe for confidential documents.",
-                header: "Secure Zip Tool",
-                h1: "📦 Secure Zip Tool",
-                info: "<strong>No Server Upload:</strong> All processing is done in your browser. No data leaks to the outside.",
-                drop: "➕ Select or Drop Files",
-                label_name: "Output Filename",
-                label_comp: "Compression Level",
-                opt_low: "Low (Fast)",
-                opt_mid: "Standard (Recommended)",
-                opt_high: "High (Slow)",
-                btn_run: "Create & Save ZIP",
-                status_run: "⚡ Compressing...",
-                status_done: "✅ ZIP created successfully!",
-                status_err: "❌ An error occurred",
-                footer_h2: "🔒 Cut Data Usage & Fast Compression",
-                footer_desc: "Batch compress files into ZIP. Since no files are sent to a server, you can prepare confidential documents safely.",
-                recommend: "Recommended Tools",
-                nav_home: "🏠 Home",
-                nav_all: "🏠 All Tools",
-                install: "📲 Save"
-            },
-            zh: {
-                title: "安全批量ZIP压缩｜Secure Toolkit",
-                meta: "在浏览器内完成多个ファイルのZIP压缩。无需上传服务器，確保機密文件安全。",
-                header: "安全压缩工具",
-                h1: "📦 安全压缩工具",
-                info: "<strong>无需上传服务器:</strong> 所有处理都在浏览器内完成。不必担心数据泄露。",
-                drop: "➕ 选择文件 或 拖放至此",
-                label_name: "保存文件名",
-                label_comp: "压缩等级",
-                opt_low: "低压缩 (快速)",
-                opt_mid: "标准 (推荐)",
-                opt_high: "最高压缩 (慢速)",
-                btn_run: "生成并保存 ZIP",
-                status_run: "⚡ 正在压缩...",
-                status_done: "✅ 制作完成！",
-                status_err: "❌ 发生错误",
-                footer_h2: "🔒 大幅节省流量，极速压缩",
-                footer_desc: "将多个文件批量压缩为ZIP格式。由于不经过服务器处理，您可以安心地准备机密文件。",
-                recommend: "推荐工具",
-                nav_home: "🏠 首页",
-                nav_all: "🏠 返回列表",
-                install: "📲 保存"
-            }
-        };
-
-        // 言語判定
-        const params = new URLSearchParams(window.location.search);
-        const lang = i18n[params.get('lang')] ? params.get('lang') : 'ja';
-        const t = i18n[lang];
-
-        // UI反映
-        document.getElementById('page-title').innerText = t.title;
-        document.getElementById('meta-desc').content = t.meta;
-        document.getElementById('header-title').innerText = t.header;
-        document.getElementById('main-h1').innerText = t.h1;
-        document.getElementById('info-text').innerHTML = t.info;
-        document.getElementById('drop-text').innerText = t.drop;
-        document.getElementById('label-filename').innerText = t.label_name;
-        document.getElementById('label-comp').innerText = t.label_comp;
-        document.getElementById('opt-low').innerText = t.opt_low;
-        document.getElementById('opt-mid').innerText = t.opt_mid;
-        document.getElementById('opt-high').innerText = t.opt_high;
-        document.getElementById('zip-btn').innerText = t.btn_run;
-        document.getElementById('footer-h2').innerText = t.footer_h2;
-        document.getElementById('footer-desc').innerText = t.footer_desc;
-        document.getElementById('recommend-text').innerText = t.recommend;
-        document.getElementById('nav-home').innerText = t.nav_home;
-        document.getElementById('nav-all').innerText = t.nav_all;
-        document.getElementById('install-btn').innerText = t.install;
-
-        // PWA & ZIP ロジック
-        let deferredPrompt;
-        const installBtn = document.getElementById('install-btn');
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            installBtn.style.display = 'block';
-        });
-        installBtn.addEventListener('click', async () => {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') installBtn.style.display = 'none';
-                deferredPrompt = null;
-            }
-        });
-
-        let filesArray = [];
-        window.onload = () => {
-            const n = new Date();
-            const ts = `${n.getFullYear()}${String(n.getMonth()+1).padStart(2,'0')}${String(n.getDate()).padStart(2,'0')}_${String(n.getHours()).padStart(2,'0')}${String(n.getMinutes()).padStart(2,'0')}`;
-            document.getElementById('zip-name').value = `archive_${ts}`;
-        };
-
-        const dz = document.getElementById('drop-zone');
-        dz.addEventListener('dragover', (e) => { e.preventDefault(); dz.style.background = "#f0fdf4"; });
-        dz.addEventListener('dragleave', () => { dz.style.background = "#fff"; });
-        dz.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dz.style.background = "#fff";
-            handleFiles(e.dataTransfer.files);
-        });
-
-        async function handleFiles(files) {
-            for (let file of files) {
-                const thumb = file.type.startsWith('image/') ? await createThumb(file) : null;
-                filesArray.push({ file, thumb, id: Date.now() + Math.random() });
-            }
-            updateList();
-        }
-
-        function createThumb(file) {
-            return new Promise(res => {
-                const reader = new FileReader();
-                reader.onload = (e) => res(e.target.result);
-                reader.readAsDataURL(file);
-            });
-        }
-
-        function updateList() {
-            const list = document.getElementById('file-list');
-            const btn = document.getElementById('zip-btn');
-            list.innerHTML = '';
-            filesArray.forEach((item, index) => {
-                const div = document.createElement('div');
-                div.className = 'file-item';
-                const thumbImg = item.thumb ? `<img src="${item.thumb}" class="thumb">` : `<div class="thumb" style="display:flex;align-items:center;justify-content:center;font-size:1.2rem;">📄</div>`;
-                div.innerHTML = `
-                    ${thumbImg}
-                    <div class="file-info">
-                        <span class="file-name">${item.file.name}</span>
-                    </div>
-                    <div class="sort-controls">
-                        <button class="sort-btn" onclick="move(${index}, -1)">↑</button>
-                        <button class="sort-btn" onclick="move(${index}, 1)">↓</button>
-                    </div>
-                    <button class="remove-btn" onclick="removeFile(${index})">✕</button>
-                `;
-                list.appendChild(div);
-            });
-            btn.disabled = filesArray.length === 0;
-        }
-
-        function move(index, step) {
-            const target = index + step;
-            if (target < 0 || target >= filesArray.length) return;
-            const temp = filesArray[index];
-            filesArray[index] = filesArray[target];
-            filesArray[target] = temp;
-            updateList();
-        }
-
-        function removeFile(index) {
-            filesArray.splice(index, 1);
-            updateList();
-        }
-
-        async function generateZip() {
-            const zip = new JSZip();
-            const btn = document.getElementById('zip-btn');
-            const status = document.getElementById('status-msg');
-            const level = parseInt(document.getElementById('comp-level').value);
-            btn.disabled = true;
-            status.innerText = t.status_run;
-            try {
-                filesArray.forEach(item => {
-                    zip.file(item.file.name, item.file, { binary: true });
-                });
-                const content = await zip.generateAsync({
-                    type: "blob",
-                    compression: "DEFLATE",
-                    compressionOptions: { level: level }
-                });
-                let zipName = document.getElementById('zip-name').value.trim() || "archive";
-                zipName = zipName.replace(/[\\/:*?"<>|]/g, '_'); 
-                if (!zipName.toLowerCase().endsWith('.zip')) zipName += '.zip';
-                
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(content);
-                link.download = zipName;
-                link.click();
-                status.innerHTML = t.status_done;
-            } catch (e) {
-                status.innerText = t.status_err;
-                console.error(e);
-            } finally {
-                btn.disabled = false;
-            }
-        }
-    </script>
-</body>
-</html>
+    <footer style="padding:20px; font-size:0.7rem; color:#94a3b8; text-align
