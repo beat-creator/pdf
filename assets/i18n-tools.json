@@ -26,7 +26,7 @@
     "emoji": "🖼️",
     "color": { "primary": "#2563eb", "bg": "#eff6ff" },
     "name": { "ja": "セキュア画像PDF変換", "en": "Secure Image to PDF", "zh": "安全图片转PDF" },
-    "top_name": { "ja": "PDF変換", "en": "Image to PDF", "zh": "图片转PDF" },
+    "top_name": { "ja": "画像PDF変換", "en": "Image to PDF", "zh": "图片转PDF" },
     "seo_title": {
       "ja": "セキュア画像PDF変換｜Secure Toolkit - 複数画像をまとめてPDF化",
       "en": "Secure Image to PDF｜Secure Toolkit - Combine Images",
