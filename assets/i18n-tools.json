@@ -1,0 +1,68 @@
+{
+  "zip": {
+    "id": 1,
+    "emoji": "📦",
+    "color": { "primary": "#059669", "bg": "#ecfdf5" },
+    "name": { "ja": "セキュア圧縮ツール", "en": "Secure Zip Tool", "zh": "安全压缩工具" },
+    "top_name": { "ja": "圧縮ツール", "en": "Zip Tool", "zh": "压缩工具" },
+    "seo_title": {
+      "ja": "セキュア一括ZIP圧縮｜Secure Toolkit - サーバー送信なしで安全",
+      "en": "Secure Batch ZIP｜Secure Toolkit - No Server Upload",
+      "zh": "安全批量ZIP压缩｜Secure Toolkit - 无需上传服务器"
+    },
+    "meta_desc": {
+      "ja": "複数のファイルをサーバーへ送らずブラウザ内で一括ZIP圧縮。機密書類も通信量を節約して安全に処理できます。",
+      "en": "Compress multiple files into ZIP within your browser. Safe for confidential documents with zero server-side processing.",
+      "zh": "在浏览器内完成多个文件的ZIP压缩。无需上传服务器，确保机密文件的绝对安全。"
+    },
+    "footer_desc": {
+      "ja": "🔒 通信量を大幅カット、爆速圧縮\n複数のファイルを一括でZIP形式にまとめます。サーバー送信がないため、機密書類の受け渡し準備も安心・安全に行えます。",
+      "en": "🔒 Cut Data Usage & Fast Compression\nBatch compress files into ZIP. Since no files are sent to a server, you can prepare confidential documents safely and securely.",
+      "zh": "🔒 大幅节省流量，极速压缩\n将多个文件批量压缩为ZIP格式。由于不经过服务器处理，您可以安心地准备和传输机密文件。"
+    }
+  },
+  "pdf": {
+    "id": 2,
+    "emoji": "🖼️",
+    "color": { "primary": "#2563eb", "bg": "#eff6ff" },
+    "name": { "ja": "セキュア画像PDF変換", "en": "Secure Image to PDF", "zh": "安全图片转PDF" },
+    "top_name": { "ja": "PDF変換", "en": "Image to PDF", "zh": "图片转PDF" },
+    "seo_title": {
+      "ja": "セキュア画像PDF変換｜Secure Toolkit - 複数画像をまとめてPDF化",
+      "en": "Secure Image to PDF｜Secure Toolkit - Combine Images",
+      "zh": "安全图片转PDF｜Secure Toolkit - 多图合并PDF"
+    },
+    "meta_desc": {
+      "ja": "JPG/PNG画像をブラウザ内でPDFに変換。サーバーにアップロードしないため、プライベートな写真も安全に結合できます。",
+      "en": "Convert JPG/PNG to PDF in your browser. Since no files are uploaded, your private photos stay safe and secure.",
+      "zh": "在浏览器内将JPG/PNG图片转换为PDF。无需上传，即使是私密照片也能安全合并。"
+    },
+    "footer_desc": {
+      "ja": "📄 写真やスキャン画像を一つのPDFに\nJPGやPNGなどの画像ファイルをドラッグ＆ドロップするだけでPDF化。ブラウザ内で結合するため、プライベートな写真も安心して処理できます。",
+      "en": "📄 Convert Photos/Scans to a Single PDF\nSimply drag & drop JPG, PNG, or other image files to create a PDF. Processed locally, so your private photos stay safe.",
+      "zh": "📄 将照片或扫描图像转换为单个PDF\n只需拖放JPG、PNG等图像文件即可转换为PDF。在浏览器内完成合并，即使是私密照片也能放心处理。"
+    }
+  },
+  "pass": {
+    "id": 3,
+    "emoji": "🔑",
+    "color": { "primary": "#7c3aed", "bg": "#f5f3ff" },
+    "name": { "ja": "セキュアパスワード生成", "en": "Secure Pass Gen", "zh": "安全密码生成" },
+    "top_name": { "ja": "パス生成", "en": "Pass Gen", "zh": "密码生成" },
+    "seo_title": {
+      "ja": "セキュアパスワード生成｜Secure Toolkit - 記号・強度指定可能",
+      "en": "Secure Pass Gen｜Secure Toolkit - Custom Strength",
+      "zh": "安全密码生成｜Secure Toolkit - 自定义强度"
+    },
+    "meta_desc": {
+      "ja": "安全なパスワードをブラウザ内で生成。記号の有無や長さを指定可能。生成したパスワードがネットワークに流れることはありません。",
+      "en": "Generate secure passwords locally in your browser. Customize symbols and length with zero risk of network leakage.",
+      "zh": "在浏览器内生成安全密码。可指定符号和长度。生成的密码绝不会在网络上传输。"
+    },
+    "footer_desc": {
+      "ja": "🔑 予測不可能な強固なパスワードを即座に\n記号の有無や長さを自由にカスタマイズして、安全なパスワードを生成。生成処理も端末内で行われるため、外部に漏れることはありません。",
+      "en": "🔑 Instant Unpredictable Strong Passwords\nCustomize symbols and length to generate secure passwords instantly. Generation occurs locally, ensuring no leakage to the outside world.",
+      "zh": "🔑 立即生成不可预测的强密码\n自由定制符号和长度，生成安全密码。由于生成过程在终端内完成，绝对不会泄露到外部。"
+    }
+  }
+}
