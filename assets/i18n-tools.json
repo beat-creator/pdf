@@ -18,7 +18,7 @@
     "footer_desc": {
       "ja": "🔒 通信量を大幅カット、爆速圧縮\n複数のファイルを一括でZIP形式にまとめます。サーバー送信がないため、機密書類の受け渡し準備も安心・安全に行えます。",
       "en": "🔒 Cut Data Usage & Fast Compression\nBatch compress files into ZIP. Since no files are sent to a server, you can prepare confidential documents safely and securely.",
-      "zh": "🔒 大幅节省流量，极速压缩\n将多个文件批量压缩为ZIP格式。由于不经过服务器处理，您可以安心地准备和传输机密文件。"
+      "zh": "🔒 大幅节省流量，极速压缩\n将多个文件批量压缩为ZIP格式。由于不经过服务器処理，您可以安心地准备和传输机密文件。"
     }
   },
   "pdf": {
@@ -43,26 +43,26 @@
       "zh": "📄 将照片或扫描图像转换为单个PDF\n只需拖放JPG、PNG等图像文件即可转换为PDF。在浏览器内完成合并，即使是私密照片也能放心处理。"
     }
   },
-  "pass": {
+  "resize": {
     "id": 3,
-    "emoji": "🔑",
-    "color": { "primary": "#7c3aed", "bg": "#f5f3ff" },
-    "name": { "ja": "セキュアパスワード生成", "en": "Secure Pass Gen", "zh": "安全密码生成" },
-    "top_name": { "ja": "パス生成", "en": "Pass Gen", "zh": "密码生成" },
+    "emoji": "↔️",
+    "color": { "primary": "#0ea5e9", "bg": "#f0f9ff" },
+    "name": { "ja": "セキュア画像リサイズ", "en": "Secure Image Resize", "zh": "安全图片尺寸调整" },
+    "top_name": { "ja": "画像リサイズ", "en": "Resize", "zh": "尺寸调整" },
     "seo_title": {
-      "ja": "セキュアパスワード生成｜Secure Toolkit - 記号・強度指定可能",
-      "en": "Secure Pass Gen｜Secure Toolkit - Custom Strength",
-      "zh": "安全密码生成｜Secure Toolkit - 自定义强度"
+      "ja": "セキュア画像リサイズ｜Secure Toolkit - ブラウザで一括リサイズ",
+      "en": "Secure Image Resize｜Secure Toolkit - Batch Resize Locally",
+      "zh": "安全图片尺寸调整｜Secure Toolkit - 本地批量调整"
     },
     "meta_desc": {
-      "ja": "安全なパスワードをブラウザ内で生成。記号の有無や長さを指定可能。生成したパスワードがネットワークに流れることはありません。",
-      "en": "Generate secure passwords locally in your browser. Customize symbols and length with zero risk of network leakage.",
-      "zh": "在浏览器内生成安全密码。可指定符号和长度。生成的密码绝不会在网络上传输。"
+      "ja": "複数の画像をサーバーへ送信せず、ブラウザ内だけで一括リサイズ。プライバシーを守りながら素早く処理できます。",
+      "en": "Batch resize images in your browser without uploading to any server. Protect your privacy.",
+      "zh": "在浏览器内批量调整图片大小，不上传服务器。确保隐私安全。"
     },
     "footer_desc": {
-      "ja": "🔑 予測不可能な強固なパスワードを即座に\n記号の有無や長さを自由にカスタマイズして、安全なパスワードを生成。生成処理も端末内で行われるため、外部に漏れることはありません。",
-      "en": "🔑 Instant Unpredictable Strong Passwords\nCustomize symbols and length to generate secure passwords instantly. Generation occurs locally, ensuring no leakage to the outside world.",
-      "zh": "🔑 立即生成不可预测的强密码\n自由定制符号和长度，生成安全密码。由于生成过程在终端内完成，绝对不会泄露到外部。"
+      "ja": "↔️ 通信なしでサクサク変換\nSNS用やWebサイト用に、複数の画像をまとめてリサイズ。すべての処理はデバイス内で完結するため、写真が外部に流出する心配はありません。",
+      "en": "↔️ Fast Conversion with Zero Data Usage\nResize multiple images for SNS or websites. All processing stays on your device, ensuring your photos never leave.",
+      "zh": "↔️ 无需联网，极速转换\n批量调整图片尺寸以用于社交媒体或网站。所有処理均在本地完成，无需担心照片外泄。"
     }
   }
 }
