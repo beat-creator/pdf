@@ -114,4 +114,162 @@
         </div>
     </div>
 
-    <footer style="padding:20px; font-size:0.7rem; color:#94a3b8; text-align
+    <footer style="padding:20px; font-size:0.7rem; color:#94a3b8; text-align:center;">
+        &copy; 2026 Secure Toolkit
+    </footer>
+
+    <script>
+        let currentLang = 'ja';
+        let t = {}; // 翻訳データ保持用
+        let filesArray = [];
+
+        async function initI18n() {
+            try {
+                // 階層が深いので ../asset/ を指定
+                const response = await fetch('../assets/i18n-tools.json');
+                const i18nData = await response.json();
+                
+                const lang = (navigator.language || navigator.userLanguage).split('-')[0];
+                currentLang = ['ja', 'en', 'zh'].includes(lang) ? lang : 'en';
+                
+                const toolData = i18nData["zip"];
+                
+                const common = {
+                    ja: { home: "🏠 ツール一覧", back: "🏠 ホーム", all: "🏠 一覧へ", recommend: "こちらのツールもおすすめ", processing: "⚡ 圧縮中...", done: "✅ 作成が完了しました！", error: "❌ エラーが発生しました", drop: "➕ ファイルを選択 または ドロップ", fname: "保存ファイル名", comp: "圧縮レベル", low: "低圧縮 (高速)", mid: "標準 (推奨)", high: "最高圧縮 (低速)", btn: "ZIPを作成して保存", install: "📲 保存" },
+                    en: { home: "🏠 All Tools", back: "🏠 Home", all: "🏠 All Tools", recommend: "Recommended Tools", processing: "⚡ Compressing...", done: "✅ ZIP created successfully!", error: "❌ An error occurred", drop: "➕ Select or Drop Files", fname: "Output Filename", comp: "Compression Level", low: "Low (Fast)", mid: "Standard (Recommended)", high: "High (Slow)", btn: "Create & Save ZIP", install: "📲 Save" },
+                    zh: { home: "🏠 工具列表", back: "🏠 首页", all: "🏠 返回列表", recommend: "推荐工具", processing: "⚡ 正在压缩...", done: "✅ 制作完成！", error: "❌ 发生错误", drop: "➕ 选择文件 或 拖放至此", fname: "保存文件名", comp: "压缩等级", low: "低压缩 (快速)", mid: "标准 (推荐)", high: "最高压缩 (慢速)", btn: "生成并保存 ZIP", install: "📲 保存" }
+                }[currentLang];
+
+                t = { ...toolData, ...common };
+
+                // UI反映
+                document.title = t.seo_title[currentLang];
+                document.getElementById('meta-desc').content = t.meta_desc[currentLang];
+                document.getElementById('header-title').innerText = t.top_name[currentLang];
+                document.getElementById('main-h1').innerText = t.emoji + " " + t.name[currentLang];
+                document.getElementById('info-text').innerHTML = `<strong>${currentLang === 'ja' ? 'サーバー送信なし' : 'No Upload'}:</strong> ${t.meta_desc[currentLang]}`;
+                document.getElementById('drop-text').innerText = t.drop;
+                document.getElementById('label-filename').innerText = t.fname;
+                document.getElementById('label-comp').innerText = t.comp;
+                document.getElementById('opt-low').innerText = t.low;
+                document.getElementById('opt-mid').innerText = t.mid;
+                document.getElementById('opt-high').innerText = t.high;
+                document.getElementById('zip-btn').innerText = t.btn;
+                document.getElementById('footer-h2').innerText = t.footer_desc[currentLang].split('\n')[0];
+                document.getElementById('footer-desc').innerText = t.footer_desc[currentLang].split('\n')[1];
+                document.getElementById('recommend-text').innerText = t.recommend;
+                document.getElementById('nav-home').innerText = t.home;
+                document.getElementById('nav-all').innerText = t.all;
+                document.getElementById('install-btn').innerText = t.install;
+
+            } catch (err) {
+                console.error("i18n Load Error:", err);
+            }
+        }
+
+        window.onload = () => {
+            initI18n();
+            const n = new Date();
+            const ts = `${n.getFullYear()}${String(n.getMonth()+1).padStart(2,'0')}${String(n.getDate()).padStart(2,'0')}_${String(n.getHours()).padStart(2,'0')}${String(n.getMinutes()).padStart(2,'0')}`;
+            document.getElementById('zip-name').value = `archive_${ts}`;
+        };
+
+        // --- ZIP ロジック (filesArray 等は元のコードを継承) ---
+        const dz = document.getElementById('drop-zone');
+        dz.addEventListener('dragover', (e) => { e.preventDefault(); dz.style.background = "#f0fdf4"; });
+        dz.addEventListener('dragleave', () => { dz.style.background = "#fff"; });
+        dz.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dz.style.background = "#fff";
+            handleFiles(e.dataTransfer.files);
+        });
+
+        async function handleFiles(files) {
+            for (let file of files) {
+                const thumb = file.type.startsWith('image/') ? await createThumb(file) : null;
+                filesArray.push({ file, thumb, id: Date.now() + Math.random() });
+            }
+            updateList();
+        }
+
+        function createThumb(file) {
+            return new Promise(res => {
+                const reader = new FileReader();
+                reader.onload = (e) => res(e.target.result);
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function updateList() {
+            const list = document.getElementById('file-list');
+            const btn = document.getElementById('zip-btn');
+            list.innerHTML = '';
+            filesArray.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'file-item';
+                const thumbImg = item.thumb ? `<img src="${item.thumb}" class="thumb">` : `<div class="thumb" style="display:flex;align-items:center;justify-content:center;font-size:1.2rem;">📄</div>`;
+                div.innerHTML = `
+                    ${thumbImg}
+                    <div class="file-info">
+                        <span class="file-name">${item.file.name}</span>
+                    </div>
+                    <div class="sort-controls">
+                        <button class="sort-btn" onclick="move(${index}, -1)">↑</button>
+                        <button class="sort-btn" onclick="move(${index}, 1)">↓</button>
+                    </div>
+                    <button class="remove-btn" onclick="removeFile(${index})">✕</button>
+                `;
+                list.appendChild(div);
+            });
+            btn.disabled = filesArray.length === 0;
+        }
+
+        function move(index, step) {
+            const target = index + step;
+            if (target < 0 || target >= filesArray.length) return;
+            const temp = filesArray[index];
+            filesArray[index] = filesArray[target];
+            filesArray[target] = temp;
+            updateList();
+        }
+
+        function removeFile(index) {
+            filesArray.splice(index, 1);
+            updateList();
+        }
+
+        async function generateZip() {
+            const zip = new JSZip();
+            const btn = document.getElementById('zip-btn');
+            const status = document.getElementById('status-msg');
+            const level = parseInt(document.getElementById('comp-level').value);
+            btn.disabled = true;
+            status.innerText = t.processing;
+            try {
+                filesArray.forEach(item => {
+                    zip.file(item.file.name, item.file, { binary: true });
+                });
+                const content = await zip.generateAsync({
+                    type: "blob",
+                    compression: "DEFLATE",
+                    compressionOptions: { level: level }
+                });
+                let zipName = document.getElementById('zip-name').value.trim() || "archive";
+                zipName = zipName.replace(/[\\/:*?"<>|]/g, '_'); 
+                if (!zipName.toLowerCase().endsWith('.zip')) zipName += '.zip';
+                
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(content);
+                link.download = zipName;
+                link.click();
+                status.innerHTML = t.done;
+            } catch (e) {
+                status.innerText = t.error;
+                console.error(e);
+            } finally {
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
