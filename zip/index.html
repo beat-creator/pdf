@@ -11,7 +11,7 @@
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="page-title">セキュア一括ZIP圧縮｜Secure Toolkit</title>
+    <title id="page-title">Loading...</title>
 
     <link rel="icon" href="../icon-512.png" type="image/png">
     <link rel="apple-touch-icon" href="../icon-512.png">
@@ -19,13 +19,8 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
-        :root { 
-            --primary: #059669; 
-            --bg: #ecfdf5;
-            --card-bg: #ffffff;
-            --text: #1e293b; 
-            --border: #e2e8f0;
-        }
+        /* スタイル部分は変更なし（中略） */
+        :root { --primary: #059669; --bg: #ecfdf5; --card-bg: #ffffff; --text: #1e293b; --border: #e2e8f0; }
         body { font-family: sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
         .app-header { width: 100%; background: var(--card-bg); border-bottom: 1px solid var(--border); padding: 12px 20px; display: flex; align-items: center; box-sizing: border-box; }
         .container { max-width: 500px; width: 95%; background: var(--card-bg); margin: 20px 0; padding: 24px; border-radius: 20px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); box-sizing: border-box; }
@@ -38,6 +33,7 @@
         .main-btn:disabled { background: #cbd5e1; }
         .nav-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
         .nav-item { text-decoration: none; background: #f8fafc; padding: 10px; border-radius: 12px; text-align: center; font-size: 0.75rem; color: var(--text); border: 1px solid var(--border); }
+        .file-item { background:#f1f5f9; padding:8px; margin-bottom:5px; border-radius:8px; display:flex; justify-content:space-between; font-size:0.8rem; }
     </style>
 </head>
 <body>
@@ -49,77 +45,68 @@
 
     <div class="container">
         <h1 id="main-h1" style="font-size: 1.2rem; text-align:center;">📦 セキュア圧縮</h1>
-        
-        <div class="info-box">
-            <span id="info-text">🔒 すべてブラウザ内で完結します。</span>
-        </div>
-        
+        <div class="info-box"><span id="info-text">...</span></div>
         <div class="drop-zone" onclick="document.getElementById('file-input').click()">
             <span id="drop-text">➕ ファイルを選択</span>
             <input type="file" id="file-input" multiple style="display:none" onchange="handleFiles(this.files)">
         </div>
-
         <div id="file-list" style="margin-top: 15px;"></div>
-
         <div class="config-card">
             <label id="label-name">保存ファイル名</label>
             <input type="text" id="zip-name">
-            
             <label id="label-comp">圧縮レベル</label>
             <select id="comp-level">
-                <option value="6" id="opt-mid">標準</option>
+                <option value="1" id="opt-low">低</option>
+                <option value="6" id="opt-mid" selected>標準</option>
+                <option value="9" id="opt-high">高</option>
             </select>
         </div>
-
         <button id="zip-btn" class="main-btn" onclick="generateZip()" disabled>ZIPを作成</button>
         <div id="status-msg" style="text-align:center; margin-top:10px; font-size:0.8rem;"></div>
     </div>
 
-    <div class="container" style="box-shadow:none; border:1px solid var(--border);">
-        <p id="recommend-text" style="font-size:0.8rem; text-align:center; font-weight:bold;">おすすめツール</p>
-        <div class="nav-grid">
-            <a href="../pdf/" class="nav-item">🖼️ PDF</a>
-            <a href="../resize/" class="nav-item">↔️ Resize</a>
-            <a href="../" class="nav-item">🏠 List</a>
-        </div>
-    </div>
-
     <script>
-        // 設定データ
-        const config = {
-            ja: {
-                header: "セキュア圧縮ツール",
-                h1: "📦 セキュア一括圧縮",
-                info: "🔒 <strong>サーバー送信なし:</strong> 処理はすべてブラウザ内で完結。外部にデータが漏れる心配はありません。",
-                drop: "➕ ファイルを選択 または ドロップ",
-                label_name: "保存ファイル名",
-                label_comp: "圧縮レベル",
-                btn_run: "ZIPを作成して保存",
-                status_run: "⚡ 圧縮中...",
-                status_done: "✅ 完了しました！",
-                recommend: "こちらのツールもおすすめ"
-            }
-        };
-
         let filesArray = [];
+        let t = {}; // 翻訳データ格納用
 
-        window.onload = () => {
-            const t = config.ja;
-            // 要素が存在するか確認しながら流し込み
-            if(document.getElementById('header-title')) document.getElementById('header-title').innerText = t.header;
-            if(document.getElementById('main-h1')) document.getElementById('main-h1').innerText = t.h1;
-            if(document.getElementById('info-text')) document.getElementById('info-text').innerHTML = t.info;
-            if(document.getElementById('drop-text')) document.getElementById('drop-text').innerText = t.drop;
-            if(document.getElementById('label-name')) document.getElementById('label-name').innerText = t.label_name;
-            if(document.getElementById('label-comp')) document.getElementById('label-comp').innerText = t.label_comp;
-            if(document.getElementById('zip-btn')) document.getElementById('zip-btn').innerText = t.btn_run;
-            if(document.getElementById('recommend-text')) document.getElementById('recommend-text').innerText = t.recommend;
+        window.onload = async () => {
+            try {
+                // 構成に合わせた相対パスでFetch
+                const response = await fetch('../assets/i18n-tools.json');
+                const data = await response.json();
+                t = data.ja; // 日本語データを取得
+                applyLanguage();
+            } catch (e) {
+                console.error("JSONの読み込みに失敗しました:", e);
+                // 失敗時のフォールバック（最低限の日本語表示）
+                document.getElementById('header-title').innerText = "ZIPツール (offline)";
+            }
 
             const n = new Date();
             const ts = n.toISOString().slice(0,10).replace(/-/g,'');
             document.getElementById('zip-name').value = `archive_${ts}`;
         };
 
+        function applyLanguage() {
+            if(!t.zip) return; // JSON内のzipセクションを確認
+            const z = t.zip; 
+            
+            document.getElementById('page-title').innerText = z.title || "ZIP圧縮";
+            document.getElementById('header-title').innerText = z.header || "ZIPツール";
+            document.getElementById('main-h1').innerText = z.h1 || "📦 セキュア一括圧縮";
+            document.getElementById('info-text').innerHTML = z.info || "";
+            document.getElementById('drop-text').innerText = z.drop || "➕ ファイルを選択";
+            document.getElementById('label-name').innerText = z.label_name || "保存名";
+            document.getElementById('label-comp').innerText = z.label_comp || "圧縮率";
+            
+            document.getElementById('opt-low').innerText = z.opt_low || "低";
+            document.getElementById('opt-mid').innerText = z.opt_mid || "標準";
+            document.getElementById('opt-high').innerText = z.opt_high || "高";
+            
+            document.getElementById('zip-btn').innerText = z.btn_run || "ZIPを作成";
+        }
+
+        // --- handleFiles, updateList, generateZip は共通のため維持 ---
         function handleFiles(files) {
             for (let f of files) filesArray.push(f);
             updateList();
@@ -128,7 +115,7 @@
         function updateList() {
             const list = document.getElementById('file-list');
             list.innerHTML = filesArray.map((f, i) => `
-                <div style="background:#f1f5f9; padding:8px; margin-bottom:5px; border-radius:8px; display:flex; justify-content:space-between; font-size:0.8rem;">
+                <div class="file-item">
                     <span>${f.name}</span>
                     <span style="color:red; cursor:pointer;" onclick="filesArray.splice(${i},1);updateList();">✕</span>
                 </div>
@@ -139,18 +126,23 @@
         async function generateZip() {
             const zip = new JSZip();
             const status = document.getElementById('status-msg');
-            status.innerText = config.ja.status_run;
+            const level = parseInt(document.getElementById('comp-level').value);
+            status.innerText = "⚡ Processing...";
             
             try {
                 filesArray.forEach(f => zip.file(f.name, f));
-                const content = await zip.generateAsync({type: "blob"});
+                const content = await zip.generateAsync({
+                    type: "blob",
+                    compression: "DEFLATE",
+                    compressionOptions: { level: level }
+                });
                 const link = document.createElement('a');
                 link.href = URL.createObjectURL(content);
-                link.download = document.getElementById('zip-name').value + ".zip";
+                link.download = (document.getElementById('zip-name').value || "archive") + ".zip";
                 link.click();
-                status.innerText = config.ja.status_done;
+                status.innerText = "✅ Done!";
             } catch (e) {
-                status.innerText = "Error";
+                status.innerText = "❌ Error";
             }
         }
     </script>
