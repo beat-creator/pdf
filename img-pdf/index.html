@@ -63,22 +63,9 @@
             font-size: 0.8rem; 
             font-weight: 600; 
             background: #f1f5f9; 
-            padding: 6px 12px; 
+            padding: 8px 16px; 
             border-radius: 20px; 
             transition: 0.2s;
-        }
-
-        #install-btn {
-            display: none;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 20px;
-            padding: 6px 12px;
-            font-size: 0.75rem;
-            font-weight: bold;
-            cursor: pointer;
-            margin-left: auto;
         }
 
         .container { 
@@ -181,35 +168,18 @@
         }
         .main-btn:disabled { background: #cbd5e1; cursor: not-allowed; }
 
-        .tool-info {
-            max-width: 500px;
-            width: 95%;
-            margin: 0 auto 20px;
-            padding: 24px;
-            background: var(--card-bg);
-            border-radius: 20px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-            box-sizing: border-box;
+        .tool-info { margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border); text-align: left; }
+        .nav-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
+        .nav-item { 
+            text-decoration: none; 
+            background: #f8fafc; 
+            padding: 10px; 
+            border-radius: 12px; 
+            text-align: center; 
+            font-size: 0.7rem; 
+            color: var(--text); 
+            border: 1px solid var(--border); 
         }
-        .nav-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-top: 15px;
-        }
-        .nav-item {
-            text-decoration: none;
-            background: #f8fafc;
-            padding: 10px;
-            border-radius: 12px;
-            text-align: center;
-            font-size: 0.75rem;
-            color: var(--text);
-            border: 1px solid var(--border);
-            transition: 0.2s;
-        }
-        .nav-item:hover { background: #f1f5f9; }
-
         #status-msg { margin-top: 15px; text-align: center; font-weight: bold; min-height: 1.2rem; }
     </style>
 </head>
@@ -217,15 +187,14 @@
 
     <header class="app-header">
         <a href="../" class="back-btn" id="nav-home"></a>
-        <div style="flex:1; text-align:center; font-weight:bold; margin-left: 10px;" id="header-title"></div>
-        <button id="install-btn">📲 保存</button>
+        <div style="flex:1; text-align:center; font-weight:bold; margin-right:80px;" id="header-title"></div>
     </header>
 
     <div class="container">
         <h1 style="font-size: 1.3rem; margin-bottom: 20px; text-align:center;" id="main-h1"></h1>
         
         <div class="info-box">
-            <span>🔒</span>
+            <span>🛡️</span>
             <div style="margin-left:8px;" id="safe-msg"></div>
         </div>
         
@@ -250,19 +219,16 @@
 
         <button id="convert-btn" class="main-btn" onclick="generatePDF()" disabled></button>
         <div id="status-msg"></div>
-    </div>
 
-    <div class="tool-info">
-        <h2 style="font-size: 1.1rem; color: #2563eb; margin-top: 0;" id="footer-h2"></h2>
-        <p style="font-size: 0.85rem; line-height: 1.6; color: #475569;" id="footer-desc"></p>
-        
-        <hr style="border: 0; border-top: 1px solid var(--border); margin: 20px 0;">
-        
-        <p style="font-size: 0.75rem; color: #64748b; margin-bottom: 12px; text-align: center; font-weight: bold;" id="recommend-text"></p>
-        <div class="nav-grid">
-            <a href="../zip/" class="nav-item">📦 ZIP</a>
-            <a href="../resize/" class="nav-item">↔️ Resize</a>
-            <a href="../" class="nav-item" id="nav-back" style="background: #f1f5f9; font-weight: bold;">🏠 Home</a>
+        <div class="tool-info">
+            <h2 id="footer-h2"></h2>
+            <p id="footer-desc" style="font-size: 0.8rem; line-height: 1.6; color: #64748b; margin-bottom: 15px; white-space: pre-wrap;"></p>
+            <p style="font-size:0.75rem; color:#64748b; margin-bottom:10px; text-align:center;" id="recommend-text"></p>
+            <div class="nav-grid">
+                <a href="../zip/" class="nav-item">📦 ZIP</a>
+                <a href="../resize/" class="nav-item">↔️ Resize</a>
+                <a href="../" class="nav-item" id="nav-back">🏠</a>
+            </div>
         </div>
     </div>
 
@@ -272,68 +238,55 @@
 
     <script>
         let currentLang = 'ja';
-        let i18nData = null;
         let filesArray = [];
+        let t = {};
 
-        // 共通翻訳と個別データの統合
         async function initI18n() {
             try {
-                const response = await fetch('../assets/i18n-tools.json');
-                i18nData = await response.json();
+                // パスの確認（asset）
+                const response = await fetch('../asset/i18n-tools.json');
+                const i18nData = await response.json();
                 
                 const lang = (navigator.language || navigator.userLanguage).split('-')[0];
                 currentLang = ['ja', 'en', 'zh'].includes(lang) ? lang : 'en';
                 
-                const toolKey = document.body.getAttribute('data-tool-key');
-                const t = i18nData[toolKey];
-                
+                const toolData = i18nData["pdf"];
                 const common = {
-                    ja: { home: "🏠 ツール一覧", back: "🏠 ホーム", recommend: "こちらのツールもおすすめ", processing: "⏳ 作成中...", done: "✅ 完了しました！", error: "❌ エラーが発生しました。", drop: "➕ 画像を選択 または ドロップ", fname: "保存ファイル名", quality: "画質設定", q1: "標準 (推奨)", q2: "最高画質 (ファイル大)", q3: "圧縮優先 (ファイル小)", btn: "PDFを作成して保存" },
-                    en: { home: "🏠 All Tools", back: "🏠 Home", recommend: "Recommended Tools", processing: "⏳ Creating...", done: "✅ Completed!", error: "❌ Error occurred.", drop: "➕ Select or Drop Images", fname: "Output Filename", quality: "Quality Setting", q1: "Standard (Recommended)", q2: "High Quality (Large)", q3: "Compress (Small)", btn: "Create & Save PDF" },
-                    zh: { home: "🏠 工具列表", back: "🏠 首页", recommend: "推荐工具", processing: "⏳ 正在生成...", done: "✅ 完成！", error: "❌ 发生错误。", drop: "➕ 选择或拖放图像", fname: "保存文件名", quality: "画质设置", q1: "标准 (推荐)", q2: "最高画质 (文件大)", q3: "压缩优先 (文件小)", btn: "创建并保存PDF" }
+                    ja: { home: "🏠 ツール一覧", back: "🏠 ホーム", recommend: "こちらのツールもおすすめ", processing: "⏳ 作成中...", done: "✅ 完了しました！", error: "❌ エラーが発生しました。", drop: "➕ 画像を選択 または ドロップ", fname: "保存ファイル名", quality: "画質設定", q1: "標準 (推奨)", q2: "最高画質 (ファイル大)", q3: "圧縮優先 (ファイル小)", btn: "PDFを作成して保存", safe: "<strong>サーバー送信なし:</strong> すべての画像はブラウザ内で処理され、安全に結合されます。" },
+                    en: { home: "🏠 All Tools", back: "🏠 Home", recommend: "Recommended Tools", processing: "⏳ Creating...", done: "✅ Completed!", error: "❌ Error occurred.", drop: "➕ Select or Drop Images", fname: "Output Filename", quality: "Quality Setting", q1: "Standard (Recommended)", q2: "High Quality (Large)", q3: "Compress (Small)", btn: "Create & Save PDF", safe: "<strong>No Upload:</strong> All images are processed locally and securely combined in your browser." },
+                    zh: { home: "🏠 工具列表", back: "🏠 首页", recommend: "推荐工具", processing: "⏳ 正在生成...", done: "✅ 完成！", error: "❌ 发生错误。", drop: "➕ 选择或拖放图像", fname: "保存文件名", quality: "画质设置", q1: "标准 (推荐)", q2: "最高画质 (文件大)", q3: "压缩优先 (文件小)", btn: "创建并保存PDF", safe: "<strong>无需上传服务器:</strong> 所有图像均在浏览器内处理，安全合并。" }
                 }[currentLang];
 
-                // UIの反映
-                document.title = t.seo_title[currentLang];
-                document.getElementById('meta-title').innerText = t.seo_title[currentLang];
-                document.getElementById('meta-desc').setAttribute('content', t.meta_desc[currentLang]);
-                document.getElementById('nav-home').innerText = common.home;
-                document.getElementById('header-title').innerText = t.top_name[currentLang];
-                document.getElementById('main-h1').innerText = t.emoji + " " + t.name[currentLang];
-                document.getElementById('safe-msg').innerHTML = `<strong>${currentLang === 'ja' ? 'サーバー送信なし' : (currentLang === 'zh' ? '无需上传服务器' : 'No Upload')}:</strong> ${t.meta_desc[currentLang]}`;
-                document.getElementById('drop-text').innerText = common.drop;
-                document.getElementById('label-filename').innerText = common.fname;
-                document.getElementById('label-quality').innerText = common.quality;
-                document.getElementById('opt-standard').innerText = common.q1;
-                document.getElementById('opt-high').innerText = common.q2;
-                document.getElementById('opt-low').innerText = common.q3;
-                document.getElementById('convert-btn').innerText = common.btn;
-                
-                const footerParts = t.footer_desc[currentLang].split('\n');
-                document.getElementById('footer-h2').innerText = footerParts[0];
-                document.getElementById('footer-desc').innerText = footerParts[1];
-                document.getElementById('recommend-text').innerText = common.recommend;
-                document.getElementById('nav-back').innerText = common.back;
+                t = { ...common, ...toolData };
 
-                window.statusMsg = common;
+                // UI反映
+                document.title = (t.seo_title && t.seo_title[currentLang]) || "Image to PDF";
+                const metaTag = document.getElementById('meta-desc');
+                if(metaTag && t.meta_description) metaTag.content = t.meta_description[currentLang];
+
+                document.getElementById('nav-home').innerText = t.home;
+                document.getElementById('header-title').innerText = (t.top_name && t.top_name[currentLang]) || "PDF";
+                document.getElementById('main-h1').innerText = (t.emoji || "🖼️") + " " + ((t.name && t.name[currentLang]) || "Image to PDF");
+                document.getElementById('safe-msg').innerHTML = t.safe;
+                document.getElementById('drop-text').innerText = t.drop;
+                document.getElementById('label-filename').innerText = t.fname;
+                document.getElementById('label-quality').innerText = t.quality;
+                document.getElementById('opt-standard').innerText = t.q1;
+                document.getElementById('opt-high').innerText = t.q2;
+                document.getElementById('opt-low').innerText = t.q3;
+                document.getElementById('convert-btn').innerText = t.btn;
+                document.getElementById('recommend-text').innerText = t.recommend;
+                document.getElementById('nav-back').innerText = t.back;
+
+                if (t.footer_desc && t.footer_desc[currentLang]) {
+                    const parts = t.footer_desc[currentLang].split('\n');
+                    document.getElementById('footer-h2').innerText = parts[0];
+                    document.getElementById('footer-desc').innerText = parts[1] || "";
+                }
             } catch (err) {
                 console.error("i18n Load Error:", err);
             }
         }
-
-        // PWA Install
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            document.getElementById('install-btn').style.display = 'block';
-        });
-        document.getElementById('install-btn').addEventListener('click', async () => {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                deferredPrompt = null;
-            }
-        });
 
         window.onload = () => {
             initI18n();
@@ -341,7 +294,7 @@
             document.getElementById('pdf-name').value = "PDF_" + now.getFullYear() + ('0' + (now.getMonth() + 1)).slice(-2) + ('0' + now.getDate()).slice(-2);
         };
 
-        // File Logic
+        // Drop Zone Logic
         const dz = document.getElementById('drop-zone');
         dz.addEventListener('dragover', (e) => { e.preventDefault(); dz.style.background = "#eff6ff"; });
         dz.addEventListener('dragleave', () => { dz.style.background = "#fff"; });
@@ -352,7 +305,7 @@
         });
 
         function handleFiles(files) { 
-            filesArray = [...filesArray, ...Array.from(files)]; 
+            filesArray = [...filesArray, ...Array.from(files).filter(f => f.type.startsWith('image/'))]; 
             updateList(); 
         }
         
@@ -362,7 +315,7 @@
             filesArray.forEach((file, index) => {
                 const li = document.createElement('li');
                 li.className = 'file-item';
-                li.innerHTML = `<span class="page-num">${index+1}P</span><span class="file-name">${file.name}</span><div class="controls">${filesArray.length > 1 ? `<button class="btn-sm" onclick="moveItem(${index}, -1)">↑</button><button class="btn-sm" onclick="moveItem(${index}, 1)">↓</button>` : ''}<button class="btn-sm" style="color:#ef4444; border:none; background:transparent;" onclick="removeItem(${index})">✕</button></div>`;
+                li.innerHTML = `<span class="page-num">${index+1}P</span><span class="file-name">${file.name}</span><div class="controls">${filesArray.length > 1 ? `<button class="btn-sm" onclick="moveItem(${index}, -1)">↑</button><button class="btn-sm" onclick="moveItem(${index}, 1)">↓</button>` : ''}<button class="btn-sm" style="color:#ef4444; border:none; background:transparent; cursor:pointer;" onclick="removeItem(${index})">✕</button></div>`;
                 list.appendChild(li);
             });
             document.getElementById('convert-btn').disabled = filesArray.length === 0;
@@ -383,7 +336,7 @@
             const btn = document.getElementById('convert-btn');
             const status = document.getElementById('status-msg');
             btn.disabled = true; 
-            status.innerText = window.statusMsg.processing;
+            status.innerText = t.processing;
 
             try {
                 for (let i = 0; i < filesArray.length; i++) {
@@ -397,9 +350,9 @@
                 let pdfName = document.getElementById('pdf-name').value.trim() || "document";
                 if (!pdfName.toLowerCase().endsWith('.pdf')) pdfName += '.pdf';
                 doc.save(pdfName);
-                status.innerHTML = `<span style="color:#059669">${window.statusMsg.done}</span>`;
+                status.innerHTML = `<span style="color:#059669">${t.done}</span>`;
             } catch (e) { 
-                status.innerText = window.statusMsg.error; 
+                status.innerText = t.error; 
             } finally { 
                 btn.disabled = false; 
             }
