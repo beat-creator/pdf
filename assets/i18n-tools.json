@@ -43,26 +43,19 @@
       "zh": "📄 将照片或扫描图像转换为单个PDF\n只需拖放JPG、PNG等图像文件即可转换为PDF。在浏览器内完成合并，即使是私密照片也能放心处理。"
     }
   },
+  {
   "resize": {
-    "id": 3,
     "emoji": "↔️",
-    "color": { "primary": "#0ea5e9", "bg": "#f0f9ff" },
-    "name": { "ja": "セキュア画像リサイズ", "en": "Secure Image Resize", "zh": "安全图片尺寸调整" },
-    "top_name": { "ja": "画像リサイズ", "en": "Resize", "zh": "尺寸调整" },
-    "seo_title": {
-      "ja": "セキュア画像リサイズ｜Secure Toolkit - ブラウザで一括リサイズ",
-      "en": "Secure Image Resize｜Secure Toolkit - Batch Resize Locally",
-      "zh": "安全图片尺寸调整｜Secure Toolkit - 本地批量调整"
-    },
-    "meta_desc": {
-      "ja": "複数の画像をサーバーへ送信せず、ブラウザ内だけで一括リサイズ。プライバシーを守りながら素早く処理できます。",
-      "en": "Batch resize images in your browser without uploading to any server. Protect your privacy.",
-      "zh": "在浏览器内批量调整图片大小，不上传服务器。确保隐私安全。"
-    },
-    "footer_desc": {
-      "ja": "↔️ 通信なしでサクサク変換\nSNS用やWebサイト用に、複数の画像をまとめてリサイズ。すべての処理はデバイス内で完結するため、写真が外部に流出する心配はありません。",
-      "en": "↔️ Fast Conversion with Zero Data Usage\nResize multiple images for SNS or websites. All processing stays on your device, ensuring your photos never leave.",
-      "zh": "↔️ 无需联网，极速转换\n批量调整图片尺寸以用于社交媒体或网站。所有処理均在本地完成，无需担心照片外泄。"
+    "top_name": { "ja": "画像リサイズ", "en": "Image Resizer", "zh": "图像缩放" },
+    "name": { "ja": "セキュア画像リサイズ", "en": "Secure Image Resizer", "zh": "安全图像缩放" },
+    "seo_title": { "ja": "セキュア画像リサイズ｜Secure Toolkit", "en": "Secure Image Resizer | Secure Toolkit", "zh": "安全图像缩放 | Secure Toolkit" },
+    "meta_description": { "ja": "大きな写真をブラウザ内で一括リサイズ。サーバーに送信しないため安全です。", "en": "Resize images in your browser securely without server upload.", "zh": "在浏览器内安全地批量缩放图像。" },
+    "footer_desc": { 
+      "ja": "🔒 通信量を大幅カット、爆速リサイズ\n大きな写真をSNSやブログ用に一括リサイズ。サーバー送信がないため、スマホのギガを消費せず、プライバシーも完全に守られます。",
+      "en": "🔒 Cut Data Usage & Fast Resizing\nBatch resize large photos. No server upload means you save data and keep privacy.",
+      "zh": "🔒 大幅节省流量，极速缩放\n批量缩放照片。由于不经过服务器，您可以节省流量并保护隐私。"
     }
   }
+}
+
 }
