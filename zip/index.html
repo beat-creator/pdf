@@ -94,7 +94,7 @@
     async function initI18n() {
         try {
             // パスを確認（asset または assets）
-            const response = await fetch('../asset/i18n-tools.json');
+            const response = await fetch('../assets/i18n-tools.json');
             if (!response.ok) throw new Error('JSON load failed');
             const i18nData = await response.json();
             
