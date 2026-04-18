@@ -12,8 +12,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
-    <title id="meta-title">セキュア便利ツール集｜Secure Toolkit - 登録不要・サーバー送信なしで安全</title>
-    <meta name="description" id="meta-desc" content="日本発の完全ローカル処理ツール集。画像圧縮、PDF変換、リサイズなどが、ファイルをサーバーに送らずブラウザ内だけで完結。通信量（ギガ）も節約できます。">
+    <title data-i18n="top.site_name">セキュア便利ツール集｜Secure Toolkit - 登録不要・サーバー送信なしで安全</title>
+    <meta name="description" content="">
 
     <link rel="icon" href="./icon-512.png" type="image/png">
     <link rel="apple-touch-icon" href="./icon-512.png">
@@ -146,140 +146,52 @@
         footer a { color: #94a3b8; text-decoration: none; margin: 0 10px; }
     </style>
 </head>
-<body>
-
-<header>
-    <div class="seo-tagline" id="tagline">セキュア便利ツール集</div>
-    <h1 id="main-title">🛠️ Secure Toolkit</h1>
+<body class="is-top"> <header>
+    <div class="seo-tagline" data-i18n="top.site_name"></div>
+    <h1 data-i18n="top.site_logo"></h1>
 </header>
 
 <div class="container">
     <div class="tool-grid">
         <a href="./zip/" class="tool-card" style="border-top: 4px solid #059669;">
             <span class="tool-emoji">📦</span>
-            <span class="tool-name" id="tool-zip">圧縮ツール</span>
+            <span class="tool-name" data-i18n="tools.zip.top_name"></span>
         </a>
         <a href="./img-pdf/" class="tool-card" style="border-top: 4px solid #e11d48;">
             <span class="tool-emoji">🖼️</span>
-            <span class="tool-name" id="tool-pdf">PDF変換</span>
+            <span class="tool-name" data-i18n="tools.pdf.top_name"></span>
         </a>
-        <a href="./resize/" class="tool-card" style="border-top: 4px solid #0ea5e9;">
-            <span class="tool-emoji">↔️</span>
-            <span class="tool-name" id="tool-resize">画像リサイズ</span>
+        <a href="./pass-gen/" class="tool-card" style="border-top: 4px solid #7c3aed;">
+            <span class="tool-emoji">🔑</span>
+            <span class="tool-name" data-i18n="tools.pass.top_name"></span>
         </a>
-        <a href="./pdf-tool/" class="tool-card" style="border-top: 4px solid #6366f1;">
-            <span class="tool-emoji">📚</span>
-            <span class="tool-name" id="tool-pdf-split">PDF結合・分割</span>
-        </a>
-    </div>
+        </div>
 
     <section class="benefits-section">
-        <h2 id="why-title">なぜ Secure Toolkit なのか？</h2>
+        <h2 data-i18n="top.hero_title"></h2>
         
-        <div class="benefit-item">
-            <h3 id="benefit1-h">🇯🇵 安心の国内開発・完全無料</h3>
-            <p id="benefit1-p">Secure Toolkitは日本国内で設計・開発されています。海外製ツールと違い、データの行き先が不透明な心配はありません。</p>
-        </div>
-
-        <div class="benefit-item">
-            <h3 id="benefit2-h">📡 通信量を消費しない</h3>
-            <p id="benefit2-p">ファイルをサーバーにアップロードしないため、ギガを大幅に節約できます。外出先での作業に最適です。</p>
-        </div>
-
-        <div class="benefit-item">
-            <h3 id="benefit3-h">🔒 サーバーに送らない究極の安全</h3>
-            <p id="benefit3-p">すべての処理はブラウザ内で完結します。機密書類も安心して処理できます。</p>
+        <div id="features-container">
+            <div class="benefit-item">
+                <h3 data-i18n="top.features.0.title"></h3>
+                <p data-i18n="top.features.0.content"></p>
+            </div>
+            <div class="benefit-item">
+                <h3 data-i18n="top.features.1.title"></h3>
+                <p data-i18n="top.features.1.content"></p>
+            </div>
+            <div class="benefit-item">
+                <h3 data-i18n="top.features.2.title"></h3>
+                <p data-i18n="top.features.2.content"></p>
+            </div>
         </div>
     </section>
 </div>
 
 <footer>
-    <a href="./privacy.html" id="privacy-link">プライバシーポリシー</a>
+    <a href="./privacy.html" data-i18n="common.privacy">プライバシーポリシー</a>
     <p>© 2026 Secure Toolkit</p>
 </footer>
 
-<script>
-const i18n = {
-    ja: {
-        title: "セキュア便利ツール集｜Secure Toolkit - 登録不要・サーバー送信なしで安全",
-        desc: "日本発の完全ローカル処理ツール集。画像圧縮、PDF変換、リサイズなどがブラウザ内だけで完結。",
-        tagline: "セキュア便利ツール集",
-        mainTitle: "🛠️ Secure Toolkit",
-        zip: "圧縮ツール",
-        pdf: "PDF変換",
-        resize: "画像リサイズ",
-        pdfSplit: "PDF結合・分割",
-        why: "なぜ Secure Toolkit なのか？",
-        b1h: "🇯🇵 安心の国内開発・完全無料",
-        b1p: "Secure Toolkitは日本国内で設計・開発されています。海外製ツールと違い、データの行き先が不透明な心配はありません。",
-        b2h: "📡 通信量を消費しない",
-        b2p: "ファイルをサーバーにアップロードしないため、ギガを大幅に節約できます。外出先での作業に最適です。",
-        b3h: "🔒 サーバーに送らない究極の安全",
-        b3p: "すべての処理はブラウザ内で完結します。機密書類も安心して処理できます。",
-        privacy: "プライバシーポリシー"
-    },
-    en: {
-        title: "Secure Toolkit | No Upload, Browser-based Secure Tools",
-        desc: "Local processing tools. Compress images, convert PDFs, and resize photos entirely in your browser without uploading to a server.",
-        tagline: "Secure Toolkit",
-        mainTitle: "🛠️ Secure Toolkit",
-        zip: "Zip Tool",
-        pdf: "PDF Conv",
-        resize: "Resize",
-        pdfSplit: "PDF Merge/Split",
-        why: "Why Secure Toolkit?",
-        b1h: "🇯🇵 Developed in Japan & Free",
-        b1p: "Secure Toolkit is designed and developed in Japan. No worry about where your data goes.",
-        b2h: "📡 Save Your Data",
-        b2p: "Since files are not uploaded to a server, you can significantly save data. Ideal for working on the go.",
-        b3h: "🔒 Ultimate Privacy",
-        b3p: "All processing is completed within your browser. Safely process confidential documents.",
-        privacy: "Privacy Policy"
-    },
-    zh: {
-        title: "安全工具集 | 无需上传，浏览器端安全处理",
-        desc: "日本开发的完全本地处理工具集。在浏览器内完成压缩、PDF转换和调整大小，不上传服务器。",
-        tagline: "安全工具集",
-        mainTitle: "🛠️ Secure Toolkit",
-        zip: "压缩工具",
-        pdf: "PDF转换",
-        resize: "尺寸调整",
-        pdfSplit: "PDF合并/拆分",
-        why: "为什么选择 Secure Toolkit？",
-        b1h: "🇯🇵 日本国内开发・完全免费",
-        b1p: "Secure Toolkit 在日本国内设计和开发。与国外工具不同，不用担心数据去向不明。",
-        b2h: "📡 不消耗流量",
-        b2p: "由于文件不上传到服务器，可以大幅节省数据流量。非常适合在外出办公時使用。",
-        b3h: "🔒 终极安全",
-        b3p: "所有处理都在浏览器内完成。可以放心处理机密文件。",
-        privacy: "隐私政策"
-    }
-};
-
-function applyLanguage() {
-    const lang = (navigator.language || navigator.userLanguage).split('-')[0];
-    const t = i18n[lang] || i18n.en; // 該当なしは英語
-
-    document.title = t.title;
-    document.getElementById('meta-title').innerText = t.title;
-    document.getElementById('meta-desc').setAttribute('content', t.desc);
-    document.getElementById('tagline').innerText = t.tagline;
-    document.getElementById('main-title').innerText = t.mainTitle;
-    document.getElementById('tool-zip').innerText = t.zip;
-    document.getElementById('tool-pdf').innerText = t.pdf;
-    document.getElementById('tool-resize').innerText = t.resize;
-    document.getElementById('tool-pdf-split').innerText = t.pdfSplit;
-    document.getElementById('why-title').innerText = t.why;
-    document.getElementById('benefit1-h').innerText = t.b1h;
-    document.getElementById('benefit1-p').innerText = t.b1p;
-    document.getElementById('benefit2-h').innerText = t.b2h;
-    document.getElementById('benefit2-p').innerText = t.b2p;
-    document.getElementById('benefit3-h').innerText = t.b3h;
-    document.getElementById('benefit3-p').innerText = t.b3p;
-    document.getElementById('privacy-link').innerText = t.privacy;
-}
-
-window.onload = applyLanguage;
-</script>
+<script src="./js/i18n-engine.js"></script>
 </body>
 </html>
