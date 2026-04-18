@@ -8,149 +8,278 @@
       gtag('js', new Date());
       gtag('config', 'G-489DX1LV2M');
     </script>
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
-    <title id="page-title">セキュア一括ZIP圧縮｜Secure Toolkit</title>
-    <meta name="description" id="meta-desc" content="">
+    <title id="meta-title">セキュア便利ツール集｜Secure Toolkit - 登録不要・サーバー送信なしで安全</title>
+    <meta name="description" id="meta-desc" content="日本発の完全ローカル処理ツール集。画像圧縮、PDF変換、リサイズなどが、ファイルをサーバーに送らずブラウザ内だけで完結。通信量（ギガ）も節約できます。">
+
+    <link rel="icon" href="./icon-512.png" type="image/png">
+    <link rel="apple-touch-icon" href="./icon-512.png">
+    <link rel="manifest" href="./manifest.json">
 
     <style>
-        :root { 
-            --primary: #059669; 
-            --primary-hover: #047857; 
-            --bg: #ecfdf5; 
+        :root {
+            --primary: #059669;
+            --text-main: #1e293b;
+            --text-sub: #64748b;
+            --bg-site: #f8fafc;
             --card-bg: #ffffff;
-            --text: #1e293b; 
             --border: #e2e8f0;
         }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-        .app-header { width: 100%; background: var(--card-bg); border-bottom: 1px solid var(--border); padding: 12px 20px; display: flex; align-items: center; position: sticky; top: 0; z-index: 100; box-sizing: border-box; }
-        .back-btn { text-decoration: none; color: var(--text); font-size: 0.85rem; font-weight: 600; background: #f1f5f9; padding: 8px 16px; border-radius: 20px; }
 
-        .container { max-width: 500px; width: 95%; background: var(--card-bg); margin: 20px 0; padding: 24px; border-radius: 24px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); box-sizing: border-box; }
-        .info-box { background: var(--bg); border-radius: 12px; padding: 12px; margin-bottom: 20px; font-size: 0.8rem; line-height: 1.5; color: var(--primary-hover); display: flex; align-items: flex-start; }
-        .drop-zone { border: 2px dashed var(--primary); border-radius: 16px; padding: 35px 20px; text-align: center; cursor: pointer; background: #fff; color: var(--primary); font-weight: bold; }
-        
-        #file-list { margin: 20px 0; padding: 0; list-style: none; width: 100%; }
-        .file-item { display: flex; align-items: center; background: #f8fafc; margin-bottom: 10px; padding: 10px; border-radius: 12px; border: 1px solid var(--border); font-size: 0.85rem; }
-        .file-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        
-        .main-btn { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 1rem; transition: 0.2s; }
-        .main-btn:disabled { background: #cbd5e1; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-site);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-        .tool-info { margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border); text-align: left; }
-        .tool-info h2 { font-size: 1rem; color: var(--text); margin-bottom: 10px; }
-        .tool-info p { font-size: 0.8rem; line-height: 1.6; color: #64748b; margin-bottom: 15px; white-space: pre-wrap; }
-        .nav-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
-        .nav-item { text-decoration: none; padding: 10px; background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; font-size: 0.7rem; color: var(--text); text-align: center; }
+        header {
+            width: 100%;
+            padding: 40px 20px 30px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        .seo-tagline {
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: var(--text-sub);
+            margin-bottom: 4px;
+            letter-spacing: 0.05em;
+        }
+        h1 {
+            font-size: 1.8rem;
+            margin: 0;
+            color: var(--text-main);
+            letter-spacing: -0.5px;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 95%;
+            padding-bottom: 40px;
+        }
+
+        .tool-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .tool-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 24px 10px;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+        .tool-card:active {
+            transform: scale(0.96);
+            background: #f1f5f9;
+        }
+        .tool-emoji {
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+        }
+        .tool-name {
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: var(--text-main);
+            text-align: center;
+        }
+
+        .benefits-section {
+            margin-top: 50px;
+            padding: 0 5px;
+        }
+        .benefits-section h2 {
+            font-size: 1.2rem;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .benefit-item {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border);
+        }
+        .benefit-item h3 {
+            font-size: 0.95rem;
+            margin: 0 0 8px 0;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+        }
+        .benefit-item h3::before {
+            content: "✓";
+            margin-right: 8px;
+            color: #059669;
+            font-weight: bold;
+        }
+        .benefit-item p {
+            font-size: 0.8rem;
+            line-height: 1.6;
+            color: var(--text-sub);
+            margin: 0;
+            white-space: pre-wrap;
+        }
+
+        footer {
+            padding: 40px 20px;
+            font-size: 0.75rem;
+            color: var(--text-sub);
+            text-align: center;
+        }
+        footer a { color: #94a3b8; text-decoration: none; margin: 0 10px; }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </head>
-<body data-tool-key="zip">
+<body>
 
-    <header class="app-header">
-        <a href="../" class="back-btn" id="nav-home"></a>
-        <div style="flex:1; text-align:center; font-weight:bold; margin-right:80px;" id="header-title"></div>
-    </header>
+<header>
+    <div class="seo-tagline" id="tagline">セキュア便利ツール集</div>
+    <h1 id="main-title">🛠️ Secure Toolkit</h1>
+</header>
 
-    <div class="container">
-        <h1 style="font-size: 1.3rem; margin-bottom: 20px; text-align:center;" id="main-h1"></h1>
-        
-        <div class="info-box">
-            <span>🛡️</span>
-            <div style="margin-left:8px;" id="safe-msg"></div>
-        </div>
-        
-        <div class="drop-zone" onclick="document.getElementById('file-input').click()" id="drop-text">
-            <input type="file" id="file-input" multiple style="display:none" onchange="handleFiles(this.files)">
-        </div>
-
-        <ul id="file-list"></ul>
-
-        <button id="process-btn" class="main-btn" onclick="createZip()" disabled></button>
-        <div id="status-msg" style="margin-top:15px; text-align:center; font-weight:bold;"></div>
-
-        <div class="tool-info">
-            <h2 id="footer-h2"></h2>
-            <p id="footer-desc"></p>
-            <p style="font-size:0.75rem; color:#64748b; margin-bottom:10px; text-align:center;" id="recommend-text"></p>
-            <div class="nav-grid">
-                <a href="../img-pdf/" class="nav-item">🖼️ PDF</a>
-                <a href="../resize/" class="nav-item">↔️ Resize</a>
-                <a href="../" class="nav-item" id="nav-back">🏠</a>
-            </div>
-        </div>
+<div class="container">
+    <div class="tool-grid">
+        <a href="./zip/" class="tool-card" style="border-top: 4px solid #059669;">
+            <span class="tool-emoji">📦</span>
+            <span class="tool-name" id="tool-zip">圧縮ツール</span>
+        </a>
+        <a href="./img-pdf/" class="tool-card" style="border-top: 4px solid #e11d48;">
+            <span class="tool-emoji">🖼️</span>
+            <span class="tool-name" id="tool-pdf">PDF変換</span>
+        </a>
+        <a href="./resize/" class="tool-card" style="border-top: 4px solid #0ea5e9;">
+            <span class="tool-emoji">↔️</span>
+            <span class="tool-name" id="tool-resize">画像リサイズ</span>
+        </a>
+        <a href="./pdf-tool/" class="tool-card" style="border-top: 4px solid #6366f1;">
+            <span class="tool-emoji">📚</span>
+            <span class="tool-name" id="tool-pdf-split">PDF結合・分割</span>
+        </a>
     </div>
 
-    <footer style="padding:20px; font-size:0.7rem; color:#94a3b8; text-align:center;">
-        &copy; 2026 Secure Toolkit
-    </footer>
+    <section class="benefits-section">
+        <h2 id="why-title">なぜ Secure Toolkit なのか？</h2>
+        
+        <div class="benefit-item">
+            <h3 id="benefit1-h">🇯🇵 安心の国内開発・完全無料</h3>
+            <p id="benefit1-p">Secure Toolkitは日本国内で設計・開発されています。海外製ツールと違い、データの行き先が不透明な心配はありません。</p>
+        </div>
+
+        <div class="benefit-item">
+            <h3 id="benefit2-h">📡 通信量を消費しない</h3>
+            <p id="benefit2-p">ファイルをサーバーにアップロードしないため、ギガを大幅に節約できます。外出先での作業に最適です。</p>
+        </div>
+
+        <div class="benefit-item">
+            <h3 id="benefit3-h">🔒 サーバーに送らない究極の安全</h3>
+            <p id="benefit3-p">すべての処理はブラウザ内で完結します。機密書類も安心して処理できます。</p>
+        </div>
+    </section>
+</div>
+
+<footer>
+    <a href="./privacy.html" id="privacy-link">プライバシーポリシー</a>
+    <p>© 2026 Secure Toolkit</p>
+</footer>
 
 <script>
-    let filesArray = [];
-    let currentLang = 'ja';
-    let t = {};
-
-    async function initI18n() {
-        try {
-            // パスを確認（asset または assets）
-            const response = await fetch('../assets/i18n-tools.json');
-            if (!response.ok) throw new Error('JSON load failed');
-            const i18nData = await response.json();
-            
-            const lang = (navigator.language || navigator.userLanguage).split('-')[0];
-            currentLang = ['ja', 'en', 'zh'].includes(lang) ? lang : 'en';
-            
-            const toolData = i18nData["zip"];
-            const common = {
-                ja: { home: "🏠 ツール一覧", back: "🏠 ホーム", recommend: "こちらのツールもおすすめ", processing: "⏳ 圧縮中...", done: "✅ 完了しました！", error: "❌ エラーが発生しました。", drop: "➕ ファイルを選択・ドロップ", btn: "ZIPを作成して保存", safe: "<strong>一括処理も安全:</strong> サーバーへの送信なし。ブラウザ内ですべてのファイルを圧縮します。" },
-                en: { home: "🏠 All Tools", back: "🏠 Home", recommend: "Recommended Tools", processing: "⏳ Compressing...", done: "✅ Complete!", error: "❌ An error occurred.", drop: "➕ Select or Drop Files", btn: "Create ZIP & Save", safe: "<strong>Safe Batch Processing:</strong> No server upload. All files are compressed within your browser." },
-                zh: { home: "🏠 工具列表", back: "🏠 首页", recommend: "推荐工具", processing: "⏳ 压缩中...", done: "✅ 完成！", error: "❌ 发生错误。", drop: "➕ 选择或拖放文件", btn: "创建 ZIP 并保存", safe: "<strong>批量处理更安全:</strong> 无需上传服务器。所有文件均在浏览器内完成压缩。" }
-            }[currentLang];
-
-            t = { ...common, ...toolData };
-
-            // UI反映（エラー防止のため存在チェック付き）
-            document.title = (t.seo_title && t.seo_title[currentLang]) || "Secure ZIP";
-            const metaTag = document.getElementById('meta-desc');
-            if(metaTag && t.meta_description) metaTag.content = t.meta_description[currentLang];
-
-            document.getElementById('nav-home').innerText = t.home;
-            document.getElementById('nav-back').innerText = t.back;
-            document.getElementById('header-title').innerText = (t.top_name && t.top_name[currentLang]) || "ZIP";
-            document.getElementById('main-h1').innerText = (t.emoji || "📦") + " " + ((t.name && t.name[currentLang]) || "ZIP Tool");
-            document.getElementById('safe-msg').innerHTML = t.safe;
-            
-            const dropZone = document.getElementById('drop-text');
-            dropZone.innerHTML = t.drop + '<input type="file" id="file-input" multiple style="display:none" onchange="handleFiles(this.files)">';
-            
-            document.getElementById('process-btn').innerText = t.btn;
-            document.getElementById('recommend-text').innerText = t.recommend;
-
-            if (t.footer_desc && t.footer_desc[currentLang]) {
-                const parts = t.footer_desc[currentLang].split('\n');
-                document.getElementById('footer-h2').innerText = parts[0];
-                document.getElementById('footer-desc').innerText = parts[1] || "";
-            }
-
-        } catch (err) {
-            console.error("i18n Load Error:", err);
-        }
+const i18n = {
+    ja: {
+        title: "セキュア便利ツール集｜Secure Toolkit - 登録不要・サーバー送信なしで安全",
+        desc: "日本発の完全ローカル処理ツール集。画像圧縮、PDF変換、リサイズなどがブラウザ内だけで完結。",
+        tagline: "セキュア便利ツール集",
+        mainTitle: "🛠️ Secure Toolkit",
+        zip: "圧縮ツール",
+        pdf: "PDF変換",
+        resize: "画像リサイズ",
+        pdfSplit: "PDF結合・分割",
+        why: "なぜ Secure Toolkit なのか？",
+        b1h: "🇯🇵 安心の国内開発・完全無料",
+        b1p: "Secure Toolkitは日本国内で設計・開発されています。海外製ツールと違い、データの行き先が不透明な心配はありません。",
+        b2h: "📡 通信量を消費しない",
+        b2p: "ファイルをサーバーにアップロードしないため、ギガを大幅に節約できます。外出先での作業に最適です。",
+        b3h: "🔒 サーバーに送らない究極の安全",
+        b3p: "すべての処理はブラウザ内で完結します。機密書類も安心して処理できます。",
+        privacy: "プライバシーポリシー"
+    },
+    en: {
+        title: "Secure Toolkit | No Upload, Browser-based Secure Tools",
+        desc: "Local processing tools. Compress images, convert PDFs, and resize photos entirely in your browser without uploading to a server.",
+        tagline: "Secure Toolkit",
+        mainTitle: "🛠️ Secure Toolkit",
+        zip: "Zip Tool",
+        pdf: "PDF Conv",
+        resize: "Resize",
+        pdfSplit: "PDF Merge/Split",
+        why: "Why Secure Toolkit?",
+        b1h: "🇯🇵 Developed in Japan & Free",
+        b1p: "Secure Toolkit is designed and developed in Japan. No worry about where your data goes.",
+        b2h: "📡 Save Your Data",
+        b2p: "Since files are not uploaded to a server, you can significantly save data. Ideal for working on the go.",
+        b3h: "🔒 Ultimate Privacy",
+        b3p: "All processing is completed within your browser. Safely process confidential documents.",
+        privacy: "Privacy Policy"
+    },
+    zh: {
+        title: "安全工具集 | 无需上传，浏览器端安全处理",
+        desc: "日本开发的完全本地处理工具集。在浏览器内完成压缩、PDF转换和调整大小，不上传服务器。",
+        tagline: "安全工具集",
+        mainTitle: "🛠️ Secure Toolkit",
+        zip: "压缩工具",
+        pdf: "PDF转换",
+        resize: "图像缩放",
+        pdfSplit: "PDF合并/拆分",
+        why: "为什么选择 Secure Toolkit？",
+        b1h: "🇯🇵 日本国内开发・完全免费",
+        b1p: "Secure Toolkit 在日本国内设计和开发。与国外工具不同，不用担心数据去向不明。",
+        b2h: "📡 不消耗流量",
+        b2p: "由于文件不上传到服务器，可以大幅节省数据流量。非常适合在外出办公時使用。",
+        b3h: "🔒 终极安全",
+        b3p: "所有处理都在浏览器内完成。可以放心处理机密文件。",
+        privacy: "隐私政策"
     }
+};
 
-    function handleFiles(files) {
-        filesArray = [...filesArray, ...Array.from(files)];
-        updateList();
-    }
+function applyLanguage() {
+    const lang = (navigator.language || navigator.userLanguage).split('-')[0];
+    const t = i18n[lang] || i18n.en; // 該当なしは英語
 
-    function updateList() {
-        const list = document.getElementById('file-list');
-        const btn = document.getElementById('process-btn');
-        list.innerHTML = '';
-        filesArray.forEach((file, index) => {
-            const li = document.createElement('li');
-            li.className = 'file-item';
-            li.innerHTML = `<span class="file-name">${file.name}</span><button style="color:#ef4444;border:none;background:none;margin-left:auto;cursor:pointer;" onclick="removeItem(${index})">✕</button>`;
-            list.appendChild(li);
-        });
-        btn.disabled = filesArray
+    document.title = t.title;
+    document.getElementById('meta-title').innerText = t.title;
+    document.getElementById('meta-desc').setAttribute('content', t.desc);
+    document.getElementById('tagline').innerText = t.tagline;
+    document.getElementById('main-title').innerText = t.mainTitle;
+    document.getElementById('tool-zip').innerText = t.zip;
+    document.getElementById('tool-pdf').innerText = t.pdf;
+    document.getElementById('tool-resize').innerText = t.resize;
+    document.getElementById('tool-pdf-split').innerText = t.pdfSplit;
+    document.getElementById('why-title').innerText = t.why;
+    document.getElementById('benefit1-h').innerText = t.b1h;
+    document.getElementById('benefit1-p').innerText = t.b1p;
+    document.getElementById('benefit2-h').innerText = t.b2h;
+    document.getElementById('benefit2-p').innerText = t.b2p;
+    document.getElementById('benefit3-h').innerText = t.b3h;
+    document.getElementById('benefit3-p').innerText = t.b3p;
+    document.getElementById('privacy-link').innerText = t.privacy;
+}
+
+window.onload = applyLanguage;
+</script>
+</body>
+</html>
