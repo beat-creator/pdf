@@ -8,109 +8,77 @@
       gtag('js', new Date());
       gtag('config', 'G-489DX1LV2M');
     </script>
-
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
     <title id="page-title">セキュア一括ZIP圧縮｜Secure Toolkit</title>
-    <meta id="meta-desc" name="description" content="">
+    <meta name="description" id="meta-desc" content="">
 
-    <link rel="icon" href="../icon-512.png" type="image/png">
-    <link rel="apple-touch-icon" href="../icon-512.png">
-    <link rel="manifest" href="../manifest.json">
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
         :root { 
             --primary: #059669; 
             --primary-hover: #047857; 
-            --bg: #ecfdf5;
+            --bg: #ecfdf5; 
             --card-bg: #ffffff;
             --text: #1e293b; 
             --border: #e2e8f0;
         }
-        
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
         .app-header { width: 100%; background: var(--card-bg); border-bottom: 1px solid var(--border); padding: 12px 20px; display: flex; align-items: center; position: sticky; top: 0; z-index: 100; box-sizing: border-box; }
-        .back-btn { display: flex; align-items: center; text-decoration: none; color: var(--text); font-size: 0.8rem; font-weight: 600; background: #f1f5f9; padding: 6px 12px; border-radius: 20px; transition: 0.2s; }
-        
-        #install-btn { display: none; background: var(--primary); color: white; border: none; border-radius: 20px; padding: 6px 12px; font-size: 0.75rem; font-weight: bold; cursor: pointer; margin-left: auto; }
+        .back-btn { text-decoration: none; color: var(--text); font-size: 0.85rem; font-weight: 600; background: #f1f5f9; padding: 8px 16px; border-radius: 20px; }
 
-        .container { max-width: 500px; width: 95%; background: var(--card-bg); margin: 20px 0; padding: 24px; border-radius: 20px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); box-sizing: border-box; }
-        .info-box { background: #ecfdf5; border-radius: 12px; padding: 12px; margin-bottom: 20px; font-size: 0.8rem; line-height: 1.5; color: var(--primary-hover); display: flex; align-items: flex-start; }
-        .drop-zone { border: 2px dashed var(--primary); border-radius: 16px; padding: 30px 20px; text-align: center; cursor: pointer; background: #fff; color: var(--primary); font-weight: bold; }
+        .container { max-width: 500px; width: 95%; background: var(--card-bg); margin: 20px 0; padding: 24px; border-radius: 24px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); box-sizing: border-box; }
+        .info-box { background: var(--bg); border-radius: 12px; padding: 12px; margin-bottom: 20px; font-size: 0.8rem; line-height: 1.5; color: var(--primary-hover); display: flex; align-items: flex-start; }
+        .drop-zone { border: 2px dashed var(--primary); border-radius: 16px; padding: 35px 20px; text-align: center; cursor: pointer; background: #fff; color: var(--primary); font-weight: bold; }
         
-        #file-list { margin: 20px 0; padding: 0; }
+        #file-list { margin: 20px 0; padding: 0; list-style: none; width: 100%; }
         .file-item { display: flex; align-items: center; background: #f8fafc; margin-bottom: 10px; padding: 10px; border-radius: 12px; border: 1px solid var(--border); font-size: 0.85rem; }
-        .thumb { width: 40px; height: 40px; border-radius: 6px; object-fit: cover; margin-right: 12px; background: #e2e8f0; }
-        .file-info { flex: 1; min-width: 0; }
-        .file-name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
-        
-        .sort-controls { display: flex; gap: 5px; margin-left: 10px; }
-        .sort-btn { border: none; background: white; border-radius: 6px; padding: 5px 8px; cursor: pointer; border: 1px solid var(--border); font-size: 0.8rem; }
-        .remove-btn { color: #ef4444; border: none; background: none; cursor: pointer; font-size: 1.2rem; margin-left: 10px; }
-
-        .config-card { background: #f8fafc; padding: 16px; border-radius: 16px; margin-bottom: 20px; }
-        label { font-size: 0.8rem; font-weight: bold; color: #64748b; margin-bottom: 6px; display: block; }
-        input, select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px; box-sizing: border-box; font-size: 1rem; margin-bottom: 12px; }
+        .file-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         
         .main-btn { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 1rem; transition: 0.2s; }
-        .main-btn:disabled { background: #cbd5e1; cursor: not-allowed; }
-        
-        .tool-info { max-width: 500px; width: 95%; margin: 0 auto 20px; padding: 24px; background: var(--card-bg); border-radius: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); box-sizing: border-box; }
+        .main-btn:disabled { background: #cbd5e1; }
+
+        .tool-info { margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border); text-align: left; }
+        .tool-info h2 { font-size: 1rem; color: var(--text); margin-bottom: 10px; }
+        .tool-info p { font-size: 0.8rem; line-height: 1.6; color: #64748b; margin-bottom: 15px; white-space: pre-wrap; }
         .nav-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
-        .nav-item { text-decoration: none; background: #f8fafc; padding: 10px; border-radius: 12px; text-align: center; font-size: 0.75rem; color: var(--text); border: 1px solid var(--border); transition: 0.2s; }
-        #status-msg { margin-top: 15px; text-align: center; font-weight: bold; color: var(--primary); min-height: 1.2rem; }
+        .nav-item { text-decoration: none; padding: 10px; background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; font-size: 0.7rem; color: var(--text); text-align: center; }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </head>
 <body data-tool-key="zip">
 
     <header class="app-header">
-        <a href="../" id="nav-home" class="back-btn">🏠</a>
-        <div id="header-title" style="flex:1; text-align:center; font-weight:bold; margin-left: 10px;"></div>
-        <button id="install-btn"></button>
+        <a href="../" class="back-btn" id="nav-home"></a>
+        <div style="flex:1; text-align:center; font-weight:bold; margin-right:80px;" id="header-title"></div>
     </header>
 
     <div class="container">
-        <h1 id="main-h1" style="font-size: 1.3rem; margin-bottom: 20px; text-align:center;"></h1>
+        <h1 style="font-size: 1.3rem; margin-bottom: 20px; text-align:center;" id="main-h1"></h1>
         
         <div class="info-box">
-            <span>🔒</span>
-            <div id="info-text" style="margin-left:8px;"></div>
+            <span>🛡️</span>
+            <div style="margin-left:8px;" id="safe-msg"></div>
         </div>
         
-        <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()">
-            <div id="drop-text"></div>
+        <div class="drop-zone" onclick="document.getElementById('file-input').click()" id="drop-text">
             <input type="file" id="file-input" multiple style="display:none" onchange="handleFiles(this.files)">
         </div>
 
-        <div id="file-list"></div>
+        <ul id="file-list"></ul>
 
-        <div class="config-card">
-            <label id="label-filename"></label>
-            <input type="text" id="zip-name" placeholder="">
-            
-            <label id="label-comp"></label>
-            <select id="comp-level">
-                <option value="1" id="opt-low"></option>
-                <option value="6" id="opt-mid" selected></option>
-                <option value="9" id="opt-high"></option>
-            </select>
-        </div>
+        <button id="process-btn" class="main-btn" onclick="createZip()" disabled></button>
+        <div id="status-msg" style="margin-top:15px; text-align:center; font-weight:bold;"></div>
 
-        <button id="zip-btn" class="main-btn" onclick="generateZip()" disabled></button>
-        <div id="status-msg"></div>
-    </div>
-
-    <div class="tool-info">
-        <h2 id="footer-h2" style="font-size: 1.1rem; color: var(--primary); margin-top: 0;"></h2>
-        <p id="footer-desc" style="font-size: 0.85rem; line-height: 1.6; color: #475569;"></p>
-        <hr style="border: 0; border-top: 1px solid var(--border); margin: 20px 0;">
-        <p id="recommend-text" style="font-size: 0.75rem; color: #64748b; margin-bottom: 12px; text-align: center; font-weight: bold;"></p>
-        <div class="nav-grid">
-            <a href="../img-pdf/" class="nav-item">🖼️ PDF</a>
-            <a href="../resize/" class="nav-item">↔️ Resize</a>
-            <a href="../" id="nav-all" class="nav-item" style="background: #f1f5f9; font-weight: bold;">🏠</a>
+        <div class="tool-info">
+            <h2 id="footer-h2"></h2>
+            <p id="footer-desc"></p>
+            <p style="font-size:0.75rem; color:#64748b; margin-bottom:10px; text-align:center;" id="recommend-text"></p>
+            <div class="nav-grid">
+                <a href="../img-pdf/" class="nav-item">🖼️ PDF</a>
+                <a href="../resize/" class="nav-item">↔️ Resize</a>
+                <a href="../" class="nav-item" id="nav-back">🏠</a>
+            </div>
         </div>
     </div>
 
@@ -118,158 +86,71 @@
         &copy; 2026 Secure Toolkit
     </footer>
 
-    <script>
-        let currentLang = 'ja';
-        let t = {}; // 翻訳データ保持用
-        let filesArray = [];
+<script>
+    let filesArray = [];
+    let currentLang = 'ja';
+    let t = {};
 
-        async function initI18n() {
-            try {
-                // 階層が深いので ../asset/ を指定
-                const response = await fetch('../assets/i18n-tools.json');
-                const i18nData = await response.json();
-                
-                const lang = (navigator.language || navigator.userLanguage).split('-')[0];
-                currentLang = ['ja', 'en', 'zh'].includes(lang) ? lang : 'en';
-                
-                const toolData = i18nData["zip"];
-                
-                const common = {
-                    ja: { home: "🏠 ツール一覧", back: "🏠 ホーム", all: "🏠 一覧へ", recommend: "こちらのツールもおすすめ", processing: "⚡ 圧縮中...", done: "✅ 作成が完了しました！", error: "❌ エラーが発生しました", drop: "➕ ファイルを選択 または ドロップ", fname: "保存ファイル名", comp: "圧縮レベル", low: "低圧縮 (高速)", mid: "標準 (推奨)", high: "最高圧縮 (低速)", btn: "ZIPを作成して保存", install: "📲 保存" },
-                    en: { home: "🏠 All Tools", back: "🏠 Home", all: "🏠 All Tools", recommend: "Recommended Tools", processing: "⚡ Compressing...", done: "✅ ZIP created successfully!", error: "❌ An error occurred", drop: "➕ Select or Drop Files", fname: "Output Filename", comp: "Compression Level", low: "Low (Fast)", mid: "Standard (Recommended)", high: "High (Slow)", btn: "Create & Save ZIP", install: "📲 Save" },
-                    zh: { home: "🏠 工具列表", back: "🏠 首页", all: "🏠 返回列表", recommend: "推荐工具", processing: "⚡ 正在压缩...", done: "✅ 制作完成！", error: "❌ 发生错误", drop: "➕ 选择文件 或 拖放至此", fname: "保存文件名", comp: "压缩等级", low: "低压缩 (快速)", mid: "标准 (推荐)", high: "最高压缩 (慢速)", btn: "生成并保存 ZIP", install: "📲 保存" }
-                }[currentLang];
+    async function initI18n() {
+        try {
+            // パスを確認（asset または assets）
+            const response = await fetch('../asset/i18n-tools.json');
+            if (!response.ok) throw new Error('JSON load failed');
+            const i18nData = await response.json();
+            
+            const lang = (navigator.language || navigator.userLanguage).split('-')[0];
+            currentLang = ['ja', 'en', 'zh'].includes(lang) ? lang : 'en';
+            
+            const toolData = i18nData["zip"];
+            const common = {
+                ja: { home: "🏠 ツール一覧", back: "🏠 ホーム", recommend: "こちらのツールもおすすめ", processing: "⏳ 圧縮中...", done: "✅ 完了しました！", error: "❌ エラーが発生しました。", drop: "➕ ファイルを選択・ドロップ", btn: "ZIPを作成して保存", safe: "<strong>一括処理も安全:</strong> サーバーへの送信なし。ブラウザ内ですべてのファイルを圧縮します。" },
+                en: { home: "🏠 All Tools", back: "🏠 Home", recommend: "Recommended Tools", processing: "⏳ Compressing...", done: "✅ Complete!", error: "❌ An error occurred.", drop: "➕ Select or Drop Files", btn: "Create ZIP & Save", safe: "<strong>Safe Batch Processing:</strong> No server upload. All files are compressed within your browser." },
+                zh: { home: "🏠 工具列表", back: "🏠 首页", recommend: "推荐工具", processing: "⏳ 压缩中...", done: "✅ 完成！", error: "❌ 发生错误。", drop: "➕ 选择或拖放文件", btn: "创建 ZIP 并保存", safe: "<strong>批量处理更安全:</strong> 无需上传服务器。所有文件均在浏览器内完成压缩。" }
+            }[currentLang];
 
-                t = { ...toolData, ...common };
+            t = { ...common, ...toolData };
 
-                // UI反映
-                document.title = t.seo_title[currentLang];
-                document.getElementById('meta-desc').content = t.meta_desc[currentLang];
-                document.getElementById('header-title').innerText = t.top_name[currentLang];
-                document.getElementById('main-h1').innerText = t.emoji + " " + t.name[currentLang];
-                document.getElementById('info-text').innerHTML = `<strong>${currentLang === 'ja' ? 'サーバー送信なし' : 'No Upload'}:</strong> ${t.meta_desc[currentLang]}`;
-                document.getElementById('drop-text').innerText = t.drop;
-                document.getElementById('label-filename').innerText = t.fname;
-                document.getElementById('label-comp').innerText = t.comp;
-                document.getElementById('opt-low').innerText = t.low;
-                document.getElementById('opt-mid').innerText = t.mid;
-                document.getElementById('opt-high').innerText = t.high;
-                document.getElementById('zip-btn').innerText = t.btn;
-                document.getElementById('footer-h2').innerText = t.footer_desc[currentLang].split('\n')[0];
-                document.getElementById('footer-desc').innerText = t.footer_desc[currentLang].split('\n')[1];
-                document.getElementById('recommend-text').innerText = t.recommend;
-                document.getElementById('nav-home').innerText = t.home;
-                document.getElementById('nav-all').innerText = t.all;
-                document.getElementById('install-btn').innerText = t.install;
+            // UI反映（エラー防止のため存在チェック付き）
+            document.title = (t.seo_title && t.seo_title[currentLang]) || "Secure ZIP";
+            const metaTag = document.getElementById('meta-desc');
+            if(metaTag && t.meta_description) metaTag.content = t.meta_description[currentLang];
 
-            } catch (err) {
-                console.error("i18n Load Error:", err);
+            document.getElementById('nav-home').innerText = t.home;
+            document.getElementById('nav-back').innerText = t.back;
+            document.getElementById('header-title').innerText = (t.top_name && t.top_name[currentLang]) || "ZIP";
+            document.getElementById('main-h1').innerText = (t.emoji || "📦") + " " + ((t.name && t.name[currentLang]) || "ZIP Tool");
+            document.getElementById('safe-msg').innerHTML = t.safe;
+            
+            const dropZone = document.getElementById('drop-text');
+            dropZone.innerHTML = t.drop + '<input type="file" id="file-input" multiple style="display:none" onchange="handleFiles(this.files)">';
+            
+            document.getElementById('process-btn').innerText = t.btn;
+            document.getElementById('recommend-text').innerText = t.recommend;
+
+            if (t.footer_desc && t.footer_desc[currentLang]) {
+                const parts = t.footer_desc[currentLang].split('\n');
+                document.getElementById('footer-h2').innerText = parts[0];
+                document.getElementById('footer-desc').innerText = parts[1] || "";
             }
+
+        } catch (err) {
+            console.error("i18n Load Error:", err);
         }
+    }
 
-        window.onload = () => {
-            initI18n();
-            const n = new Date();
-            const ts = `${n.getFullYear()}${String(n.getMonth()+1).padStart(2,'0')}${String(n.getDate()).padStart(2,'0')}_${String(n.getHours()).padStart(2,'0')}${String(n.getMinutes()).padStart(2,'0')}`;
-            document.getElementById('zip-name').value = `archive_${ts}`;
-        };
+    function handleFiles(files) {
+        filesArray = [...filesArray, ...Array.from(files)];
+        updateList();
+    }
 
-        // --- ZIP ロジック (filesArray 等は元のコードを継承) ---
-        const dz = document.getElementById('drop-zone');
-        dz.addEventListener('dragover', (e) => { e.preventDefault(); dz.style.background = "#f0fdf4"; });
-        dz.addEventListener('dragleave', () => { dz.style.background = "#fff"; });
-        dz.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dz.style.background = "#fff";
-            handleFiles(e.dataTransfer.files);
+    function updateList() {
+        const list = document.getElementById('file-list');
+        const btn = document.getElementById('process-btn');
+        list.innerHTML = '';
+        filesArray.forEach((file, index) => {
+            const li = document.createElement('li');
+            li.className = 'file-item';
+            li.innerHTML = `<span class="file-name">${file.name}</span><button style="color:#ef4444;border:none;background:none;margin-left:auto;cursor:pointer;" onclick="removeItem(${index})">✕</button>`;
+            list.appendChild(li);
         });
-
-        async function handleFiles(files) {
-            for (let file of files) {
-                const thumb = file.type.startsWith('image/') ? await createThumb(file) : null;
-                filesArray.push({ file, thumb, id: Date.now() + Math.random() });
-            }
-            updateList();
-        }
-
-        function createThumb(file) {
-            return new Promise(res => {
-                const reader = new FileReader();
-                reader.onload = (e) => res(e.target.result);
-                reader.readAsDataURL(file);
-            });
-        }
-
-        function updateList() {
-            const list = document.getElementById('file-list');
-            const btn = document.getElementById('zip-btn');
-            list.innerHTML = '';
-            filesArray.forEach((item, index) => {
-                const div = document.createElement('div');
-                div.className = 'file-item';
-                const thumbImg = item.thumb ? `<img src="${item.thumb}" class="thumb">` : `<div class="thumb" style="display:flex;align-items:center;justify-content:center;font-size:1.2rem;">📄</div>`;
-                div.innerHTML = `
-                    ${thumbImg}
-                    <div class="file-info">
-                        <span class="file-name">${item.file.name}</span>
-                    </div>
-                    <div class="sort-controls">
-                        <button class="sort-btn" onclick="move(${index}, -1)">↑</button>
-                        <button class="sort-btn" onclick="move(${index}, 1)">↓</button>
-                    </div>
-                    <button class="remove-btn" onclick="removeFile(${index})">✕</button>
-                `;
-                list.appendChild(div);
-            });
-            btn.disabled = filesArray.length === 0;
-        }
-
-        function move(index, step) {
-            const target = index + step;
-            if (target < 0 || target >= filesArray.length) return;
-            const temp = filesArray[index];
-            filesArray[index] = filesArray[target];
-            filesArray[target] = temp;
-            updateList();
-        }
-
-        function removeFile(index) {
-            filesArray.splice(index, 1);
-            updateList();
-        }
-
-        async function generateZip() {
-            const zip = new JSZip();
-            const btn = document.getElementById('zip-btn');
-            const status = document.getElementById('status-msg');
-            const level = parseInt(document.getElementById('comp-level').value);
-            btn.disabled = true;
-            status.innerText = t.processing;
-            try {
-                filesArray.forEach(item => {
-                    zip.file(item.file.name, item.file, { binary: true });
-                });
-                const content = await zip.generateAsync({
-                    type: "blob",
-                    compression: "DEFLATE",
-                    compressionOptions: { level: level }
-                });
-                let zipName = document.getElementById('zip-name').value.trim() || "archive";
-                zipName = zipName.replace(/[\\/:*?"<>|]/g, '_'); 
-                if (!zipName.toLowerCase().endsWith('.zip')) zipName += '.zip';
-                
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(content);
-                link.download = zipName;
-                link.click();
-                status.innerHTML = t.done;
-            } catch (e) {
-                status.innerText = t.error;
-                console.error(e);
-            } finally {
-                btn.disabled = false;
-            }
-        }
-    </script>
-</body>
-</html>
+        btn.disabled = filesArray
