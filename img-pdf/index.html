@@ -12,8 +12,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
-    <title id="meta-title">セキュア画像PDF変換｜Secure Toolkit - 登録不要でJPGをPDF化</title>
-    <meta name="description" id="meta-desc" content="JPG/PNG画像をブラウザ内で安全にPDFへ変換。ファイルは一切送信されないため、プライバシーも万全です。">
+    <title id="meta-title">Secure Toolkit</title>
+    <meta name="description" id="meta-desc" content="">
 
     <link rel="icon" href="../icon-512.png" type="image/png">
     <link rel="apple-touch-icon" href="../icon-512.png">
@@ -22,9 +22,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root { 
-            --primary: #e11d48; 
-            --primary-hover: #be123c; 
-            --bg: #fff1f2; 
+            --primary: #2563eb; 
+            --primary-hover: #1d4ed8; 
+            --bg: #eff6ff; 
             --card-bg: #ffffff; 
             --text: #1e293b; 
             --border: #e2e8f0; 
@@ -213,56 +213,52 @@
         #status-msg { margin-top: 15px; text-align: center; font-weight: bold; min-height: 1.2rem; }
     </style>
 </head>
-<body>
+<body data-tool-key="pdf">
 
     <header class="app-header">
-        <a href="../" class="back-btn" id="nav-home">🏠 ツール一覧</a>
-        <div style="flex:1; text-align:center; font-weight:bold; margin-left: 10px;" id="header-title">画像PDF変換</div>
+        <a href="../" class="back-btn" id="nav-home"></a>
+        <div style="flex:1; text-align:center; font-weight:bold; margin-left: 10px;" id="header-title"></div>
         <button id="install-btn">📲 保存</button>
     </header>
 
     <div class="container">
-        <h1 style="font-size: 1.3rem; margin-bottom: 20px; text-align:center;" id="main-h1">🖼️ 画像をPDFに変換</h1>
+        <h1 style="font-size: 1.3rem; margin-bottom: 20px; text-align:center;" id="main-h1"></h1>
         
         <div class="info-box">
             <span>🔒</span>
-            <div style="margin-left:8px;" id="safe-msg">
-                <strong>サーバー送信なし:</strong> 処理はすべてブラウザ内で完結。外部にデータが漏れる心配はありません。
-            </div>
+            <div style="margin-left:8px;" id="safe-msg"></div>
         </div>
         
         <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()">
-            <div id="drop-text">➕ 画像を選択 または ドロップ</div>
+            <div id="drop-text"></div>
             <input type="file" id="file-input" multiple accept="image/*" style="display:none" onchange="handleFiles(this.files)">
         </div>
 
         <ul id="file-list"></ul>
 
         <div class="config-card">
-            <label id="label-filename">保存ファイル名</label>
-            <input type="text" id="pdf-name" placeholder="ファイル名を入力">
+            <label id="label-filename"></label>
+            <input type="text" id="pdf-name" placeholder="">
             
-            <label id="label-quality">画質設定</label>
+            <label id="label-quality"></label>
             <select id="quality">
-                <option value="0.7" id="opt-standard" selected>標準 (推奨)</option>
-                <option value="1.0" id="opt-high">最高画質 (ファイル大)</option>
-                <option value="0.4" id="opt-low">圧縮優先 (ファイル小)</option>
+                <option value="0.7" id="opt-standard" selected></option>
+                <option value="1.0" id="opt-high"></option>
+                <option value="0.4" id="opt-low"></option>
             </select>
         </div>
 
-        <button id="convert-btn" class="main-btn" onclick="generatePDF()" disabled>PDFを作成して保存</button>
+        <button id="convert-btn" class="main-btn" onclick="generatePDF()" disabled></button>
         <div id="status-msg"></div>
     </div>
 
     <div class="tool-info">
-        <h2 style="font-size: 1.1rem; color: var(--primary); margin-top: 0;" id="footer-h2">🔒 画像データは外に出しません</h2>
-        <p style="font-size: 0.85rem; line-height: 1.6; color: #475569;" id="footer-desc">
-            撮影した写真やスキャン画像をブラウザ内でPDFに変換。サーバーにアップロードする待ち時間もなく、即座にダウンロード可能です。
-        </p>
+        <h2 style="font-size: 1.1rem; color: #2563eb; margin-top: 0;" id="footer-h2"></h2>
+        <p style="font-size: 0.85rem; line-height: 1.6; color: #475569;" id="footer-desc"></p>
         
         <hr style="border: 0; border-top: 1px solid var(--border); margin: 20px 0;">
         
-        <p style="font-size: 0.75rem; color: #64748b; margin-bottom: 12px; text-align: center; font-weight: bold;" id="recommend-text">こちらのツールもおすすめ</p>
+        <p style="font-size: 0.75rem; color: #64748b; margin-bottom: 12px; text-align: center; font-weight: bold;" id="recommend-text"></p>
         <div class="nav-grid">
             <a href="../zip/" class="nav-item">📦 ZIP</a>
             <a href="../resize/" class="nav-item">↔️ Resize</a>
@@ -275,129 +271,79 @@
     </footer>
 
     <script>
-        const i18n = {
-            ja: {
-                title: "セキュア画像PDF変換｜Secure Toolkit - 登録不要でJPGをPDF化",
-                desc: "JPG/PNG画像をブラウザ内で安全にPDFへ変換。ファイルは一切送信されないため、プライバシーも万全です。",
-                navHome: "🏠 ツール一覧",
-                headerTitle: "画像PDF変換",
-                mainH1: "🖼️ 画像をPDFに変換",
-                safeMsg: "<strong>サーバー送信なし:</strong> 処理はすべてブラウザ内で完結。外部にデータが漏れる心配はありません。",
-                dropText: "➕ 画像を選択 または ドロップ",
-                labelFilename: "保存ファイル名",
-                labelQuality: "画質設定",
-                optStandard: "標準 (推奨)",
-                optHigh: "最高画質 (ファイル大)",
-                optLow: "圧縮優先 (ファイル小)",
-                convertBtn: "PDFを作成して保存",
-                processing: "⏳ 作成中...",
-                done: "✅ 完了しました！",
-                error: "❌ エラーが発生しました。",
-                footerH2: "🔒 画像データは外に出しません",
-                footerDesc: "撮影した写真やスキャン画像をブラウザ内でPDFに変換。サーバーにアップロードする待ち時間もなく、即座にダウンロード可能です。",
-                recommend: "こちらのツールもおすすめ",
-                navBack: "🏠 一覧へ"
-            },
-            en: {
-                title: "Secure Image to PDF | No Upload, Convert JPG/PNG Safely",
-                desc: "Convert images to PDF safely in your browser. No files are uploaded, ensuring complete privacy.",
-                navHome: "🏠 All Tools",
-                headerTitle: "Image to PDF",
-                mainH1: "🖼️ Convert Image to PDF",
-                safeMsg: "<strong>No Server Upload:</strong> Everything is processed in your browser. No risks of data leakage.",
-                dropText: "➕ Select or Drop Images",
-                labelFilename: "Output Filename",
-                labelQuality: "Quality Setting",
-                optStandard: "Standard (Recommended)",
-                optHigh: "High Quality (Large File)",
-                optLow: "Compress (Small File)",
-                convertBtn: "Create & Save PDF",
-                processing: "⏳ Creating...",
-                done: "✅ Completed successfully!",
-                error: "❌ An error occurred.",
-                footerH2: "🔒 Your images stay on your device",
-                footerDesc: "Convert photos or scanned images to PDF within your browser. No waiting for uploads, download instantly.",
-                recommend: "Recommended Tools",
-                navBack: "🏠 Home"
-            },
-            zh: {
-                title: "安全图像转PDF | 无需注册，本地极速转换",
-                desc: "在浏览器内将JPG/PNG安全地转换为PDF。文件不经过服务器，完全保护隐私。",
-                navHome: "🏠 工具列表",
-                headerTitle: "图像转PDF",
-                mainH1: "🖼️ 图像转换为PDF",
-                safeMsg: "<strong>无需上传服务器:</strong> 所有处理均在浏览器内完成。无需担心隐私泄露。",
-                dropText: "➕ 选择或拖放图像",
-                labelFilename: "保存文件名",
-                labelQuality: "画质设置",
-                optStandard: "标准 (推荐)",
-                optHigh: "最高画质 (文件大)",
-                optLow: "压缩优先 (文件小)",
-                convertBtn: "创建并保存PDF",
-                processing: "⏳ 正在生成...",
-                done: "✅ 完成！",
-                error: "❌ 发生错误。",
-                footerH2: "🔒 图像数据不外传",
-                footerDesc: "在浏览器内将照片或扫描图像转换为PDF。无需等待上传，即可立即下载。",
-                recommend: "推荐工具",
-                navBack: "🏠 列表"
-            }
-        };
-
         let currentLang = 'ja';
+        let i18nData = null;
+        let filesArray = [];
 
-        function applyLanguage() {
-            const lang = (navigator.language || navigator.userLanguage).split('-')[0];
-            currentLang = i18n[lang] ? lang : 'en';
-            const t = i18n[currentLang];
+        // 共通翻訳と個別データの統合
+        async function initI18n() {
+            try {
+                const response = await fetch('../i18n-tools.json');
+                i18nData = await response.json();
+                
+                const lang = (navigator.language || navigator.userLanguage).split('-')[0];
+                currentLang = ['ja', 'en', 'zh'].includes(lang) ? lang : 'en';
+                
+                const toolKey = document.body.getAttribute('data-tool-key');
+                const t = i18nData[toolKey];
+                
+                const common = {
+                    ja: { home: "🏠 ツール一覧", back: "🏠 ホーム", recommend: "こちらのツールもおすすめ", processing: "⏳ 作成中...", done: "✅ 完了しました！", error: "❌ エラーが発生しました。", drop: "➕ 画像を選択 または ドロップ", fname: "保存ファイル名", quality: "画質設定", q1: "標準 (推奨)", q2: "最高画質 (ファイル大)", q3: "圧縮優先 (ファイル小)", btn: "PDFを作成して保存" },
+                    en: { home: "🏠 All Tools", back: "🏠 Home", recommend: "Recommended Tools", processing: "⏳ Creating...", done: "✅ Completed!", error: "❌ Error occurred.", drop: "➕ Select or Drop Images", fname: "Output Filename", quality: "Quality Setting", q1: "Standard (Recommended)", q2: "High Quality (Large)", q3: "Compress (Small)", btn: "Create & Save PDF" },
+                    zh: { home: "🏠 工具列表", back: "🏠 首页", recommend: "推荐工具", processing: "⏳ 正在生成...", done: "✅ 完成！", error: "❌ 发生错误。", drop: "➕ 选择或拖放图像", fname: "保存文件名", quality: "画质设置", q1: "标准 (推荐)", q2: "最高画质 (文件大)", q3: "压缩优先 (文件小)", btn: "创建并保存PDF" }
+                }[currentLang];
 
-            document.title = t.title;
-            document.getElementById('meta-title').innerText = t.title;
-            document.getElementById('meta-desc').setAttribute('content', t.desc);
-            document.getElementById('nav-home').innerText = t.navHome;
-            document.getElementById('header-title').innerText = t.headerTitle;
-            document.getElementById('main-h1').innerText = t.mainH1;
-            document.getElementById('safe-msg').innerHTML = t.safeMsg;
-            document.getElementById('drop-text').innerText = t.dropText;
-            document.getElementById('label-filename').innerText = t.labelFilename;
-            document.getElementById('label-quality').innerText = t.labelQuality;
-            document.getElementById('opt-standard').innerText = t.optStandard;
-            document.getElementById('opt-high').innerText = t.optHigh;
-            document.getElementById('opt-low').innerText = t.optLow;
-            document.getElementById('convert-btn').innerText = t.convertBtn;
-            document.getElementById('footer-h2').innerText = t.footerH2;
-            document.getElementById('footer-desc').innerText = t.footerDesc;
-            document.getElementById('recommend-text').innerText = t.recommend;
-            document.getElementById('nav-back').innerText = t.navBack;
+                // UIの反映
+                document.title = t.seo_title[currentLang];
+                document.getElementById('meta-title').innerText = t.seo_title[currentLang];
+                document.getElementById('meta-desc').setAttribute('content', t.meta_desc[currentLang]);
+                document.getElementById('nav-home').innerText = common.home;
+                document.getElementById('header-title').innerText = t.top_name[currentLang];
+                document.getElementById('main-h1').innerText = t.emoji + " " + t.name[currentLang];
+                document.getElementById('safe-msg').innerHTML = `<strong>${currentLang === 'ja' ? 'サーバー送信なし' : (currentLang === 'zh' ? '无需上传服务器' : 'No Upload')}:</strong> ${t.meta_desc[currentLang]}`;
+                document.getElementById('drop-text').innerText = common.drop;
+                document.getElementById('label-filename').innerText = common.fname;
+                document.getElementById('label-quality').innerText = common.quality;
+                document.getElementById('opt-standard').innerText = common.q1;
+                document.getElementById('opt-high').innerText = common.q2;
+                document.getElementById('opt-low').innerText = common.q3;
+                document.getElementById('convert-btn').innerText = common.btn;
+                
+                const footerParts = t.footer_desc[currentLang].split('\n');
+                document.getElementById('footer-h2').innerText = footerParts[0];
+                document.getElementById('footer-desc').innerText = footerParts[1];
+                document.getElementById('recommend-text').innerText = common.recommend;
+                document.getElementById('nav-back').innerText = common.back;
+
+                window.statusMsg = common;
+            } catch (err) {
+                console.error("i18n Load Error:", err);
+            }
         }
 
-        // PWAインストール制御
+        // PWA Install
         let deferredPrompt;
-        const installBtn = document.getElementById('install-btn');
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            installBtn.style.display = 'block';
+            document.getElementById('install-btn').style.display = 'block';
         });
-        installBtn.addEventListener('click', async () => {
+        document.getElementById('install-btn').addEventListener('click', async () => {
             if (deferredPrompt) {
                 deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') installBtn.style.display = 'none';
                 deferredPrompt = null;
             }
         });
 
-        let filesArray = [];
         window.onload = () => {
-            applyLanguage();
+            initI18n();
             const now = new Date();
-            const dateStr = now.getFullYear() + ('0' + (now.getMonth() + 1)).slice(-2) + ('0' + now.getDate()).slice(-2);
-            document.getElementById('pdf-name').value = "PDF_" + dateStr;
+            document.getElementById('pdf-name').value = "PDF_" + now.getFullYear() + ('0' + (now.getMonth() + 1)).slice(-2) + ('0' + now.getDate()).slice(-2);
         };
 
+        // File Logic
         const dz = document.getElementById('drop-zone');
-        dz.addEventListener('dragover', (e) => { e.preventDefault(); dz.style.background = "#fff1f2"; });
+        dz.addEventListener('dragover', (e) => { e.preventDefault(); dz.style.background = "#eff6ff"; });
         dz.addEventListener('dragleave', () => { dz.style.background = "#fff"; });
         dz.addEventListener('drop', (e) => {
             e.preventDefault();
@@ -412,46 +358,32 @@
         
         function updateList() {
             const list = document.getElementById('file-list');
-            const btn = document.getElementById('convert-btn');
             list.innerHTML = '';
             filesArray.forEach((file, index) => {
                 const li = document.createElement('li');
                 li.className = 'file-item';
-                li.innerHTML = `
-                    <span class="page-num">${index+1}P</span>
-                    <span class="file-name">${file.name}</span>
-                    <div class="controls">
-                        ${filesArray.length > 1 ? `
-                            <button class="btn-sm" onclick="moveItem(${index}, -1)">↑</button>
-                            <button class="btn-sm" onclick="moveItem(${index}, 1)">↓</button>
-                        ` : ''}
-                        <button class="btn-sm" style="color:#ef4444; border:none; background:transparent; cursor:pointer;" onclick="removeItem(${index})">✕</button>
-                    </div>
-                `;
+                li.innerHTML = `<span class="page-num">${index+1}P</span><span class="file-name">${file.name}</span><div class="controls">${filesArray.length > 1 ? `<button class="btn-sm" onclick="moveItem(${index}, -1)">↑</button><button class="btn-sm" onclick="moveItem(${index}, 1)">↓</button>` : ''}<button class="btn-sm" style="color:#ef4444; border:none; background:transparent;" onclick="removeItem(${index})">✕</button></div>`;
                 list.appendChild(li);
             });
-            btn.disabled = filesArray.length === 0;
+            document.getElementById('convert-btn').disabled = filesArray.length === 0;
         }
 
-        function moveItem(index, direction) {
-            const newIndex = index + direction;
+        function moveItem(index, dir) {
+            const newIndex = index + dir;
             if (newIndex >= 0 && newIndex < filesArray.length) {
                 [filesArray[index], filesArray[newIndex]] = [filesArray[newIndex], filesArray[index]];
                 updateList();
             }
         }
-
         function removeItem(index) { filesArray.splice(index, 1); updateList(); }
 
         async function generatePDF() {
-            const t = i18n[currentLang];
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             const btn = document.getElementById('convert-btn');
             const status = document.getElementById('status-msg');
             btn.disabled = true; 
-            status.innerText = t.processing;
-            status.style.color = "var(--primary)";
+            status.innerText = window.statusMsg.processing;
 
             try {
                 for (let i = 0; i < filesArray.length; i++) {
@@ -459,17 +391,15 @@
                     const imgProps = doc.getImageProperties(imgData);
                     const pdfWidth = doc.internal.pageSize.getWidth();
                     const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-                    
                     if (i > 0) doc.addPage();
                     doc.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
                 }
                 let pdfName = document.getElementById('pdf-name').value.trim() || "document";
                 if (!pdfName.toLowerCase().endsWith('.pdf')) pdfName += '.pdf';
                 doc.save(pdfName);
-                status.innerHTML = `<span style="color:#059669">${t.done}</span>`;
+                status.innerHTML = `<span style="color:#059669">${window.statusMsg.done}</span>`;
             } catch (e) { 
-                status.innerText = t.error; 
-                console.error(e);
+                status.innerText = window.statusMsg.error; 
             } finally { 
                 btn.disabled = false; 
             }
@@ -482,8 +412,7 @@
                     const img = new Image();
                     img.onload = () => {
                         const canvas = document.createElement('canvas');
-                        canvas.width = img.width; 
-                        canvas.height = img.height;
+                        canvas.width = img.width; canvas.height = img.height;
                         const ctx = canvas.getContext('2d'); 
                         ctx.drawImage(img, 0, 0);
                         resolve(canvas.toDataURL('image/jpeg', quality));
