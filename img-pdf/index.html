@@ -244,7 +244,7 @@
         async function initI18n() {
             try {
                 // パスの確認（asset）
-                const response = await fetch('../asset/i18n-tools.json');
+                const response = await fetch('../assets/i18n-tools.json');
                 const i18nData = await response.json();
                 
                 const lang = (navigator.language || navigator.userLanguage).split('-')[0];
