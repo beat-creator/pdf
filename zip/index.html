@@ -11,13 +11,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
-    <title id="page-title">セキュア一括ZIP圧縮｜Secure Toolkit</title>
+    <title id="page-title">Loading...</title>
     <meta name="description" id="meta-desc" content="">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
         :root { 
-            --primary: #059669; /* ZIPは緑系を維持 */
+            --primary: #059669; 
             --primary-hover: #047857; 
             --bg: #ecfdf5; 
             --card-bg: #ffffff;
@@ -65,7 +65,7 @@
             <div style="margin-left:8px;" id="safe-msg"></div>
         </div>
         
-        <div class="drop-zone" onclick="document.getElementById('file-input').click()" id="drop-text-wrapper">
+        <div class="drop-zone" onclick="document.getElementById('file-input').click()" id="drop-area">
             <span id="drop-text"></span>
             <input type="file" id="file-input" multiple style="display:none" onchange="handleFiles(this.files)">
         </div>
@@ -74,7 +74,7 @@
 
         <div class="config-card">
             <label id="label-name"></label>
-            <input type="text" id="zip-name" placeholder="archive">
+            <input type="text" id="zip-name">
             
             <label id="label-comp"></label>
             <select id="comp-level">
@@ -94,7 +94,7 @@
             <div class="nav-grid">
                 <a href="../resize/" class="nav-item">↔️ Resize</a>
                 <a href="../img-pdf/" class="nav-item">🖼️ PDF</a>
-                <a href="../" class="nav-item" id="nav-back">🏠</a>
+                <a href="../" class="nav-item" id="nav-back">🏠 Home</a>
             </div>
         </div>
     </div>
@@ -106,7 +106,8 @@
 <script>
     let filesArray = [];
     let currentLang = 'ja';
-    let t = {};
+    let t = {}; // 翻訳データ
+    let labels = {}; // 共通ラベル
 
     async function initI18n() {
         try {
@@ -116,31 +117,113 @@
             const lang = (navigator.language || navigator.userLanguage).split('-')[0];
             currentLang = ['ja', 'en', 'zh'].includes(lang) ? lang : 'en';
             
-            // ZIP用のデータ取得
-            const toolData = i18nData["zip"];
+            // JSONからZIP用のデータを抽出
+            t = i18nData["zip"];
+            
+            // 共通ラベル（もしJSONに共通セクションがあればそこから、なければフォールバック）
             const common = {
-                ja: { home: "🏠 ツール一覧", back: "🏠 ホーム", recommend: "こちらのツールもおすすめ", processing: "⏳ 圧縮中...", done: "✅ 完了しました！", error: "❌ エラーが発生しました。", drop: "➕ ファイルを選択・ドロップ", label_name: "保存ファイル名", label_comp: "圧縮レベル", opt_low: "低圧縮 (高速)", opt_mid: "標準 (推奨)", opt_high: "最高圧縮 (低速)", btn: "ZIPを作成して保存", safe: "<strong>ブラウザ内処理:</strong> サーバーへの送信なし。プライバシーを守ったまま一括圧縮します。" },
-                en: { home: "🏠 All Tools", back: "🏠 Home", recommend: "Recommended Tools", processing: "⏳ Compressing...", done: "✅ Done!", error: "❌ Error occurred.", drop: "➕ Select or Drop Files", label_name: "Archive Name", label_comp: "Compression Level", opt_low: "Low (Fast)", opt_mid: "Standard", opt_high: "High (Slow)", btn: "Create ZIP & Save", safe: "<strong>Local Processing:</strong> No server upload. Compress files privately in your browser." },
-                zh: { home: "🏠 工具列表", back: "🏠 首页", recommend: "推荐工具", processing: "⏳ 压缩中...", done: "✅ 完成！", error: "❌ 发生错误。", drop: "➕ 选择或拖放文件", label_name: "保存文件名", label_comp: "压缩级别", opt_low: "低 (快)", opt_mid: "标准", opt_high: "最高 (慢)", btn: "创建 ZIP 并保存", safe: "<strong>浏览器内处理:</strong> 無需上傳服务器。在本地安全地批量压缩文件。" }
+                ja: { home: "🏠 ツール一覧", back: "🏠 ホーム", recommend: "こちらのツールもおすすめ", processing: "⏳ 圧縮中...", done: "✅ 完了しました！", error: "❌ エラーが発生しました。" },
+                en: { home: "🏠 All Tools", back: "🏠 Home", recommend: "Recommended Tools", processing: "⏳ Compressing...", done: "✅ Done!", error: "❌ Error occurred." },
+                zh: { home: "🏠 工具列表", back: "🏠 首页", recommend: "推荐工具", processing: "⏳ 压缩中...", done: "✅ 完成！", error: "❌ 发生错误。" }
             }[currentLang];
+            labels = common;
 
-            t = { ...toolData, ...common };
-
-            // UI反映
+            // UI反映（JSONデータを優先的に使用）
             document.title = t.seo_title[currentLang];
             document.getElementById('meta-desc').content = t.meta_description[currentLang];
-            document.getElementById('nav-home').innerText = t.home;
-            document.getElementById('nav-back').innerText = t.back;
+            document.getElementById('nav-home').innerText = labels.home;
+            document.getElementById('nav-back').innerText = labels.back;
             document.getElementById('header-title').innerText = t.top_name[currentLang];
             document.getElementById('main-h1').innerText = t.emoji + " " + t.name[currentLang];
-            document.getElementById('safe-msg').innerHTML = t.safe;
-            document.getElementById('drop-text').innerText = t.drop;
-            document.getElementById('label-name').innerText = t.label_name;
-            document.getElementById('label-comp').innerText = t.label_comp;
-            document.getElementById('opt-low').innerText = t.opt_low;
-            document.getElementById('opt-mid').innerText = t.opt_mid;
-            document.getElementById('opt-high').innerText = t.opt_high;
-            document.getElementById('process-btn').innerText = t.btn;
+            
+            // ZIP固有のラベル流し込み
+            const z = t.labels ? t.labels[currentLang] : {};
+            document.getElementById('safe-msg').innerHTML = z.safe || "<strong>ブラウザ内処理:</strong> サーバーへの送信なし。";
+            document.getElementById('drop-text').innerText = z.drop || "➕ ファイルを選択";
+            document.getElementById('label-name').innerText = z.label_name || "保存ファイル名";
+            document.getElementById('label-comp').innerText = z.label_comp || "圧縮レベル";
+            document.getElementById('opt-low').innerText = z.opt_low || "低";
+            document.getElementById('opt-mid').innerText = z.opt_mid || "標準";
+            document.getElementById('opt-high').innerText = z.opt_high || "高";
+            document.getElementById('process-btn').innerText = z.btn || "ZIPを作成";
+            
             document.getElementById('footer-h2').innerText = t.footer_desc[currentLang].split('\n')[0];
             document.getElementById('footer-desc').innerText = t.footer_desc[currentLang].split('\n')[1];
-            document.getElementById('recommend-text').innerText = t.recommend;
+            document.getElementById('recommend-text').innerText = labels.recommend;
+
+            // ファイル名初期値
+            const n = new Date();
+            const ts = n.toISOString().slice(0,10).replace(/-/g,'');
+            document.getElementById('zip-name').value = `archive_${ts}`;
+
+        } catch (err) {
+            console.error("i18n Load Error:", err);
+        }
+    }
+
+    function handleFiles(files) {
+        filesArray = [...filesArray, ...Array.from(files)];
+        updateList();
+    }
+
+    function updateList() {
+        const list = document.getElementById('file-list');
+        const btn = document.getElementById('process-btn');
+        list.innerHTML = '';
+        filesArray.forEach((file, index) => {
+            const li = document.createElement('li');
+            li.className = 'file-item';
+            li.innerHTML = `<span class="file-name">${file.name}</span><button style="color:#ef4444;border:none;background:none;margin-left:auto;cursor:pointer;" onclick="removeItem(${index})">✕</button>`;
+            list.appendChild(li);
+        });
+        btn.disabled = filesArray.length === 0;
+    }
+
+    function removeItem(index) {
+        filesArray.splice(index, 1);
+        updateList();
+    }
+
+    async function generateZip() {
+        const btn = document.getElementById('process-btn');
+        const status = document.getElementById('status-msg');
+        const level = parseInt(document.getElementById('comp-level').value);
+        const zipName = document.getElementById('zip-name').value || "archive";
+        
+        btn.disabled = true;
+        status.innerText = labels.processing;
+
+        try {
+            const zip = new JSZip();
+            filesArray.forEach(file => zip.file(file.name, file));
+            
+            const content = await zip.generateAsync({
+                type: "blob",
+                compression: "DEFLATE",
+                compressionOptions: { level: level }
+            });
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(content);
+            link.download = zipName.endsWith('.zip') ? zipName : zipName + ".zip";
+            link.click();
+            
+            status.innerHTML = `<span style="color:var(--primary)">${labels.done}</span>`;
+        } catch (e) {
+            status.innerText = labels.error;
+        } finally {
+            btn.disabled = false;
+        }
+    }
+
+    window.onload = initI18n;
+
+    // ドラッグ&ドロップ対応
+    window.addEventListener('dragover', (e) => e.preventDefault());
+    window.addEventListener('drop', (e) => {
+        e.preventDefault();
+        if (e.dataTransfer.files.length > 0) handleFiles(e.dataTransfer.files);
+    });
+</script>
+</body>
+</html>
