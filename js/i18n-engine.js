@@ -1,82 +1,83 @@
 /**
- * Secure Toolkit 多言語化エンジン (i18n)
+ * Secure Toolkit i18n Engine - Final Version
  */
 async function initI18n() {
-    // 1. URLやブラウザから言語を判定
+    // 1. 言語判定 (URL優先 > ブラウザ設定 > デフォルト日本語)
     const urlParams = new URLSearchParams(window.location.search);
-    const lang = urlParams.get('lang') || document.documentElement.lang || 'ja';
-    
-    // 2. ページの種類を判定（トップかツール個別ページか）
+    const lang = urlParams.get('lang') || (navigator.language || 'ja').split('-')[0];
     const isTopPage = document.body.classList.contains('is-top');
-    const jsonPath = isTopPage ? './assets/i18n-top.json' : './assets/i18n-tools.json';
-    const toolKey = document.body.getAttribute('data-tool-key'); // 個別ページなら 'zip' 等
-
-try {
-        let data = {};
+    
+    try {
+        let combinedData = {};
 
         if (isTopPage) {
-            // トップページの場合は、共通項目とツール詳細の両方を読み込んで結合する
+            // トップページ：2つのJSONを並列読み込みして統合
             const [resTop, resTools] = await Promise.all([
                 fetch('./assets/i18n-top.json'),
                 fetch('./assets/i18n-tools.json')
             ]);
             const dataTop = await resTop.json();
             const dataTools = await resTools.json();
-            // toolsキーの中に詳細データを結合
-            data = { ...dataTop, tools: dataTools };
+            
+            // 統合構造の作成
+            combinedData = { 
+                top: dataTop.top, 
+                tools: dataTools 
+            };
         } else {
-            // 個別ページの場合は従来通りツール詳細のみ
+            // 個別ページ：ツール用JSONのみ
             const res = await fetch('./assets/i18n-tools.json');
-            data = await res.json();
+            combinedData = await res.json();
         }
 
         const toolKey = document.body.getAttribute('data-tool-key');
 
-        // 3. 要素への流し込み
+        // 2. 要素への流し込み
         document.querySelectorAll('[data-i18n]').forEach(el => {
-            const path = el.getAttribute('data-i18n').split('.');
-            let value = data;
+            const pathKey = el.getAttribute('data-i18n');
+            const path = pathKey.split('.');
+            let target = combinedData;
 
-            // 個別ページ（isTopPageでない）かつ pathが 'tool.' で始まる場合の処理
+            // 個別ページ用のショートカット
             if (!isTopPage && toolKey && path[0] === 'tool') {
-                value = data[toolKey];
+                target = combinedData[toolKey];
                 path.shift();
             }
 
-            // パスを辿って値を取得
-            path.forEach(key => {
-                value = value ? value[key] : null;
-            });
-
-            if (value && value[lang]) {
-                const text = value[lang];
-                if (text.includes('\\n') || text.includes('\n')) {
-                    el.style.whiteSpace = 'pre-wrap';
-                    el.innerText = text.replace(/\\n/g, '\n');
+            // パスを動的に辿る (配列インデックスにも対応)
+            for (const segment of path) {
+                if (target && target[segment] !== undefined) {
+                    target = target[segment];
                 } else {
-                    el.innerText = text;
+                    target = null;
+                    break;
+                }
+            }
+
+            // 言語の適用
+            if (target && (target[lang] || target['ja'])) {
+                const text = target[lang] || target['ja'];
+                const formattedText = text.replace(/\\n/g, '\n');
+                
+                // inputやtextareaの場合はvalue、それ以外はinnerText
+                if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                    el.value = formattedText;
+                } else {
+                    el.innerText = formattedText;
                 }
             }
         });
 
-        // 4. 個別ページのSEO書き換え
-        if (!isTopPage && toolKey && data[toolKey]) {
-            const toolData = data[toolKey];
-            document.title = toolData.seo_title[lang] || toolData.seo_title['ja'];
-            const metaDesc = document.querySelector('meta[name="description"]');
-            if (metaDesc) metaDesc.setAttribute('content', toolData.meta_desc[lang]);
-        }
-
-        // 4. SEO（Title/Meta）の動的書き換え（個別ページ用）
-        if (!isTopPage && toolKey && data[toolKey]) {
-            const toolData = data[toolKey];
-            document.title = toolData.seo_title[lang] || toolData.seo_title['ja'];
-            const metaDesc = document.querySelector('meta[name="description"]');
-            if (metaDesc) metaDesc.setAttribute('content', toolData.meta_desc[lang]);
+        // 3. SEO設定 (個別ページのみ)
+        if (!isTopPage && toolKey && combinedData[toolKey]) {
+            const tool = combinedData[toolKey];
+            document.title = tool.seo_title[lang] || tool.seo_title['ja'];
+            const meta = document.querySelector('meta[name="description"]');
+            if (meta) meta.setAttribute('content', tool.meta_desc[lang] || tool.meta_desc['ja']);
         }
 
     } catch (e) {
-        console.error('i18n Error:', e);
+        console.error('i18n Engine Error:', e);
     }
 }
 
