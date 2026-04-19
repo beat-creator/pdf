@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1200"> <title>Secure PDF Merge | Secure Toolkit</title>
+    <link rel="stylesheet" href="../assets/style.css">
+    <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+</head>
+<body>
+    <header id="tool-header">
+        <h1 id="display-name"></h1>
+        <p id="display-desc"></p>
+    </header>
+
+    <main class="container">
+        <div id="drop-zone" class="drop-zone">
+            <p>PDFファイルをここにドラッグ＆ドロップ、または選択</p>
+            <input type="file" id="file-input" multiple accept=".pdf" hidden>
+            <button onclick="document.getElementById('file-input').click()" class="btn-primary">ファイルを選択</button>
+        </div>
+
+        <div id="file-list-container" style="margin-top: 20px;">
+            <ul id="file-list" class="sortable-list"></ul>
+        </div>
+
+        <div class="actions" style="margin-top: 30px; text-align: center;">
+            <button id="merge-btn" class="btn-execute" disabled>PDFを結合してダウンロード</button>
+        </div>
+    </main>
+
+    <footer id="tool-footer"></footer>
+
+    <script src="main.js"></script>
+</body>
+</html>
