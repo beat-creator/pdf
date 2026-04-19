@@ -55,4 +55,34 @@
       "zh": "🔒 大幅节省流量，极速缩放\n批量缩放照片。由于不经过服务器，您可以节省流量并保护隐私。"
     }
   }
+  "merge": {
+    "id": 4,
+    "emoji": "📑",
+    "color": { "primary": "#4f46e5", "bg": "#eef2ff" },
+    "name": { 
+      "ja": "セキュアPDF結合", 
+      "en": "Secure PDF Merge", 
+      "zh": "安全PDF合并" 
+    },
+    "top_name": { 
+      "ja": "PDF結合", 
+      "en": "PDF Merge", 
+      "zh": "PDF合并" 
+    },
+    "seo_title": {
+      "ja": "セキュアPDF結合｜Secure Toolkit - 複数のPDFをサーバーに送らず結合",
+      "en": "Secure PDF Merge｜Secure Toolkit - Combine PDFs Without Server Upload",
+      "zh": "安全PDF合并｜Secure Toolkit - 无需上传即可合并多个PDF"
+    },
+    "meta_description": {
+      "ja": "複数のPDFファイルをブラウザ上で安全に結合。データをサーバーにアップロードしないため、機密書類の整理も安心です。",
+      "en": "Merge multiple PDF files safely in your browser. No server-side processing ensures your confidential documents stay private.",
+      "zh": "在浏览器中安全地合并多个PDF文件。无需将数据上传到服务器，整理机密文档更放心。"
+    },
+    "footer_desc": {
+      "ja": "🔒 機密書類の合体も安全に\n複数のPDFを1つのファイルにまとめます。ブラウザ内で完結するため、中身を見られる心配がなく、テレワークや機密案件でも安心して使えます。",
+      "en": "🔒 Secure Document Consolidation\nCombine multiple PDFs into one. Since it runs entirely in the browser, there's no risk of data leaks, making it ideal for remote work and sensitive projects.",
+      "zh": "🔒 机密文件合并更安全\n将多个PDF文件整合为一个。由于完全在浏览器内运行，无需担心内容泄露，非常适合远程办公或处理机密案件。"
+    }
+  }
 }
