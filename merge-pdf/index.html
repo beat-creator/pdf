@@ -1,161 +1,37 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-489DX1LV2M"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-489DX1LV2M');
-    </script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    
-    <title id="page-title"></title>
-    <meta name="description" id="meta-desc" content="">
-
-    <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
-
-    <style>
-        :root { 
-            --primary: #4f46e5; /* PDF結合用のテーマカラー */
-            --primary-hover: #4338ca; 
-            --bg: #f5f3ff; 
-            --card-bg: #ffffff;
-            --text: #1e293b; 
-            --border: #e2e8f0;
-        }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-        .app-header { width: 100%; background: var(--card-bg); border-bottom: 1px solid var(--border); padding: 12px 20px; display: flex; align-items: center; position: sticky; top: 0; z-index: 100; box-sizing: border-box; }
-        .back-btn { text-decoration: none; color: var(--text); font-size: 0.85rem; font-weight: 600; background: #f1f5f9; padding: 8px 16px; border-radius: 20px; }
-
-        .container { max-width: 500px; width: 95%; background: var(--card-bg); margin: 20px 0; padding: 24px; border-radius: 24px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); box-sizing: border-box; }
-        .info-box { background: var(--bg); border-radius: 12px; padding: 12px; margin-bottom: 20px; font-size: 0.8rem; line-height: 1.5; color: var(--primary-hover); display: flex; align-items: flex-start; }
-        .drop-zone { border: 2px dashed var(--primary); border-radius: 16px; padding: 35px 20px; text-align: center; cursor: pointer; background: #fff; color: var(--primary); font-weight: bold; }
-        
-        #file-list { margin: 20px 0; padding: 0; list-style: none; width: 100%; }
-        .file-item { display: flex; align-items: center; background: #f8fafc; margin-bottom: 10px; padding: 10px; border-radius: 12px; border: 1px solid var(--border); font-size: 0.85rem; }
-        .file-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        
-        .main-btn { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 1rem; transition: 0.2s; }
-        .main-btn:disabled { background: #cbd5e1; }
-
-        .tool-info { margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border); text-align: left; }
-        .tool-info h2 { font-size: 1rem; color: var(--text); margin-bottom: 10px; }
-        .tool-info p { font-size: 0.8rem; line-height: 1.6; color: #64748b; margin-bottom: 15px; white-space: pre-wrap; }
-        .nav-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
-        .nav-item { text-decoration: none; padding: 10px; background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; font-size: 0.7rem; color: var(--text); text-align: center; }
-    </style>
-</head>
-<body data-tool-key="merge-pdf">
-
-    <header class="app-header">
-        <a href="../" class="back-btn" id="nav-home"></a>
-        <div style="flex:1; text-align:center; font-weight:bold; margin-right:80px;" id="header-title"></div>
-    </header>
-
-    <div class="container">
-        <h1 style="font-size: 1.3rem; margin-bottom: 20px; text-align:center;" id="main-h1"></h1>
-        
-        <div class="info-box">
-            <span>🛡️</span>
-            <div style="margin-left:8px;" id="safe-msg"></div>
-        </div>
-        
-        <div class="drop-zone" onclick="document.getElementById('file-input').click()" id="drop-text">
-            <input type="file" id="file-input" multiple accept=".pdf" style="display:none" onchange="handleFiles(this.files)">
-        </div>
-
-        <ul id="file-list"></ul>
-
-        <button id="process-btn" class="main-btn" onclick="mergePDFs()" disabled></button>
-        <div id="status-msg" style="margin-top:15px; text-align:center; font-weight:bold;"></div>
-
-        <div class="tool-info">
-            <h2 id="footer-h2"></h2>
-            <p id="footer-desc"></p>
-            <p style="font-size:0.75rem; color:#64748b; margin-bottom:10px; text-align:center;" id="recommend-text"></p>
-            <div class="nav-grid">
-                <a href="../zip/" class="nav-item">📦 ZIP</a>
-                <a href="../resize/" class="nav-item">↔️ RESIZE</a>
-                <a href="../" class="nav-item" id="nav-back">🏠</a>
-            </div>
-        </div>
-    </div>
-
-    <footer style="padding:20px; font-size:0.7rem; color:#94a3b8; text-align:center;">
-        &copy; 2026 Secure Toolkit
-    </footer>
-
-<script>
-    let filesArray = [];
-    let currentLang = 'ja';
-    let t = {};
-
-    async function initI18n() {
-        try {
-            const response = await fetch('../assets/i18n-tools.json');
-            const i18nData = await response.json();
-            
-            const lang = (navigator.language || navigator.userLanguage).split('-')[0];
-            currentLang = ['ja', 'en', 'zh'].includes(lang) ? lang : 'en';
-            
-            const toolData = i18nData["merge-pdf"];
-            const common = {
-                ja: { home: "🏠 ツール一覧", back: "🏠 ホーム", recommend: "こちらのツールもおすすめ", processing: "⏳ 結合中...", done: "✅ 結合が完了しました！", error: "❌ エラーが発生しました。", drop: "➕ PDFを選択・ドロップ", btn: "PDFを結合して保存", safe: "<strong>機密書類も安心:</strong> サーバーへの送信なし。すべてのPDF結合処理はブラウザ内で行われます。" },
-                en: { home: "🏠 All Tools", back: "🏠 Home", recommend: "Recommended Tools", processing: "⏳ Merging...", done: "✅ Merge complete!", error: "❌ An error occurred.", drop: "➕ Select or Drop PDFs", btn: "Merge PDFs & Save", safe: "<strong>Safe for Confidential Docs:</strong> No server upload. All PDF merging is processed within your browser." },
-                zh: { home: "🏠 工具列表", back: "🏠 首页", recommend: "推荐工具", processing: "⏳ 合并中...", done: "✅ 合并完成！", error: "❌ 发生错误。", drop: "➕ 选择或拖放PDF", btn: "合并PDF并保存", safe: "<strong>机密文档更安全:</strong> 无需上传服务器。所有PDF合并处理均在浏览器内完成。" }
-            }[currentLang];
-
-            t = { ...toolData, ...common };
-
-            // UI反映
-            document.title = t.seo_title[currentLang];
-            document.getElementById('meta-desc').content = t.meta_description[currentLang];
-            document.getElementById('nav-home').innerText = t.home;
-            document.getElementById('nav-back').innerText = t.back;
-            document.getElementById('header-title').innerText = t.top_name[currentLang];
-            document.getElementById('main-h1').innerText = t.emoji + " " + t.name[currentLang];
-            document.getElementById('safe-msg').innerHTML = t.safe;
-            document.getElementById('drop-text').insertAdjacentHTML('afterbegin', t.drop);
-            document.getElementById('process-btn').innerText = t.btn;
-            document.getElementById('footer-h2').innerText = t.footer_desc[currentLang].split('\n')[0];
-            document.getElementById('footer-desc').innerText = t.footer_desc[currentLang].split('\n')[1];
-            document.getElementById('recommend-text').innerText = t.recommend;
-
-        } catch (err) {
-            console.error("i18n Load Error:", err);
-        }
-    }
-
-    function handleFiles(files) {
-        const pdfs = Array.from(files).filter(f => f.type === 'application/pdf' || f.name.toLowerCase().endsWith('.pdf'));
-        filesArray = [...filesArray, ...pdfs];
-        updateList();
-    }
-
-    function updateList() {
-        const list = document.getElementById('file-list');
-        const btn = document.getElementById('process-btn');
-        list.innerHTML = '';
-        filesArray.forEach((file, index) => {
-            const li = document.createElement('li');
-            li.className = 'file-item';
-            li.innerHTML = `<span class="file-name">${file.name}</span><button style="color:#ef4444;border:none;background:none;margin-left:auto;cursor:pointer;" onclick="removeItem(${index})">✕</button>`;
-            list.appendChild(li);
-        });
-        // 2つ以上のファイルがあるときのみ結合可能
-        btn.disabled = filesArray.length < 2;
-    }
-
-    function removeItem(index) {
-        filesArray.splice(index, 1);
-        updateList();
-    }
-
-    async function mergePDFs() {
+async function mergePDFs() {
         const btn = document.getElementById('process-btn');
         const status = document.getElementById('status-msg');
         
         btn.disabled = true;
-        status.innerText = t
+        status.innerText = t.processing; // ← ここが書きかけでした
+
+        try {
+            const mergedPdf = await PDFLib.PDFDocument.create();
+
+            for (const file of filesArray) {
+                const arrayBuffer = await file.arrayBuffer();
+                const pdf = await PDFLib.PDFDocument.load(arrayBuffer);
+                const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+                copiedPages.forEach((page) => mergedPdf.addPage(page));
+            }
+
+            const pdfBytes = await mergedPdf.save();
+            const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `merged_${new Date().getTime()}.pdf`;
+            a.click();
+            
+            status.innerHTML = `<span style="color:#4f46e5">${t.done}</span>`;
+        } catch (e) {
+            console.error(e);
+            status.innerText = t.error;
+        } finally {
+            btn.disabled = false;
+        }
+    }
+
+    window.onload = initI18n;
+</script>
