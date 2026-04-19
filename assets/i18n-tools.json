@@ -18,7 +18,7 @@
     "footer_desc": {
       "ja": "🔒 通信量を大幅カット、爆速圧縮\n複数のファイルを一括でZIP形式にまとめます。サーバー送信がないため、機密書類の受け渡し準備も安心・安全に行えます。",
       "en": "🔒 Cut Data Usage & Fast Compression\nBatch compress files into ZIP. Since no files are sent to a server, you can prepare confidential documents safely and securely.",
-      "zh": "🔒 大幅节省流量，极速压缩\n将多个文件批量压缩为ZIP格式。由于不经过服务器処理，您可以安心地准备和传输机密文件。"
+      "zh": "🔒 大幅节省流量，极速压缩\n将多个文件批量压缩为ZIP格式。由于不经过服务器处理，您可以安心地准备和传输机密文件。"
     }
   },
   "pdf": {
@@ -44,7 +44,9 @@
     }
   },
   "resize": {
+    "id": 2,
     "emoji": "↔️",
+    "color": { "primary": "#0ea5e9", "bg": "#f0f9ff" },
     "top_name": { "ja": "画像リサイズ", "en": "Image Resizer", "zh": "图像缩放" },
     "name": { "ja": "セキュア画像リサイズ", "en": "Secure Image Resizer", "zh": "安全图像缩放" },
     "seo_title": { "ja": "セキュア画像リサイズ｜Secure Toolkit", "en": "Secure Image Resizer | Secure Toolkit", "zh": "安全图像缩放 | Secure Toolkit" },
@@ -54,8 +56,8 @@
       "en": "🔒 Cut Data Usage & Fast Resizing\nBatch resize large photos. No server upload means you save data and keep privacy.",
       "zh": "🔒 大幅节省流量，极速缩放\n批量缩放照片。由于不经过服务器，您可以节省流量并保护隐私。"
     }
-  }
-"merge-pdf": {
+  },
+  "merge-pdf": {
     "id": 4,
     "emoji": "🔗",
     "color": { "primary": "#4f46e5", "bg": "#eef2ff" },
