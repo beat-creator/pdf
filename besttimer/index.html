@@ -1,11 +1,345 @@
-<nav class="tab-bar">
-            <div class="tab-item active">⏱️<br>タイマー</div>
-            <div class="tab-item">📖<br>ワークアウト</div>
-            <div class="tab-item">📅<br>履歴</div>
-            <div class="tab-item">⚙️<br>設定</div>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Quick Workout Timer</title>
+    <style>
+        /* CSSも統合して1ファイルで確認できるようにしています */
+        :root {
+            --bg-color: #f5f7fa;
+            --card-bg: #ffffff;
+            --primary-color: #1a1a1a;
+            --active-color: #4caf50;
+            --rest-color: #2196f3;
+            --text-main: #333;
+            --text-sub: #888;
+        }
+
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            user-select: none; /* 長押し時のテキスト選択を防止 */
+            -webkit-user-select: none;
+        }
+
+        .app-container {
+            max-width: 500px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+            padding-bottom: 80px; /* タブバー用 */
+        }
+
+        /* ヘッダー */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 { font-size: 22px; margin: 0; }
+
+        .pro-badge {
+            background: #e3f2fd;
+            color: #2196f3;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            border: 1px solid #bbdefb;
+        }
+
+        /* カードスタイル */
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+
+        .card label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-sub);
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .label-active { color: var(--active-color) !important; }
+        .label-rest { color: var(--rest-color) !important; }
+
+        .control {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-ctrl {
+            background: none;
+            border: none;
+            font-size: 32px;
+            color: var(--text-main);
+            cursor: pointer;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.1s;
+        }
+
+        .btn-ctrl:active { opacity: 0.3; }
+
+        .value {
+            font-size: 42px;
+            font-weight: 800;
+            font-variant-numeric: tabular-nums; /* 数字の幅を固定 */
+        }
+
+        /* オプション・追加ボタン */
+        .option-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 5px;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .add-exercise {
+            background: none;
+            border: none;
+            color: var(--rest-color);
+            font-size: 16px;
+            font-weight: bold;
+            padding: 15px;
+            cursor: pointer;
+            width: 100%;
+            text-align: left;
+        }
+
+        /* 開始ボタン */
+        .footer-action {
+            margin-top: auto;
+        }
+
+        .start-btn {
+            background: var(--primary-color);
+            color: white;
+            width: 100%;
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: none;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .total-time { opacity: 0.7; font-family: monospace; font-size: 20px; }
+
+        /* タブバー */
+        .tab-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            border-top: 1px solid #eee;
+        }
+
+        .tab-item {
+            font-size: 10px;
+            text-align: center;
+            color: var(--text-sub);
+            flex: 1;
+        }
+
+        .tab-item.active { color: #000; font-weight: bold; }
+        .tab-icon { font-size: 20px; margin-bottom: 4px; display: block; }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <header class="header">
+            <h1>クイックワークアウト</h1>
+            <div class="header-icons">
+                <span class="pro-badge">PRO</span>
+            </div>
+        </header>
+
+        <main class="config-area">
+            <div class="card" data-type="sets">
+                <label>セット</label>
+                <div class="control">
+                    <button class="btn-ctrl btn-minus">−</button>
+                    <span class="value">8</span>
+                    <button class="btn-ctrl btn-plus">＋</button>
+                </div>
+            </div>
+
+            <div class="card" data-type="activeTime">
+                <label class="label-active">トレーニング</label>
+                <div class="control">
+                    <button class="btn-ctrl btn-minus">−</button>
+                    <span class="value">00:20</span>
+                    <button class="btn-ctrl btn-plus">＋</button>
+                </div>
+            </div>
+
+            <div class="card" data-type="restTime">
+                <label class="label-rest">休息</label>
+                <div class="control">
+                    <button class="btn-ctrl btn-minus">−</button>
+                    <span class="value">00:10</span>
+                    <button class="btn-ctrl btn-plus">＋</button>
+                </div>
+            </div>
+
+            <div class="option-row">
+                <span>最後の休息をスキップ</span>
+                <input type="checkbox" id="skip-rest" checked style="width:20px; height:20px;">
+            </div>
+
+            <button class="add-exercise">＋ マルチエクササイズワークアウト</button>
+        </main>
+
+        <footer class="footer-action">
+            <button class="start-btn" id="start-btn">
+                <span>▶ ワークアウトを開始</span>
+                <span class="total-time">03:50</span>
+            </button>
+        </footer>
+
+        <nav class="tab-bar">
+            <div class="tab-item active"><span class="tab-icon">⏱️</span>タイマー</div>
+            <div class="tab-item"><span class="tab-icon">📖</span>ワークアウト</div>
+            <div class="tab-item"><span class="tab-icon">📅</span>履歴</div>
+            <div class="tab-item"><span class="tab-icon">⚙️</span>設定</div>
         </nav>
     </div>
 
-    <script src="script.js"></script> 
+    <script>
+        // 設定値の初期化
+        let settings = {
+            sets: 8,
+            activeTime: 20,
+            restTime: 10,
+            skipLastRest: true
+        };
+
+        let pressTimer;
+        let pressInterval = 200;
+
+        // 合計時間の表示更新
+        function updateTotalTime() {
+            let totalSeconds = (settings.activeTime + settings.restTime) * settings.sets;
+            if (settings.skipLastRest && settings.sets > 0) {
+                totalSeconds -= settings.restTime;
+            }
+            // 負の値にならないようガード
+            totalSeconds = Math.max(0, totalSeconds);
+
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            document.querySelector('.total-time').textContent = 
+                `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+
+        // 画面上の数値を更新
+        function renderValue(type) {
+            const cards = document.querySelectorAll('.card');
+            let targetCard;
+            cards.forEach(c => { if(c.dataset.type === type) targetCard = c; });
+            
+            const display = targetCard.querySelector('.value');
+            if (type === 'sets') {
+                display.textContent = settings[type];
+            } else {
+                const m = String(Math.floor(settings[type] / 60)).padStart(2, '0');
+                const s = String(settings[type] % 60).padStart(2, '0');
+                display.textContent = `${m}:${s}`;
+            }
+        }
+
+        function changeValue(type, delta) {
+            if (type === 'sets') {
+                settings[type] = Math.max(1, settings[type] + delta);
+            } else {
+                // 秒数は5秒刻みで増減させると使いやすい
+                settings[type] = Math.max(0, settings[type] + (delta * 5));
+            }
+            renderValue(type);
+            updateTotalTime();
+        }
+
+        function startPress(type, delta) {
+            stopPress();
+            changeValue(type, delta);
+            let counter = 0;
+            pressInterval = 200;
+
+            const loop = () => {
+                changeValue(type, delta);
+                counter++;
+                if (counter > 5 && pressInterval > 50) pressInterval -= 30;
+                pressTimer = setTimeout(loop, pressInterval);
+            };
+            pressTimer = setTimeout(loop, 500);
+        }
+
+        function stopPress() {
+            clearTimeout(pressTimer);
+        }
+
+        // イベント登録
+        document.querySelectorAll('.card').forEach(card => {
+            const type = card.dataset.type;
+            const minusBtn = card.querySelector('.btn-minus');
+            const plusBtn = card.querySelector('.btn-plus');
+
+            const bindEvents = (btn, delta) => {
+                btn.addEventListener('mousedown', (e) => { e.preventDefault(); startPress(type, delta); });
+                btn.addEventListener('touchstart', (e) => { e.preventDefault(); startPress(type, delta); });
+            };
+
+            bindEvents(plusBtn, 1);
+            bindEvents(minusBtn, -1);
+        });
+
+        window.addEventListener('mouseup', stopPress);
+        window.addEventListener('touchend', stopPress);
+
+        // チェックボックス連動
+        document.getElementById('skip-rest').addEventListener('change', (e) => {
+            settings.skipLastRest = e.target.checked;
+            updateTotalTime();
+        });
+
+        // 開始ボタンの挙動（とりあえずログを出す）
+        document.getElementById('start-btn').addEventListener('click', () => {
+            alert(`ワークアウトを開始します！\n合計時間: ${document.querySelector('.total-time').textContent}`);
+        });
+
+        // 初期表示
+        updateTotalTime();
+    </script>
 </body>
 </html>
