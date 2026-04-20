@@ -3,37 +3,188 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Integrated Interval Timer</title>
+    <title>Visual Dashboard Timer</title>
     <style>
         :root {
-            --bg: #f5f7fa;
+            --bg: #f8f9fc;
             --card: #ffffff;
             --primary: #1a1a1a;
             --accent: #4caf50;
-            --text-main: #333;
-            --text-muted: #adb5bd;
+            --rest: #2196f3;
+            --muted: #adb5bd;
             --item-h: 40px;
         }
 
-        body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text-main); user-select: none; -webkit-user-select: none; overflow: hidden; }
+        body { margin: 0; font-family: -apple-system, sans-serif; background: var(--bg); color: #333; overflow: hidden; user-select: none; -webkit-user-select: none; }
         .container { max-width: 500px; margin: 0 auto; padding: 20px; height: 100vh; display: flex; flex-direction: column; box-sizing: border-box; }
 
-        /* モード選択 */
-        .mode-selector { display: flex; gap: 10px; margin-bottom: 25px; }
-        .mode-btn { flex: 1; padding: 12px; border: 2px solid var(--primary); background: none; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .mode-btn.active { background: var(--primary); color: white; }
+        /* モード切替 */
+        .mode-selector { display: flex; background: #eee; padding: 3px; border-radius: 12px; margin-bottom: 15px; }
+        .mode-btn { flex: 1; padding: 10px; border: none; background: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 14px; }
+        .mode-btn.active { background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
 
-        /* 設定行 (Row) */
-        .setting-row { background: var(--card); border-radius: 16px; margin-bottom: 12px; display: flex; align-items: center; padding: 5px 20px; height: 100px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); transition: 0.3s; }
-        .setting-row.disabled { opacity: 0.2; pointer-events: none; }
-        .label-v { writing-mode: vertical-rl; text-orientation: upright; font-size: 14px; font-weight: bold; color: var(--text-muted); padding-right: 15px; border-right: 1px solid #eee; }
-        .picker-group { flex: 1; display: flex; justify-content: center; align-items: center; gap: 10px; height: 100%; overflow: hidden; }
+        /* 設定エリア（コンパクト化） */
+        .setting-row { background: var(--card); border-radius: 16px; margin-bottom: 8px; display: flex; align-items: center; padding: 0 15px; height: 85px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: 0.3s; }
+        .setting-row.disabled { opacity: 0.1; pointer-events: none; transform: scale(0.98); }
+        .label-v { writing-mode: vertical-rl; text-orientation: upright; font-size: 12px; font-weight: bold; color: var(--muted); padding-right: 12px; border-right: 1px solid #f0f0f0; }
         
-        /* ダイヤルスタイル */
-        .picker-col { height: 80px; width: 60px; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; }
+        .picker-group { flex: 1; display: flex; justify-content: center; align-items: center; gap: 8px; height: 100%; overflow: hidden; }
+        .picker-col { height: 80px; width: 55px; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; }
         .picker-col::-webkit-scrollbar { display: none; }
-        .picker-list { padding: 20px 0; }
-        .picker-item { height: var(--item-h); display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 800; scroll-snap-align: center; color: #eee; transition: 0.2s; }
+        .picker-item { height: var(--item-h); display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 700; scroll-snap-align: center; color: #e0e0e0; transition: 0.2s; }
+        .picker-item.selected { color: var(--primary); font-size: 30px; }
+        .unit { font-size: 12px; color: var(--muted); }
+
+        /* ダッシュボード（広めのスペースを確保） */
+        .dashboard { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 0; }
+        .info-panel { display: none; text-align: center; width: 100%; }
+        
+        /* 円形ゲージ */
+        .circle-ui { position: relative; width: 220px; height: 220px; margin: 15px auto; }
+        .circle-ui svg { transform: rotate(-90deg); width: 100%; height: 100%; }
+        .circle-ui circle { fill: none; stroke-width: 8; stroke-linecap: round; }
+        .ring-bg { stroke: #eef0f5; }
+        .ring-bar { stroke: var(--accent); stroke-dasharray: 540; stroke-dashoffset: 540; transition: stroke-dashoffset 1s linear, stroke 0.3s; }
+        
+        .time-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 56px; font-weight: 800; font-family: monospace; }
+        .status-text { font-size: 22px; font-weight: 800; letter-spacing: 4px; margin-bottom: 5px; color: var(--muted); }
+        .set-text { font-size: 16px; font-weight: bold; color: var(--muted); }
+
+        /* 操作ボタン */
+        .btn-area { width: 100%; padding-bottom: 20px; }
+        .main-btn { width: 100%; padding: 20px; border-radius: 16px; border: none; background: var(--primary); color: white; font-size: 20px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        #exit-btn { display: none; background: #ff4757; margin-top: 15px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="mode-selector">
+        <button class="mode-btn active" id="btn-timer" onclick="setMode('timer')">タイマー</button>
+        <button class="mode-btn" id="btn-repeat" onclick="setMode('repeat')">リピート</button>
+        <button class="mode-btn" id="btn-interval" onclick="setMode('interval')">インターバル</button>
+    </div>
+
+    <div class="setting-row" id="row-time"><div class="label-v">時間</div><div class="picker-group"><div class="picker-col" id="p-time-m"></div><span class="unit">分</span><div class="picker-col" id="p-time-s"></div><span class="unit">秒</span></div></div>
+    <div class="setting-row" id="row-sets"><div class="label-v">回数</div><div class="picker-group"><div class="picker-col" id="p-sets-v"></div><span class="unit">セット</span></div></div>
+    <div class="setting-row" id="row-rest"><div class="label-v">休息</div><div class="picker-group"><div class="picker-col" id="p-rest-m"></div><span class="unit">分</span><div class="picker-col" id="p-rest-s"></div><span class="unit">秒</span></div></div>
+
+    <div class="dashboard">
+        <div class="info-panel" id="panel">
+            <div class="set-text" id="ui-sets">SET 1 / 8</div>
+            <div class="status-text" id="ui-status">WORK</div>
+            <div class="circle-ui">
+                <svg viewBox="0 0 180 180">
+                    <circle class="ring-bg" cx="90" cy="90" r="86"></circle>
+                    <circle class="ring-bar" id="progress-bar" cx="90" cy="90" r="86"></circle>
+                </svg>
+                <div class="time-text" id="ui-time">00:00</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="btn-area">
+        <button class="main-btn" id="start-btn" onclick="start()">START</button>
+        <button class="main-btn" id="exit-btn" onclick="stop()">STOP</button>
+    </div>
+</div>
+
+<script>
+    let mode = 'timer';
+    let vals = { time: 20, sets: 8, rest: 10 };
+    let tId = null;
+
+    function mkPicker(id, max, step=1) {
+        const el = document.getElementById(id);
+        const list = document.createElement('div');
+        list.className = 'picker-list';
+        for(let i=0; i<=max; i+=step) {
+            const item = document.createElement('div');
+            item.className = 'picker-item';
+            item.textContent = String(i).padStart(2, '0');
+            list.appendChild(item);
+        }
+        el.appendChild(list);
+        el.onscroll = () => {
+            const idx = Math.round(el.scrollTop / 40);
+            const v = idx * step;
+            const [, type, part] = id.split('-');
+            if(type === 'sets') vals.sets = Math.max(1, v);
+            else if(part === 'm') vals[type] = (v * 60) + (vals[type] % 60);
+            else if(part === 's') vals[type] = (Math.floor(vals[type]/60) * 60) + v;
+            Array.from(list.children).forEach((it, i) => it.classList.toggle('selected', i === idx));
+        };
+    }
+
+    function scrollByVal(id, v, step=1) {
+        document.getElementById(id).scrollTo({ top: (v/step) * 40, behavior: 'smooth' });
+    }
+
+    function setMode(m) {
+        mode = m;
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.id.includes(m)));
+        document.getElementById('row-sets').classList.toggle('disabled', mode === 'timer');
+        document.getElementById('row-rest').classList.toggle('disabled', mode !== 'interval');
+    }
+
+    // 初期起動
+    mkPicker('p-time-m', 59); mkPicker('p-time-s', 55, 5); mkPicker('p-sets-v', 50); mkPicker('p-rest-m', 59); mkPicker('p-rest-s', 55, 5);
+    setTimeout(() => { scrollByVal('p-time-m', 0); scrollByVal('p-time-s', 20, 5); scrollByVal('p-sets-v', 8); scrollByVal('p-rest-m', 0); scrollByVal('p-rest-s', 10, 5); }, 200);
+
+    function start() {
+        if(vals.time <= 0) return;
+        let s = 1, ph = 'work', rem = vals.time, total = vals.time;
+        
+        document.getElementById('start-btn').style.display = 'none';
+        document.getElementById('exit-btn').style.display = 'block';
+        document.getElementById('panel').style.display = 'block';
+        document.querySelectorAll('.setting-row, .mode-selector').forEach(el => el.style.opacity = '0.05');
+
+        const tick = () => {
+            const f = s => `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+            document.getElementById('ui-time').textContent = f(rem);
+            document.getElementById('ui-sets').textContent = (mode === 'timer') ? "" : `SET ${s} / ${vals.sets}`;
+            
+            const isWork = (ph === 'work');
+            document.getElementById('ui-status').textContent = (mode === 'timer') ? "TIMER" : (isWork ? "WORK" : "REST");
+            const color = (mode === 'timer') ? "#333" : (isWork ? "var(--accent)" : "var(--rest)");
+            document.getElementById('ui-status').style.color = color;
+            document.getElementById('progress-bar').style.stroke = color;
+
+            // アニメーション計算 (全周 540)
+            const offset = 540 - (540 * (rem / total));
+            document.getElementById('progress-bar').style.strokeDashoffset = offset;
+
+            if(rem <= 0) {
+                if(navigator.vibrate) navigator.vibrate(300);
+                if(mode === 'timer') return fin();
+                if(ph === 'work') {
+                    if(s >= vals.sets) return fin();
+                    if(mode === 'repeat') { s++; rem = vals.time; total = vals.time; }
+                    else { ph = 'rest'; rem = vals.rest; total = vals.rest; }
+                } else { s++; ph = 'work'; rem = vals.time; total = vals.time; }
+            } else { rem--; }
+            tId = setTimeout(tick, 1000);
+        };
+        const fin = () => { 
+            document.getElementById('ui-time').textContent = "DONE"; 
+            document.getElementById('progress-bar').style.strokeDashoffset = 0;
+            setTimeout(stop, 2000); 
+        };
+        tick();
+    }
+
+    function stop() {
+        clearTimeout(tId);
+        document.getElementById('start-btn').style.display = 'block';
+        document.getElementById('exit-btn').style.display = 'none';
+        document.getElementById('panel').style.display = 'none';
+        document.querySelectorAll('.setting-row, .mode-selector').forEach(el => el.style.opacity = '1');
+        document.getElementById('progress-bar').style.strokeDashoffset = 540;
+    }
+</script>
+</body>
+</html>
         .picker-item.selected { color: var(--primary); }
         .unit { font-size: 14px; color: var(--text-muted); font-weight: bold; }
 
