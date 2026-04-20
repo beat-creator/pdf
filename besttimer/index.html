@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Quick Workout Timer Pro</title>
+    <title>Hybrid Workout Timer</title>
     <style>
         :root {
             --bg-color: #f5f7fa;
@@ -16,24 +16,235 @@
         }
 
         body {
-            margin: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            user-select: none;
-            -webkit-user-select: none;
-            overflow: hidden; /* スクロール抑制 */
+            margin: 0; font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-color); color: var(--text-main);
+            user-select: none; -webkit-user-select: none; overflow: hidden;
         }
 
         .app-container {
-            max-width: 500px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            padding: 20px;
-            box-sizing: border-box;
+            max-width: 500px; margin: 0 auto; display: flex; flex-direction: column;
+            height: 100vh; padding: 20px; box-sizing: border-box;
         }
+
+        /* UIパーツ */
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .pro-badge { background: #e3f2fd; color: #2196f3; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; border: 1px solid #bbdefb; }
+        
+        .card { background: var(--card-bg); border-radius: 16px; padding: 15px; margin-bottom: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        .card label { display: block; font-size: 13px; font-weight: 600; color: var(--text-sub); margin-bottom: 8px; text-align: center; }
+        .label-active { color: var(--active-color) !important; }
+        .label-rest { color: var(--rest-color) !important; }
+        
+        .control { display: flex; justify-content: space-between; align-items: center; }
+        .btn-ctrl { background: none; border: none; font-size: 32px; color: var(--text-main); cursor: pointer; width: 50px; height: 50px; }
+
+        /* 時間選択のコンテナ */
+        .time-select-group { display: flex; align-items: baseline; gap: 4px; font-weight: 800; }
+        
+        /* セレクトボックスの隠蔽と装飾 */
+        .dial-wrapper { position: relative; display: inline-block; }
+        .dial-select {
+            font-size: 42px; font-weight: 800; border: none; background: #f0f0f0;
+            border-radius: 8px; padding: 4px 8px; color: var(--text-main);
+            appearance: none; -webkit-appearance: none; cursor: pointer;
+            font-family: inherit;
+        }
+        .unit { font-size: 16px; color: var(--text-sub); margin-right: 4px; }
+
+        .value-large { font-size: 42px; font-weight: 800; }
+
+        /* その他UI */
+        .option-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 5px; font-size: 15px; }
+        .footer-action { margin-top: auto; padding-bottom: 80px; }
+        .start-btn { background: var(--primary-color); color: white; width: 100%; border-radius: 16px; padding: 20px; display: flex; justify-content: space-between; align-items: center; border: none; font-size: 18px; font-weight: bold; }
+        .total-time { opacity: 0.7; font-family: monospace; font-size: 20px; }
+
+        .tab-bar { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #eee; }
+        .tab-item { font-size: 10px; text-align: center; color: var(--text-sub); flex: 1; }
+
+        /* 実行画面 */
+        #timer-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 2000; display: none; flex-direction: column;
+            justify-content: center; align-items: center; color: white;
+            transition: background-color 0.4s ease;
+        }
+        #timer-display { font-size: 120px; font-weight: 800; font-family: monospace; }
+        #stop-btn { margin-top: 60px; padding: 15px 50px; background: rgba(255,255,255,0.2); border: 2px solid white; color: white; border-radius: 40px; font-size: 18px; }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <header class="header">
+            <h1>クイックワークアウト</h1>
+            <div class="header-icons"><span class="pro-badge">PRO</span></div>
+        </header>
+
+        <main>
+            <div class="card" data-type="sets"><label>セット</label>
+                <div class="control">
+                    <button class="btn-ctrl btn-minus">−</button>
+                    <span class="value-large" id="display-sets">8</span>
+                    <button class="btn-ctrl btn-plus">＋</button>
+                </div>
+            </div>
+
+            <div class="card" data-type="active"><label class="label-active">トレーニング</label>
+                <div class="control">
+                    <button class="btn-ctrl btn-minus">−</button>
+                    <div class="time-select-group">
+                        <select id="active-m" class="dial-select"></select><span class="unit">分</span>
+                        <select id="active-s" class="dial-select"></select><span class="unit">秒</span>
+                    </div>
+                    <button class="btn-ctrl btn-plus">＋</button>
+                </div>
+            </div>
+
+            <div class="card" data-type="rest"><label class="label-rest">休息</label>
+                <div class="control">
+                    <button class="btn-ctrl btn-minus">−</button>
+                    <div class="time-select-group">
+                        <select id="rest-m" class="dial-select"></select><span class="unit">分</span>
+                        <select id="rest-s" class="dial-select"></select><span class="unit">秒</span>
+                    </div>
+                    <button class="btn-ctrl btn-plus">＋</button>
+                </div>
+            </div>
+
+            <div class="option-row"><span>最後の休息をスキップ</span><input type="checkbox" id="skip-rest" checked style="width:22px; height:22px;"></div>
+        </main>
+
+        <footer class="footer-action">
+            <button class="start-btn" id="start-btn"><span>▶ ワークアウトを開始</span><span class="total-time">03:50</span></button>
+        </footer>
+
+        <nav class="tab-bar">
+            <div class="tab-item">⏱️<br>タイマー</div>
+            <div class="tab-item">📖<br>ワークアウト</div>
+            <div class="tab-item">📅<br>履歴</div>
+            <div class="tab-item">⚙️<br>設定</div>
+        </nav>
+    </div>
+
+    <div id="timer-overlay">
+        <div id="phase-label" style="font-size: 24px; font-weight: bold;">READY</div>
+        <div id="timer-display">00:00</div>
+        <div id="set-count" style="font-size: 20px; opacity: 0.9;">SET 1 / 8</div>
+        <button id="stop-btn">終了</button>
+    </div>
+
+    <script>
+        const settings = { sets: 8, active: 20, rest: 10, skip: true };
+        let timerId = null;
+
+        // セレクトボックスの生成
+        const initSelects = () => {
+            const mEls = document.querySelectorAll('[id$="-m"]');
+            const sEls = document.querySelectorAll('[id$="-s"]');
+            mEls.forEach(el => {
+                for(let i=0; i<60; i++) el.add(new Option(String(i).padStart(2,'0'), i));
+            });
+            sEls.forEach(el => {
+                for(let i=0; i<60; i+=5) el.add(new Option(String(i).padStart(2,'0'), i));
+            });
+        };
+
+        // 表示の全更新
+        function updateAll() {
+            // 合計時間
+            let total = (settings.active + settings.rest) * settings.sets - (settings.skip ? settings.rest : 0);
+            total = Math.max(0, total);
+            const fmt = (s) => `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+            document.querySelector('.total-time').textContent = fmt(total);
+
+            // 各値の反映
+            document.getElementById('display-sets').textContent = settings.sets;
+            document.getElementById('active-m').value = Math.floor(settings.active / 60);
+            document.getElementById('active-s').value = settings.active % 60;
+            document.getElementById('rest-m').value = Math.floor(settings.rest / 60);
+            document.getElementById('rest-s').value = settings.rest % 60;
+        }
+
+        // セレクトボックス変更時の同期
+        const syncFromSelect = () => {
+            settings.active = parseInt(document.getElementById('active-m').value) * 60 + parseInt(document.getElementById('active-s').value);
+            settings.rest = parseInt(document.getElementById('rest-m').value) * 60 + parseInt(document.getElementById('rest-s').value);
+            updateAll();
+        };
+
+        // 長押し・クリック用
+        let pTimer, pInterval;
+        const startPress = (type, delta) => {
+            const change = () => {
+                if (type === 'sets') settings.sets = Math.max(1, settings.sets + delta);
+                else settings[type] = Math.max(0, settings[type] + delta * 5);
+                updateAll();
+            };
+            change();
+            let count = 0; pInterval = 200;
+            const loop = () => { change(); count++; if(count > 5 && pInterval > 50) pInterval -= 15; pTimer = setTimeout(loop, pInterval); };
+            pTimer = setTimeout(loop, 500);
+        };
+
+        // イベント登録
+        initSelects();
+        document.querySelectorAll('.card').forEach((c, i) => {
+            const type = ['sets', 'active', 'rest'][i];
+            const b = (btn, d) => {
+                const ev = (e) => { e.preventDefault(); startPress(type, d); };
+                btn.addEventListener('mousedown', ev); btn.addEventListener('touchstart', ev);
+            };
+            b(c.querySelector('.btn-plus'), 1); b(c.querySelector('.btn-minus'), -1);
+        });
+        document.querySelectorAll('.dial-select').forEach(el => el.addEventListener('change', syncFromSelect));
+        
+        const stopP = () => clearTimeout(pTimer);
+        window.addEventListener('mouseup', stopP); window.addEventListener('touchend', stopP);
+        document.getElementById('skip-rest').onchange = (e) => { settings.skip = e.target.checked; updateAll(); };
+
+        // タイマーエンジン
+        const overlay = document.getElementById('timer-overlay');
+        const startWorkout = () => {
+            let set = 1, phase = 'active', sec = settings.active;
+            overlay.style.display = 'flex';
+            if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+
+            const tick = () => {
+                const fmt = (s) => `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+                document.getElementById('timer-display').textContent = fmt(sec);
+                document.getElementById('set-count').textContent = `セット ${set} / ${settings.sets}`;
+                document.getElementById('phase-label').textContent = phase === 'active' ? 'トレーニング' : '休息';
+                overlay.style.backgroundColor = phase === 'active' ? 'var(--active-color)' : 'var(--rest-color)';
+                if (sec <= 3 && sec > 0 && navigator.vibrate) navigator.vibrate(50);
+                if (sec <= 0) {
+                    if (navigator.vibrate) navigator.vibrate(400);
+                    if (phase === 'active') {
+                        if (set >= settings.sets && settings.skip) return finish();
+                        phase = 'rest'; sec = settings.rest;
+                    } else {
+                        set++; if (set > settings.sets) return finish();
+                        phase = 'active'; sec = settings.active;
+                    }
+                } else { sec--; }
+                timerId = setTimeout(tick, 1000);
+            };
+            const finish = () => {
+                document.getElementById('phase-label').textContent = '完了！';
+                overlay.style.backgroundColor = '#1a1a1a';
+                document.getElementById('timer-display').textContent = 'FINISH';
+                if (navigator.vibrate) navigator.vibrate([200, 100, 500]);
+                setTimeout(() => overlay.style.display = 'none', 2000);
+            };
+            tick();
+        };
+
+        document.getElementById('start-btn').onclick = startWorkout;
+        document.getElementById('stop-btn').onclick = () => { clearTimeout(timerId); overlay.style.display = 'none'; };
+        updateAll();
+    </script>
+</body>
+</html>
 
         /* ヘッダー */
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
