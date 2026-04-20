@@ -3,37 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fixed Precision Timer</title>
+    <title>Precision Timer Ultra</title>
     <style>
         :root {
-            --bg: #f8f9fa; --card: #ffffff; --primary: #1c1c1e;
+            --bg: #f5f7fa; --card: #ffffff; --primary: #1c1c1e;
             --active: #34c759; --rest: #007aff; --muted: #d1d1d6;
         }
         body { margin: 0; font-family: -apple-system, sans-serif; background: var(--bg); color: #333; overflow: hidden; user-select: none; }
         .container { max-width: 500px; margin: 0 auto; padding: 15px; height: 100vh; display: flex; flex-direction: column; box-sizing: border-box; }
 
-        /* モード切替 */
-        header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-        .mode-selector { flex: 1; display: flex; background: #e3e3e3; padding: 3px; border-radius: 12px; margin-right: 10px; }
-        .mode-btn { flex: 1; padding: 10px; border: none; background: none; border-radius: 10px; font-weight: bold; font-size: 14px; cursor: pointer; color: #777; }
+        header { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
+        .mode-selector { flex: 1; display: flex; background: #e3e3e3; padding: 3px; border-radius: 12px; }
+        .mode-btn { flex: 1; padding: 10px; border: none; background: none; border-radius: 10px; font-weight: bold; font-size: 14px; cursor: pointer; color: #666; }
         .mode-btn.active { background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); color: #000; }
+        .icon-btn { background: none; border: none; font-size: 24px; padding: 5px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         
-        /* 設定カード */
-        .setting-row { background: var(--card); border-radius: 20px; margin-bottom: 10px; display: flex; align-items: center; padding: 0 20px; height: 100px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
-        .setting-row.disabled { opacity: 0.15; pointer-events: none; }
-        .label-v { writing-mode: vertical-rl; text-orientation: upright; font-size: 12px; font-weight: bold; color: #8e8e93; padding-right: 15px; border-right: 1px solid #f0f0f0; }
+        .setting-row { background: var(--card); border-radius: 20px; margin-bottom: 12px; display: flex; align-items: center; padding: 0 15px; height: 100px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
+        .setting-row.disabled { opacity: 0.1; pointer-events: none; }
+        .label-v { writing-mode: vertical-rl; text-orientation: upright; font-size: 12px; font-weight: bold; color: #8e8e93; border-right: 1px solid #f0f0f0; padding-right: 10px; margin-right: 10px; }
         
-        /* ピッカー本体（ズレ対策） */
-        .picker-group { flex: 1; display: flex; justify-content: center; align-items: center; gap: 4px; height: 100%; position: relative; }
-        .picker-col { height: 100px; width: 75px; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; -ms-overflow-style: none; }
+        /* ピッカー構造の完全刷新 */
+        .picker-group { flex: 1; display: flex; justify-content: center; align-items: center; gap: 5px; height: 100%; }
+        .picker-col { 
+            height: 100px; width: 70px; overflow-y: scroll; 
+            scroll-snap-type: y mandatory; scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
+        }
         .picker-col::-webkit-scrollbar { display: none; }
         
+        .picker-list { padding: 100px 0; } /* 上下に十分なマージンを確保 */
         .picker-item { 
             height: 100px; display: flex; align-items: center; justify-content: center; 
             font-size: 32px; font-weight: 800; scroll-snap-align: center; 
-            color: #ccc; /* 非選択時も見えるように少し濃く */
-            transition: color 0.1s;
+            color: #ddd; transition: color 0.2s;
         }
+        .picker-item.selected { color: #000 !important; font-size: 38px; }
+
+        .main-btn { width: 100%; padding: 20px; border-radius: 18px; border: none; background: var(--primary); color: white; font-size: 22px; font-weight: 900; margin-top: auto; }
+
+        /* ダッシュボード */
+        #dashboard { position: fixed; inset: 0; background: var(--bg); z-index: 100; display: none; flex-direction: column; align-items: center; justify-content: center; }
+        .circle-ui { position: relative; width: 280px; height: 280px; }
+        .ring-bar { stroke: var(--active); stroke-dasharray: 628; stroke-dashoffset: 628; transition: stroke-dashoffset 0.3s ease-out; }
+        .time-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 70px; font-weight: 900; }
+        
+        .alarm-active { background-color: #ffcc00 !important; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div class="mode-selector">
+            <button class="mode-btn" id="m-timer" onclick="setMode('timer')">タイマー</button>
+            <button class="mode-btn" id="m-repeat" onclick="setMode('repeat')">リピート</button>
+            <button class="mode-btn" id="m-interval" onclick="setMode('interval')">インターバル</button>
+        </div>
+        <button class="icon-btn" onclick="location.reload()">🔄</button>
+    </header>
+
+    <div id="setup-view" style="flex:1; display:flex; flex-direction:column;">
+        <div class="setting-row" id="row-time"><div class="label-v">時間</div><div class="picker-group"><div class="picker-col" id="p-time-m"></div>分<div class="picker-col" id="p-time-s"></div>秒</div></div>
+        <div class="setting-row" id="row-sets"><div class="label-v">回数</div><div class="picker-group"><div class="picker-col" id="p-sets-v"></div>回</div></div>
+        <div class="setting-row" id="row-rest"><div class="label-v">休息</div><div class="picker-group"><div class="picker-col" id="p-rest-m"></div>分<div class="picker-col" id="p-rest-s"></div>秒</div></div>
+        <button class="main-btn" onclick="run()">START</button>
+    </div>
+</div>
+
+<div id="dashboard">
+    <div id="ui-phase" style="font-size:24px; font-weight:900; margin-bottom:15px;">WORK</div>
+    <div class="circle-ui">
+        <svg viewBox="0 0 210 210"><circle cx="105" cy="105" r="100" fill="none" stroke="#eef0f5" stroke-width="8"></circle>
+        <circle id="progress" cx="105" cy="105" r="100" fill="none" stroke-width="12" stroke-linecap="round" class="ring-bar" transform="rotate(-90 105 105)"></circle></svg>
+        <div class="time-text" id="ui-time">00:00</div>
+    </div>
+    <div id="ui-sets" style="margin-top:20px; font-weight:bold; color:#8e8e93;">SET 1 / 1</div>
+    <button class="main-btn" onclick="stop()" style="background:#ff3b30; width:85%; margin-top:40px;">STOP</button>
+</div>
+
+<script>
+    let mode = 'timer';
+    let vals = { time: 0, sets: 1, rest: 0 };
+    let tId = null;
+
+    function setMode(m) {
+        mode = m;
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.id === 'm-' + m));
+        document.getElementById('row-sets').classList.toggle('disabled', mode === 'timer');
+        document.getElementById('row-rest').classList.toggle('disabled', mode !== 'interval');
+    }
+
+    function mkPicker(id, max) {
+        const el = document.getElementById(id);
+        const list = document.createElement('div');
+        list.className = 'picker-list';
+        
+        for(let i=0; i<=max; i++) {
+            const it = document.createElement('div');
+            it.className = 'picker-item';
+            it.textContent = String(i).padStart(2, '0');
+            list.appendChild(it);
+        }
+        el.appendChild(list);
+
+        const update = () => {
+            const idx = Math.round(el.scrollTop / 100);
+            const items = list.getElementsByClassName('picker-item');
+            
+            // 値の同期
+            const [, type, part] = id.split('-');
+            if(type === 'sets') vals.sets = Math.max(1, idx);
+            else if(part === 'm') vals[type] = (idx * 60) + (vals[type] % 60);
+            else if(part === 's') vals[type] = (Math.floor(vals[type]/60) * 60) + idx;
+            
+            // 見た目の更新
+            Array.from(items).forEach((it, i) => it.classList.toggle('selected', i === idx));
+        };
+
+        el.addEventListener('scroll', update);
+        // 初期化時に0へ強制スクロール
+        setTimeout(() => { el.scrollTop = 0; update(); }, 300);
+    }
+
+    function run() {
+        let s = 1, ph = 'work', rem = vals.time, total = vals.time;
+        if(rem <= 0) return;
+        document.getElementById('dashboard').style.display = 'flex';
+        
+        const tick = () => {
+            const f = s => `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+            document.getElementById('ui-time').textContent = f(rem);
+            document.getElementById('ui-sets').textContent = mode==='timer' ? "" : `SET ${s} / ${vals.sets}`;
+            const isW = ph === 'work';
+            document.getElementById('ui-phase').textContent = (mode==='timer') ? "TIMER" : (isW ? "WORK" : "REST");
+            document.getElementById('progress').style.strokeDashoffset = 628 - (628 * (rem / total));
+
+            if(rem <= 0) {
+                if(mode === 'timer' || (isW && s >= vals.sets)) {
+                    document.getElementById('dashboard').classList.add('alarm-active');
+                    return;
+                }
+                if(isW && mode === 'interval') { ph = 'rest'; rem = vals.rest; total = vals.rest; }
+                else { s++; ph = 'work'; rem = vals.time; total = vals.time; }
+            } else { rem--; }
+            tId = setTimeout(tick, 1000);
+        };
+        tick();
+    }
+
+    function stop() {
+        clearTimeout(tId);
+        document.getElementById('dashboard').style.display = 'none';
+        document.getElementById('dashboard').classList.remove('alarm-active');
+    }
+
+    // 初期化
+    mkPicker('p-time-m', 59); mkPicker('p-time-s', 59);
+    mkPicker('p-sets-v', 99);
+    mkPicker('p-rest-m', 59); mkPicker('p-rest-s', 59);
+    setMode('timer');
+</script>
+</body>
+</html>
         .picker-item.selected { color: #000 !important; font-size: 38px; }
 
         .main-btn { width: 100%; padding: 22px; border-radius: 18px; border: none; background: var(--primary); color: white; font-size: 24px; font-weight: 900; margin-top: auto; }
