@@ -3,37 +3,208 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Kitchen Style Pro Timer</title>
+    <title>Visual Pro Timer v4</title>
     <style>
         :root {
             --bg: #f2f4f7; --card: #ffffff; --primary: #1c1c1e;
             --active: #34c759; --rest: #007aff; --muted: #8e8e93;
+            --warning: #ffcc00; /* 少しマイルドな警告色 */
         }
 
         body { margin: 0; font-family: -apple-system, sans-serif; background: var(--bg); color: #333; overflow: hidden; user-select: none; }
         .container { max-width: 500px; margin: 0 auto; padding: 15px; height: 100vh; display: flex; flex-direction: column; box-sizing: border-box; }
 
-        /* ヘッダー・設定エリア */
         header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
         .mode-selector { flex: 1; display: flex; background: #e3e3e3; padding: 2px; border-radius: 12px; margin-right: 10px; }
         .mode-btn { flex: 1; padding: 10px; border: none; background: none; border-radius: 10px; font-weight: bold; font-size: 14px; cursor: pointer; }
         .mode-btn.active { background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        
+        /* お気に入りリスト */
+        .presets { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none; min-height: 40px; }
+        .preset-btn { padding: 6px 15px; background: #fff; border-radius: 20px; font-size: 12px; font-weight: bold; white-space: nowrap; border: 1px solid #eee; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+
         .setting-row { background: var(--card); border-radius: 16px; margin-bottom: 8px; display: flex; align-items: center; padding: 0 20px; height: 85px; }
         .setting-row.disabled { opacity: 0.1; pointer-events: none; }
         .label-v { writing-mode: vertical-rl; text-orientation: upright; font-size: 11px; font-weight: bold; color: var(--muted); padding-right: 15px; border-right: 1px solid #f0f0f0; }
-        .picker-group { flex: 1; display: flex; justify-content: center; align-items: center; gap: 10px; height: 100%; overflow: hidden; }
+        .picker-group { flex: 1; display: flex; justify-content: center; align-items: center; gap: 8px; height: 100%; overflow: hidden; }
         .picker-col { height: 80px; width: 60px; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; }
         .picker-col::-webkit-scrollbar { display: none; }
         .picker-item { height: 40px; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 700; scroll-snap-align: center; color: #ddd; }
         .picker-item.selected { color: var(--primary); font-size: 32px; }
+
         .main-btn { width: 100%; padding: 20px; border-radius: 16px; border: none; background: var(--primary); color: white; font-size: 22px; font-weight: 900; margin-top: 10px; cursor: pointer; }
 
-        /* 実行画面 */
-        #dashboard { position: fixed; inset: 0; background: var(--bg); z-index: 100; display: none; flex-direction: column; align-items: center; justify-content: center; transition: background 0.1s; }
+        #dashboard { position: fixed; inset: 0; background: var(--bg); z-index: 100; display: none; flex-direction: column; align-items: center; justify-content: center; }
         .circle-ui { position: relative; width: 260px; height: 260px; }
         .ring-bar { stroke: var(--active); stroke-dasharray: 628; stroke-dashoffset: 628; transition: stroke-dashoffset 1s linear; }
         .time-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 64px; font-weight: 900; }
 
+        /* 点滅を黄色×白にマイルド化 */
+        .alarm-active { animation: blink-soft 0.4s infinite; }
+        @keyframes blink-soft {
+            0%, 100% { background-color: var(--warning); color: black; }
+            50% { background-color: white; color: var(--warning); }
+        }
+
+        #settings-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; display: none; align-items: flex-end; }
+        .modal-content { background: white; width: 100%; border-radius: 24px 24px 0 0; padding: 30px 20px; box-sizing: border-box; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div class="mode-selector">
+            <button class="mode-btn active" id="m-timer" onclick="setMode('timer')">タイマー</button>
+            <button class="mode-btn" id="m-repeat" onclick="setMode('repeat')">リピート</button>
+            <button class="mode-btn" id="m-interval" onclick="setMode('interval')">インターバル</button>
+        </div>
+        <button onclick="toggleModal(true)" style="background:none; border:none; font-size:24px; padding: 5px;">⚙️</button>
+    </header>
+
+    <div class="presets" id="preset-list"></div>
+
+    <div id="setup-view">
+        <div class="setting-row" id="row-time"><div class="label-v">時間</div><div class="picker-group"><div class="picker-col" id="p-time-m"></div>分<div class="picker-col" id="p-time-s"></div>秒</div></div>
+        <div class="setting-row" id="row-sets"><div class="label-v">回数</div><div class="picker-group"><div class="picker-col" id="p-sets-v"></div>セット</div></div>
+        <div class="setting-row" id="row-rest"><div class="label-v">休息</div><div class="picker-group"><div class="picker-col" id="p-rest-m"></div>分<div class="picker-col" id="p-rest-s"></div>秒</div></div>
+        <button class="main-btn" onclick="run()">START</button>
+    </div>
+</div>
+
+<div id="dashboard">
+    <div id="ui-phase" style="font-size:24px; font-weight:900; letter-spacing:8px; margin-bottom:15px;">WORK</div>
+    <div class="circle-ui">
+        <svg viewBox="0 0 210 210"><circle cx="105" cy="105" r="100" fill="none" stroke="#eef0f5" stroke-width="8"></circle>
+        <circle id="progress" cx="105" cy="105" r="100" fill="none" stroke-width="10" stroke-linecap="round" class="ring-bar" transform="rotate(-90 105 105)"></circle></svg>
+        <div class="time-text" id="ui-time">00:00</div>
+    </div>
+    <div id="ui-sets" style="margin-top:20px; font-weight:bold; color:var(--muted);">SET 1 / 8</div>
+    <button id="stop-btn" class="main-btn" onclick="stop()" style="background:#ff3b30; width:80%; margin-top:40px;">STOP</button>
+</div>
+
+<div id="settings-modal" onclick="if(event.target==this) toggleModal(false)">
+    <div class="modal-content">
+        <h3 style="margin-top:0">オプション設定</h3>
+        <button class="main-btn" onclick="savePreset()" style="background:var(--active); margin-bottom:15px;">現在設定を保存</button>
+        <button class="main-btn" onclick="clearPresets()" style="background:#eee; color:#ff3b30; font-size: 14px;">保存データを全削除</button>
+        <button class="main-btn" style="background:#eee; color:#333; margin-top:20px;" onclick="toggleModal(false)">閉じる</button>
+    </div>
+</div>
+
+<script>
+    let mode = 'timer';
+    let vals = { time: 60, sets: 1, rest: 10 };
+    let tId = null, wakeLock = null, alarmId = null;
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    // 以前より少しマイルドな音色（サイン波）
+    function playAlarm() {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(1200, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.2);
+    }
+
+    function run() {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        navigator.wakeLock?.request('screen').then(lock => wakeLock = lock);
+        
+        let s = 1, ph = 'work', rem = vals.time, total = vals.time;
+        document.getElementById('dashboard').style.display = 'flex';
+
+        const tick = () => {
+            const f = s => `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+            document.getElementById('ui-time').textContent = f(rem);
+            document.getElementById('ui-sets').textContent = mode==='timer' ? "" : `SET ${s} / ${vals.sets}`;
+            const isW = ph === 'work';
+            document.getElementById('ui-phase').textContent = mode==='timer' ? "TIMER" : (isW ? "TRAINING" : "REST");
+            const color = isW ? "var(--active)" : "var(--rest)";
+            document.getElementById('ui-phase').style.color = (mode==='timer') ? "#333" : color;
+            document.getElementById('progress').style.stroke = (mode==='timer') ? "#333" : color;
+            document.getElementById('progress').style.strokeDashoffset = 628 - (628 * (rem / total));
+
+            if(rem <= 0) {
+                if(mode === 'timer' || (ph === 'work' && s >= vals.sets)) {
+                    document.getElementById('dashboard').classList.add('alarm-active');
+                    alarmId = setInterval(playAlarm, 500);
+                    return;
+                }
+                playAlarm();
+                if(isW) { ph = 'rest'; rem = vals.rest; total = vals.rest; }
+                else { s++; ph = 'work'; rem = vals.time; total = vals.time; }
+            } else { rem--; }
+            tId = setTimeout(tick, 1000);
+        };
+        tick();
+    }
+
+    function stop() {
+        clearTimeout(tId);
+        clearInterval(alarmId);
+        document.getElementById('dashboard').classList.remove('alarm-active');
+        wakeLock?.release();
+        document.getElementById('dashboard').style.display = 'none';
+    }
+
+    function setMode(m) {
+        mode = m;
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.id === 'm-' + m));
+        document.getElementById('row-sets').classList.toggle('disabled', mode === 'timer');
+        document.getElementById('row-rest').classList.toggle('disabled', mode !== 'interval');
+    }
+
+    function mkPicker(id, max, step=1) {
+        const el = document.getElementById(id);
+        const list = document.createElement('div');
+        for(let i=0; i<=max; i+=step) {
+            const it = document.createElement('div'); it.className = 'picker-item';
+            it.textContent = String(i).padStart(2, '0'); list.appendChild(it);
+        }
+        el.appendChild(list);
+        el.onscroll = () => {
+            const idx = Math.round(el.scrollTop / 40);
+            const v = idx * step;
+            const [, type, part] = id.split('-');
+            if(type === 'sets') vals.sets = Math.max(1, v);
+            else if(part === 'm') vals[type] = (v * 60) + (vals[type] % 60);
+            else if(part === 's') vals[type] = (Math.floor(vals[type]/60) * 60) + v;
+            Array.from(list.children).forEach((it, i) => it.classList.toggle('selected', i === idx));
+        };
+    }
+
+    function toggleModal(show) { document.getElementById('settings-modal').style.display = show ? 'flex' : 'none'; }
+
+    function savePreset() {
+        const name = prompt("お気に入りの名前を入力", mode.toUpperCase());
+        if(!name) return;
+        const saved = JSON.parse(localStorage.getItem('timer_p4') || '[]');
+        saved.push({ name, mode, vals: {...vals} });
+        localStorage.setItem('timer_p4', JSON.stringify(saved));
+        loadPresets(); toggleModal(false);
+    }
+
+    function loadPresets() {
+        const list = document.getElementById('preset-list');
+        list.innerHTML = '';
+        const saved = JSON.parse(localStorage.getItem('timer_p4') || '[]');
+        saved.forEach(p => {
+            const btn = document.createElement('button'); btn.className = 'preset-btn';
+            btn.textContent = p.name;
+            btn.onclick = () => { 
+                setMode(p.mode); vals = {...p.vals};
+                alert(`${p.name}をロードしました。時間はスクロールで確認してください。`);
+            };
+            list.appendChild(btn);
+        });
+    }
+
+    function clearPresets() { if(confirm("全削除しますか？")) { localStorage.removeItem('timer_p4'); loadPresets(); } }
+
+    mkPicker('p-time-m', 59); mkPicker('p-time-s', 55,
         /* 終了時の点滅アニメーション */
         .alarm-active { animation: blink-bg 0.2s infinite; }
         @keyframes blink-bg {
