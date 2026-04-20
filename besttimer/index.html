@@ -3,37 +3,201 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Compact Dial Timer</title>
+    <title>Integrated Interval Timer</title>
     <style>
         :root {
-            --bg: #f2f2f7;
+            --bg: #f5f7fa;
             --card: #ffffff;
-            --primary: #1c1c1e;
-            --accent: #34c759;
-            --disabled-text: #c7c7cc;
-            --item-h: 40px; /* ダイヤルの1項目高さ */
+            --primary: #1a1a1a;
+            --accent: #4caf50;
+            --text-main: #333;
+            --text-muted: #adb5bd;
+            --item-h: 40px;
         }
 
-        body {
-            margin: 0; font-family: -apple-system, sans-serif; background: var(--bg);
-            color: #000; overflow: hidden; user-select: none;
-        }
+        body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text-main); user-select: none; -webkit-user-select: none; overflow: hidden; }
+        .container { max-width: 500px; margin: 0 auto; padding: 20px; height: 100vh; display: flex; flex-direction: column; box-sizing: border-box; }
 
-        .container { max-width: 500px; margin: 0 auto; padding: 15px; height: 100vh; display: flex; flex-direction: column; box-sizing: border-box; }
-
-        /* モード切替 */
-        .mode-selector { display: flex; background: #e3e3e3; padding: 2px; border-radius: 10px; margin-bottom: 20px; }
-        .mode-btn {
-            flex: 1; padding: 8px; border: none; background: none; border-radius: 8px;
-            font-size: 14px; font-weight: bold; cursor: pointer;
-        }
-        .mode-btn.active { background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        /* モード選択 */
+        .mode-selector { display: flex; gap: 10px; margin-bottom: 25px; }
+        .mode-btn { flex: 1; padding: 12px; border: 2px solid var(--primary); background: none; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .mode-btn.active { background: var(--primary); color: white; }
 
         /* 設定行 (Row) */
-        .setting-row {
-            background: var(--card); border-radius: 12px; margin-bottom: 8px;
-            display: flex; align-items: center; padding: 5px 15px; height: 100px;
-            transition: opacity 0.3s;
+        .setting-row { background: var(--card); border-radius: 16px; margin-bottom: 12px; display: flex; align-items: center; padding: 5px 20px; height: 100px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); transition: 0.3s; }
+        .setting-row.disabled { opacity: 0.2; pointer-events: none; }
+        .label-v { writing-mode: vertical-rl; text-orientation: upright; font-size: 14px; font-weight: bold; color: var(--text-muted); padding-right: 15px; border-right: 1px solid #eee; }
+        .picker-group { flex: 1; display: flex; justify-content: center; align-items: center; gap: 10px; height: 100%; overflow: hidden; }
+        
+        /* ダイヤルスタイル */
+        .picker-col { height: 80px; width: 60px; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; }
+        .picker-col::-webkit-scrollbar { display: none; }
+        .picker-list { padding: 20px 0; }
+        .picker-item { height: var(--item-h); display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 800; scroll-snap-align: center; color: #eee; transition: 0.2s; }
+        .picker-item.selected { color: var(--primary); }
+        .unit { font-size: 14px; color: var(--text-muted); font-weight: bold; }
+
+        /* 下部実行ダッシュボード（追加・変更点） */
+        .dashboard-area { margin-top: auto; padding: 25px 0; border-top: 2px solid #eee; display: flex; flex-direction: column; align-items: center; transition: 0.5s; }
+        .run-info { display: none; width: 100%; text-align: center; margin-bottom: 25px; }
+
+        /* 円形プログレスバー */
+        .progress-circle { position: relative; width: 180px; height: 180px; margin: 0 auto; display: flex; align-items: center; justify-content: center; }
+        .progress-circle svg { transform: rotate(-90deg); width: 100%; height: 100%; }
+        .progress-circle circle { fill: none; stroke-width: 10; stroke-linecap: round; }
+        .bg-ring { stroke: #eee; }
+        .bar-ring { stroke: var(--accent); stroke-dasharray: 534; stroke-dashoffset: 534; transition: stroke-dashoffset 0.1s linear, stroke 0.3s; }
+        .ov-time { position: absolute; font-size: 48px; font-weight: 900; font-family: monospace; color: var(--primary); }
+
+        /* セット・フェーズ表示 */
+        .ov-sets { font-size: 18px; color: var(--text-muted); margin-bottom: 5px; }
+        .ov-status { font-size: 26px; font-weight: bold; margin-bottom: 20px; letter-spacing: 2px; transition: color 0.3s; }
+
+        /* START / STOP ボタン */
+        .start-btn { width: 100%; padding: 22px; border-radius: 50px; border: none; background: var(--primary); color: white; font-size: 20px; font-weight: bold; cursor: pointer; transition: 0.2s; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        #stop-btn { display: none; background: #ff4757; margin-top: 15px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="mode-selector">
+        <button class="mode-btn active" onclick="setMode('timer')">タイマー</button>
+        <button class="mode-btn" onclick="setMode('repeat')">リピート</button>
+        <button class="mode-btn" onclick="setMode('interval')">インターバル</button>
+    </div>
+
+    <div class="setting-row" id="row-time"><div class="label-v">時間</div><div class="picker-group"><div class="picker-col" id="p-time-m"></div><span class="unit">分</span><div class="picker-col" id="p-time-s"></div><span class="unit">秒</span></div></div>
+    <div class="setting-row" id="row-sets"><div class="label-v">回数</div><div class="picker-group"><div class="picker-col" id="p-sets-v"></div><span class="unit">セット</span></div></div>
+    <div class="setting-row" id="row-rest"><div class="label-v">休息</div><div class="picker-group"><div class="picker-col" id="p-rest-m"></div><span class="unit">分</span><div class="picker-col" id="p-rest-s"></div><span class="unit">秒</span></div></div>
+
+    <div class="dashboard-area">
+        <div class="run-info" id="run-info-panel">
+            <div class="ov-sets" id="ov-sets-val">SET 1 / 8</div>
+            <div class="ov-status" id="ov-status-val">TRAINING</div>
+            <div class="progress-circle">
+                <svg viewBox="0 0 180 180">
+                    <circle class="bg-ring" cx="90" cy="90" r="85"></circle>
+                    <circle class="bar-ring" cx="90" cy="90" r="85"></circle>
+                </svg>
+                <div class="ov-time" id="big-time-val">00:00</div>
+            </div>
+        </div>
+        <button class="start-btn" id="start-btn" onclick="start()">START</button>
+        <button class="start-btn" id="stop-btn" onclick="stop()">STOP / EXIT</button>
+    </div>
+</div>
+
+<script>
+    let mode = 'timer';
+    let vals = { time: 20, sets: 8, rest: 10 };
+    let tId;
+    let originalTotal = 0;
+
+    // ダイヤル生成ロジック
+    function mkPicker(id, max, step=1) {
+        const el = document.getElementById(id);
+        const list = document.createElement('div');
+        list.className = 'picker-list';
+        for(let i=0; i<=max; i+=step) {
+            const item = document.createElement('div');
+            item.className = 'picker-item';
+            item.textContent = String(i).padStart(2, '0');
+            list.appendChild(item);
+        }
+        el.appendChild(list);
+
+        el.onscroll = () => {
+            const idx = Math.round(el.scrollTop / 40);
+            const v = idx * step;
+            const [, type, part] = id.split('-'); 
+            if(type === 'sets') vals.sets = Math.max(1, v);
+            else if(part === 'm') vals[type] = (v * 60) + (vals[type] % 60);
+            else if(part === 's') vals[type] = (Math.floor(vals[type]/60) * 60) + v;
+            Array.from(list.children).forEach((it, i) => it.classList.toggle('selected', i === idx));
+        };
+    }
+
+    function scrollByVal(id, v, step=1) {
+        document.getElementById(id).scrollTo({ top: (v/step) * 40, behavior: 'smooth' });
+    }
+
+    function setMode(m) {
+        mode = m;
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.innerText.includes(m === 'timer' ? 'タイマー' : m === 'repeat' ? 'リピート' : 'インターバル')));
+        document.getElementById('row-sets').classList.toggle('disabled', mode === 'timer');
+        document.getElementById('row-rest').classList.toggle('disabled', mode !== 'interval');
+    }
+
+    // 初期化
+    mkPicker('p-time-m', 59); mkPicker('p-time-s', 55, 5); mkPicker('p-sets-v', 50); mkPicker('p-rest-m', 59); mkPicker('p-rest-s', 55, 5);
+    setTimeout(() => { scrollByVal('p-time-m', 0); scrollByVal('p-time-s', 20, 5); scrollByVal('p-sets-v', 8); scrollByVal('p-rest-m', 0); scrollByVal('p-rest-s', 10, 5); }, 200);
+
+    // ビジュアルプログレス更新
+    function updateProgress(rem, total) {
+        const bar = document.querySelector('.bar-ring');
+        const pct = rem / total;
+        const offset = 534 * (1 - pct);
+        bar.strokeDashoffset = offset;
+    }
+
+    // 実行エンジン（ダッシュボード対応）
+    function start() {
+        if(vals.time <= 0 && vals.rest <= 0) return;
+        let s = 1, ph = 'work', rem = vals.time, totalPh = vals.time;
+        
+        // UI表示切り替え（ここがポイント）
+        document.getElementById('start-btn').style.display = 'none';
+        document.getElementById('stop-btn').style.display = 'block';
+        document.getElementById('run-info-panel').style.display = 'block';
+        // 設定を一時的に暗くして触れなくする（損切り的なUX）
+        document.querySelectorAll('.setting-row, .mode-selector').forEach(el => el.style.opacity = '0.15');
+
+        const tick = () => {
+            const f = s => `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+            document.getElementById('big-time-val').textContent = f(rem);
+            document.getElementById('ov-sets-val').textContent = (mode === 'timer') ? "" : `SET ${s} / ${vals.sets}`;
+            
+            // ビジュアル更新
+            const phaseLabel = (mode === 'timer') ? "TIMER" : (ph === 'work' ? "WORK" : "REST");
+            document.getElementById('ov-status-val').textContent = phaseLabel;
+            document.getElementById('ov-status-val').style.color = (mode === 'timer') ? "#333" : (ph === 'work' ? "#4caf50" : "#2196f3");
+            document.querySelector('.bar-ring').style.stroke = (mode === 'timer') ? "#333" : (ph === 'work' ? "#4caf50" : "#2196f3");
+            
+            updateProgress(rem, totalPh);
+
+            if(rem <= 0) {
+                if(navigator.vibrate) navigator.vibrate(400);
+                if(mode === 'timer') return fin();
+                if(ph === 'work') {
+                    if(s >= vals.sets) return fin();
+                    if(mode === 'repeat') { s++; rem = vals.time; totalPh = vals.time; }
+                    else { ph = 'rest'; rem = vals.rest; totalPh = vals.rest; }
+                } else { s++; ph = 'work'; rem = vals.time; totalPh = vals.time; }
+            } else { rem--; }
+            tId = setTimeout(tick, 1000);
+        };
+        const fin = () => { 
+            document.getElementById('big-time-val').textContent = "DONE"; 
+            updateProgress(1, 1); 
+            if(navigator.vibrate) navigator.vibrate([200, 100, 200]);
+            setTimeout(stop, 2500); 
+        };
+        tick();
+    }
+
+    function stop() {
+        clearTimeout(tId);
+        document.getElementById('start-btn').style.display = 'block';
+        document.getElementById('stop-btn').style.display = 'none';
+        document.getElementById('run-info-panel').style.display = 'none';
+        document.querySelectorAll('.setting-row, .mode-selector').forEach(el => el.style.opacity = '1');
+        // タイマーのリセット
+        updateProgress(1,1);
+    }
+</script>
+</body>
+</html>
         }
         .setting-row.disabled { opacity: 0.15; pointer-events: none; }
 
