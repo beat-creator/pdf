@@ -3,37 +3,183 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Visual Pro Timer</title>
+    <title>Streamlined Workout Timer</title>
     <style>
         :root {
-            --bg: #f8f9fc;
+            --bg: #f2f4f7;
             --card: #ffffff;
-            --primary: #1a1a1a;
-            --active: #4caf50;
-            --rest: #2196f3;
-            --muted: #adb5bd;
-            --item-h: 36px;
+            --primary: #1c1c1e;
+            --active: #34c759;
+            --rest: #007aff;
+            --muted: #8e8e93;
+            --item-h: 40px;
         }
 
-        body { margin: 0; font-family: -apple-system, sans-serif; background: var(--bg); color: #333; overflow: hidden; user-select: none; -webkit-user-select: none; }
+        body { margin: 0; font-family: -apple-system, sans-serif; background: var(--bg); color: #333; overflow: hidden; user-select: none; }
         .container { max-width: 500px; margin: 0 auto; padding: 15px; height: 100vh; display: flex; flex-direction: column; box-sizing: border-box; }
 
-        /* モード選択（さらにコンパクトに） */
-        .mode-selector { display: flex; background: #eee; padding: 2px; border-radius: 8px; margin-bottom: 10px; }
-        .mode-btn { flex: 1; padding: 8px; border: none; background: none; border-radius: 6px; font-weight: bold; font-size: 13px; cursor: pointer; }
-        .mode-btn.active { background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        /* モード切替 */
+        .mode-selector { display: flex; background: #e3e3e3; padding: 2px; border-radius: 12px; margin-bottom: 15px; }
+        .mode-btn { flex: 1; padding: 10px; border: none; background: none; border-radius: 10px; font-weight: bold; font-size: 14px; cursor: pointer; }
+        .mode-btn.active { background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
 
-        /* 設定行（高さを抑えてスペースを確保） */
-        .setting-row { background: var(--card); border-radius: 12px; margin-bottom: 6px; display: flex; align-items: center; padding: 0 15px; height: 75px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: 0.3s; }
-        .setting-row.disabled { opacity: 0.1; pointer-events: none; }
-        .label-v { writing-mode: vertical-rl; text-orientation: upright; font-size: 11px; font-weight: bold; color: var(--muted); padding-right: 10px; border-right: 1px solid #f0f0f0; }
+        /* 設定エリア */
+        .settings-group { transition: 0.4s ease; }
+        .setting-row { background: var(--card); border-radius: 16px; margin-bottom: 8px; display: flex; align-items: center; padding: 0 20px; height: 90px; box-shadow: 0 2px 5px rgba(0,0,0,0.03); transition: 0.3s; }
+        .setting-row.disabled { opacity: 0.1; pointer-events: none; transform: scale(0.98); }
+        .label-v { writing-mode: vertical-rl; text-orientation: upright; font-size: 12px; font-weight: bold; color: var(--muted); padding-right: 15px; border-right: 1px solid #f0f0f0; letter-spacing: 2px; }
         
-        .picker-group { flex: 1; display: flex; justify-content: center; align-items: center; gap: 5px; height: 100%; overflow: hidden; }
-        .picker-col { height: 72px; width: 50px; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; }
+        .picker-group { flex: 1; display: flex; justify-content: center; align-items: center; gap: 10px; height: 100%; overflow: hidden; }
+        .picker-col { height: 80px; width: 60px; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; }
         .picker-col::-webkit-scrollbar { display: none; }
-        .picker-item { height: var(--item-h); display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; scroll-snap-align: center; color: #e0e0e0; transition: 0.2s; }
-        .picker-item.selected { color: var(--primary); font-size: 26px; }
-        .unit { font-size: 11px; color: var(--muted); }
+        .picker-item { height: var(--item-h); display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 700; scroll-snap-align: center; color: #ddd; transition: 0.2s; }
+        .picker-item.selected { color: var(--primary); font-size: 32px; }
+        .unit { font-size: 12px; color: var(--muted); font-weight: bold; }
+
+        /* STARTボタン（休息の下） */
+        .start-container { margin-top: 10px; transition: 0.4s; }
+        .main-btn { width: 100%; padding: 20px; border-radius: 16px; border: none; background: var(--primary); color: white; font-size: 22px; font-weight: 900; cursor: pointer; box-shadow: 0 8px 15px rgba(0,0,0,0.1); transition: 0.2s; }
+        .main-btn:active { transform: scale(0.96); opacity: 0.9; }
+
+        /* 実行ダッシュボード（中央配置） */
+        .dashboard { flex: 1; display: none; flex-direction: column; align-items: center; justify-content: center; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .circle-ui { position: relative; width: 240px; height: 240px; }
+        .circle-ui svg { transform: rotate(-90deg); width: 100%; height: 100%; }
+        .circle-ui circle { fill: none; stroke-width: 8; stroke-linecap: round; }
+        .ring-bg { stroke: #eef0f5; }
+        .ring-bar { stroke: var(--active); stroke-dasharray: 628; stroke-dashoffset: 628; transition: stroke-dashoffset 1s linear, stroke 0.3s; }
+        
+        .time-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 60px; font-weight: 900; font-family: 'Courier New', Courier, monospace; }
+        .status-text { font-size: 24px; font-weight: 800; letter-spacing: 6px; margin-bottom: 10px; color: var(--muted); }
+        .set-counter { font-size: 18px; font-weight: bold; color: var(--muted); margin-top: 15px; }
+
+        #stop-btn { background: #ff3b30; margin-top: 30px; display: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="setup-view">
+        <div class="mode-selector">
+            <button class="mode-btn active" id="btn-timer" onclick="setMode('timer')">タイマー</button>
+            <button class="mode-btn" id="btn-repeat" onclick="setMode('repeat')">リピート</button>
+            <button class="mode-btn" id="btn-interval" onclick="setMode('interval')">インターバル</button>
+        </div>
+
+        <div class="settings-group">
+            <div class="setting-row" id="row-time"><div class="label-v">時間</div><div class="picker-group"><div class="picker-col" id="p-time-m"></div><span class="unit">分</span><div class="picker-col" id="p-time-s"></div><span class="unit">秒</span></div></div>
+            <div class="setting-row" id="row-sets"><div class="label-v">回数</div><div class="picker-group"><div class="picker-col" id="p-sets-v"></div><span class="unit">セット</span></div></div>
+            <div class="setting-row" id="row-rest"><div class="label-v">休息</div><div class="picker-group"><div class="picker-col" id="p-rest-m"></div><span class="unit">分</span><div class="picker-col" id="p-rest-s"></div><span class="unit">秒</span></div></div>
+        </div>
+
+        <div class="start-container">
+            <button class="main-btn" id="start-btn" onclick="run()">START</button>
+        </div>
+    </div>
+
+    <div class="dashboard" id="dashboard">
+        <div class="status-text" id="ui-phase">TRAINING</div>
+        <div class="circle-ui">
+            <svg viewBox="0 0 210 210">
+                <circle class="ring-bg" cx="105" cy="105" r="100"></circle>
+                <circle class="ring-bar" id="progress" cx="105" cy="105" r="100"></circle>
+            </svg>
+            <div class="time-text" id="ui-time">00:00</div>
+        </div>
+        <div class="set-counter" id="ui-sets">SET 1 / 8</div>
+        <button class="main-btn" id="stop-btn" onclick="stop()">STOP / EXIT</button>
+    </div>
+</div>
+
+<script>
+    let mode = 'timer';
+    let vals = { time: 150, sets: 8, rest: 20 }; // 初期値（2:30, 8sets, 20s）
+    let tId = null;
+
+    function mkPicker(id, max, step=1) {
+        const el = document.getElementById(id);
+        const list = document.createElement('div');
+        list.className = 'picker-list';
+        for(let i=0; i<=max; i+=step) {
+            const item = document.createElement('div'); item.className = 'picker-item';
+            item.textContent = String(i).padStart(2, '0'); list.appendChild(item);
+        }
+        el.appendChild(list);
+        el.onscroll = () => {
+            const idx = Math.round(el.scrollTop / 40);
+            const v = idx * step;
+            const [, type, part] = id.split('-');
+            if(type === 'sets') vals.sets = Math.max(1, v);
+            else if(part === 'm') vals[type] = (v * 60) + (vals[type] % 60);
+            else if(part === 's') vals[type] = (Math.floor(vals[type]/60) * 60) + v;
+            Array.from(list.children).forEach((it, i) => it.classList.toggle('selected', i === idx));
+        };
+    }
+
+    function scrollByVal(id, v, step=1) { document.getElementById(id).scrollTo({ top: (v/step) * 40, behavior: 'smooth' }); }
+
+    function setMode(m) {
+        mode = m;
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.id.includes(m)));
+        document.getElementById('row-sets').classList.toggle('disabled', mode === 'timer');
+        document.getElementById('row-rest').classList.toggle('disabled', mode !== 'interval');
+    }
+
+    // 初期化（スクショの値をデフォルトに）
+    mkPicker('p-time-m', 59); mkPicker('p-time-s', 55, 5); mkPicker('p-sets-v', 50); mkPicker('p-rest-m', 59); mkPicker('p-rest-s', 55, 5);
+    setTimeout(() => { 
+        scrollByVal('p-time-m', 2); scrollByVal('p-time-s', 30, 5); 
+        scrollByVal('p-sets-v', 8); 
+        scrollByVal('p-rest-m', 0); scrollByVal('p-rest-s', 20, 5); 
+    }, 200);
+
+    function run() {
+        if(vals.time <= 0) return;
+        let s = 1, ph = 'work', rem = vals.time, total = vals.time;
+        
+        document.getElementById('setup-view').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'flex';
+        document.getElementById('stop-btn').style.display = 'block';
+
+        const tick = () => {
+            const f = s => `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+            document.getElementById('ui-time').textContent = f(rem);
+            document.getElementById('ui-sets').textContent = (mode === 'timer') ? "" : `SET ${s} / ${vals.sets}`;
+            
+            const isW = (ph === 'work');
+            document.getElementById('ui-phase').textContent = (mode === 'timer') ? "TIMER" : (isW ? "TRAINING" : "REST");
+            const color = (mode === 'timer') ? "#333" : (isW ? "var(--active)" : "var(--rest)");
+            document.getElementById('ui-phase').style.color = color;
+            document.getElementById('progress').style.stroke = color;
+
+            const offset = 628 - (628 * (rem / total));
+            document.getElementById('progress').style.strokeDashoffset = offset;
+
+            if(rem <= 0) {
+                if(navigator.vibrate) navigator.vibrate(400);
+                if(mode === 'timer') return fin();
+                if(isW) {
+                    if(s >= vals.sets) return fin();
+                    if(mode === 'repeat') { s++; rem = vals.time; total = vals.time; }
+                    else { ph = 'rest'; rem = vals.rest; total = vals.rest; }
+                } else { s++; ph = 'work'; rem = vals.time; total = vals.time; }
+            } else { rem--; }
+            tId = setTimeout(tick, 1000);
+        };
+        const fin = () => { document.getElementById('ui-time').textContent = "DONE"; document.getElementById('progress').style.strokeDashoffset = 0; setTimeout(stop, 2500); };
+        tick();
+    }
+
+    function stop() {
+        clearTimeout(tId);
+        document.getElementById('setup-view').style.display = 'block';
+        document.getElementById('dashboard').style.display = 'none';
+    }
+</script>
+</body>
+</html>
 
         /* メインダッシュボード */
         .dashboard { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
