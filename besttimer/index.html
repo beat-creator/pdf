@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Hybrid Workout Timer</title>
+    <title>Drum Picker Workout Timer</title>
     <style>
         :root {
             --bg-color: #f5f7fa;
@@ -26,14 +26,214 @@
             height: 100vh; padding: 20px; box-sizing: border-box;
         }
 
-        /* UIパーツ */
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .pro-badge { background: #e3f2fd; color: #2196f3; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; border: 1px solid #bbdefb; }
-        
-        .card { background: var(--card-bg); border-radius: 16px; padding: 15px; margin-bottom: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .pro-badge { background: #e3f2fd; color: #2196f3; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+
+        .card { background: var(--card-bg); border-radius: 16px; padding: 15px; margin-bottom: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
         .card label { display: block; font-size: 13px; font-weight: 600; color: var(--text-sub); margin-bottom: 8px; text-align: center; }
-        .label-active { color: var(--active-color) !important; }
-        .label-rest { color: var(--rest-color) !important; }
+
+        .control { display: flex; justify-content: space-between; align-items: center; }
+        .btn-ctrl { background: none; border: none; font-size: 32px; color: var(--text-main); cursor: pointer; width: 40px; height: 40px; z-index: 10; }
+
+        /* 自作ドラムロール（スロット）スタイル */
+        .picker-group { display: flex; align-items: center; gap: 5px; height: 60px; overflow: hidden; position: relative; }
+        .picker-container {
+            height: 60px; width: 60px; overflow-y: scroll; 
+            scroll-snap-type: y mandatory; scrollbar-width: none; /* Firefox */
+        }
+        .picker-container::-webkit-scrollbar { display: none; /* Chrome/Safari */ }
+        
+        .picker-list { padding: 10px 0; }
+        .picker-item {
+            height: 40px; display: flex; align-items: center; justify-content: center;
+            font-size: 32px; font-weight: 800; scroll-snap-align: center;
+            opacity: 0.3; transition: opacity 0.2s;
+        }
+        /* 中央に来ているアイテムを強調（疑似的） */
+        .picker-item.selected { opacity: 1; color: var(--text-main); }
+        .unit { font-size: 14px; color: var(--text-sub); font-weight: bold; }
+
+        .option-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 5px; font-size: 14px; }
+        .footer-action { margin-top: auto; padding-bottom: 80px; }
+        .start-btn { background: var(--primary-color); color: white; width: 100%; border-radius: 16px; padding: 18px; display: flex; justify-content: space-between; align-items: center; border: none; font-size: 18px; font-weight: bold; }
+
+        .tab-bar { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #eee; }
+        .tab-item { font-size: 10px; text-align: center; color: var(--text-sub); flex: 1; }
+
+        /* 実行画面 */
+        #timer-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 2000; display: none; flex-direction: column;
+            justify-content: center; align-items: center; color: white;
+        }
+        #timer-display { font-size: 100px; font-weight: 800; font-family: monospace; }
+        #stop-btn { margin-top: 40px; padding: 12px 40px; background: rgba(255,255,255,0.2); border: 2px solid white; color: white; border-radius: 30px; }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <header class="header">
+            <h1>クイックワークアウト</h1>
+            <div class="pro-badge">PRO</div>
+        </header>
+
+        <main>
+            <div class="card" id="card-sets"><label>セット</label>
+                <div class="control">
+                    <button class="btn-ctrl" onclick="step('sets', -1)">−</button>
+                    <div class="picker-group">
+                        <div class="picker-container" id="p-sets"></div><span class="unit">回</span>
+                    </div>
+                    <button class="btn-ctrl" onclick="step('sets', 1)">＋</button>
+                </div>
+            </div>
+
+            <div class="card" id="card-active"><label style="color:var(--active-color)">トレーニング</label>
+                <div class="control">
+                    <button class="btn-ctrl" onclick="step('active', -5)">−</button>
+                    <div class="picker-group">
+                        <div class="picker-container" id="p-active-m"></div><span class="unit">分</span>
+                        <div class="picker-container" id="p-active-s"></div><span class="unit">秒</span>
+                    </div>
+                    <button class="btn-ctrl" onclick="step('active', 5)">＋</button>
+                </div>
+            </div>
+
+            <div class="card" id="card-rest"><label style="color:var(--rest-color)">休息</label>
+                <div class="control">
+                    <button class="btn-ctrl" onclick="step('rest', -5)">−</button>
+                    <div class="picker-group">
+                        <div class="picker-container" id="p-rest-m"></div><span class="unit">分</span>
+                        <div class="picker-container" id="p-rest-s"></div><span class="unit">秒</span>
+                    </div>
+                    <button class="btn-ctrl" onclick="step('rest', 5)">＋</button>
+                </div>
+            </div>
+
+            <div class="option-row"><span>最後の休息をスキップ</span><input type="checkbox" id="skip-rest" checked></div>
+        </main>
+
+        <footer class="footer-action">
+            <button class="start-btn" id="start-btn"><span>▶ ワークアウトを開始</span><span id="total-display">03:50</span></button>
+        </footer>
+
+        <nav class="tab-bar">
+            <div class="tab-item">⏱️<br>タイマー</div>
+            <div class="tab-item">📖<br>ワークアウト</div>
+            <div class="tab-item">📅<br>履歴</div>
+            <div class="tab-item">⚙️<br>設定</div>
+        </nav>
+    </div>
+
+    <div id="timer-overlay">
+        <div id="phase-label" style="font-size:24px; font-weight:bold">READY</div>
+        <div id="timer-display">00:00</div>
+        <div id="set-display">SET 1 / 8</div>
+        <button id="stop-btn">終了</button>
+    </div>
+
+    <script>
+        const settings = { sets: 8, active: 20, rest: 10, skip: true };
+        const itemHeight = 40;
+
+        // ドラム生成
+        function createPicker(id, max, step=1) {
+            const container = document.getElementById(id);
+            const list = document.createElement('div');
+            list.className = 'picker-list';
+            list.appendChild(document.createElement('div')).style.height = '10px'; // 余白
+            for(let i=0; i<=max; i+=step) {
+                const div = document.createElement('div');
+                div.className = 'picker-item';
+                div.textContent = String(i).padStart(2, '0');
+                list.appendChild(div);
+            }
+            list.appendChild(document.createElement('div')).style.height = '10px'; // 余白
+            container.appendChild(list);
+
+            // スクロール検知
+            container.onscroll = () => {
+                const index = Math.round(container.scrollTop / itemHeight);
+                const val = index * step;
+                const type = id.split('-')[1];
+                const part = id.split('-')[2];
+
+                if(id === 'p-sets') settings.sets = Math.max(1, val);
+                else if(part === 'm') settings[type] = (val * 60) + (settings[type] % 60);
+                else if(part === 's') settings[type] = (Math.floor(settings[type] / 60) * 60) + val;
+                
+                // 強調表示更新
+                Array.from(list.getElementsByClassName('picker-item')).forEach((el, i) => {
+                    el.classList.toggle('selected', i === index);
+                });
+                updateTotal();
+            };
+        }
+
+        function setPickerVal(id, val, step=1) {
+            const container = document.getElementById(id);
+            container.scrollTo({ top: (val / step) * itemHeight, behavior: 'smooth' });
+        }
+
+        function updateTotal() {
+            let total = (settings.active + settings.rest) * settings.sets - (settings.skip ? settings.rest : 0);
+            total = Math.max(0, total);
+            const m = String(Math.floor(total/60)).padStart(2,'0');
+            const s = String(total%60).padStart(2,'0');
+            document.getElementById('total-display').textContent = `${m}:${s}`;
+        }
+
+        function step(type, delta) {
+            if(type === 'sets') {
+                settings.sets = Math.max(1, settings.sets + delta);
+                setPickerVal('p-sets', settings.sets);
+            } else {
+                settings[type] = Math.max(0, settings[type] + delta);
+                setPickerVal(`p-${type}-m`, Math.floor(settings[type]/60));
+                setPickerVal(`p-${type}-s`, settings[type]%60, 5);
+            }
+        }
+
+        // 初期化
+        createPicker('p-sets', 30);
+        createPicker('p-active-m', 59);
+        createPicker('p-active-s', 55, 5);
+        createPicker('p-rest-m', 59);
+        createPicker('p-rest-s', 55, 5);
+
+        setTimeout(() => {
+            setPickerVal('p-sets', 8);
+            setPickerVal('p-active-m', 0); setPickerVal('p-active-s', 20, 5);
+            setPickerVal('p-rest-m', 0); setPickerVal('p-rest-s', 10, 5);
+        }, 100);
+
+        document.getElementById('skip-rest').onchange = (e) => { settings.skip = e.target.checked; updateTotal(); };
+
+        // 実行エンジン (簡易版)
+        let tId;
+        document.getElementById('start-btn').onclick = () => {
+            let s=1, ph='active', rem=settings.active;
+            const ov = document.getElementById('timer-overlay');
+            ov.style.display = 'flex';
+            const tick = () => {
+                document.getElementById('timer-display').textContent = `${String(Math.floor(rem/60)).padStart(2,'0')}:${String(rem%60).padStart(2,'0')}`;
+                document.getElementById('set-display').textContent = `SET ${s} / ${settings.sets}`;
+                document.getElementById('phase-label').textContent = ph === 'active' ? 'トレーニング' : '休息';
+                ov.style.backgroundColor = ph === 'active' ? 'var(--active-color)' : 'var(--rest-color)';
+                if(rem <= 0) {
+                    if(ph === 'active') { if(s >= settings.sets && settings.skip) return fin(); ph='rest'; rem=settings.rest; }
+                    else { s++; if(s > settings.sets) return fin(); ph='active'; rem=settings.active; }
+                } else rem--;
+                tId = setTimeout(tick, 1000);
+            };
+            const fin = () => { ov.style.backgroundColor='#1a1a1a'; document.getElementById('timer-display').textContent='FINISH'; setTimeout(()=>ov.style.display='none', 2000); };
+            tick();
+        };
+        document.getElementById('stop-btn').onclick = () => { clearTimeout(tId); document.getElementById('timer-overlay').style.display='none'; };
+    </script>
+</body>
+</html>
         
         .control { display: flex; justify-content: space-between; align-items: center; }
         .btn-ctrl { background: none; border: none; font-size: 32px; color: var(--text-main); cursor: pointer; width: 50px; height: 50px; }
