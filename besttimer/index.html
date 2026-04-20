@@ -3,37 +3,203 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Drum Picker Workout Timer</title>
+    <title>3-in-1 Simple Timer</title>
     <style>
         :root {
-            --bg-color: #f5f7fa;
-            --card-bg: #ffffff;
-            --primary-color: #1a1a1a;
-            --active-color: #4caf50;
-            --rest-color: #2196f3;
+            --bg: #f8f9fa;
+            --card: #ffffff;
+            --primary: #1a1a1a;
+            --accent: #4caf50;
+            --disabled: #e9ecef;
             --text-main: #333;
-            --text-sub: #888;
+            --text-muted: #adb5bd;
         }
 
         body {
-            margin: 0; font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: var(--bg-color); color: var(--text-main);
-            user-select: none; -webkit-user-select: none; overflow: hidden;
+            margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text-main);
+            user-select: none; -webkit-user-select: none;
         }
 
-        .app-container {
-            max-width: 500px; margin: 0 auto; display: flex; flex-direction: column;
-            height: 100vh; padding: 20px; box-sizing: border-box;
+        .container { max-width: 500px; margin: 0 auto; padding: 20px; height: 100vh; box-sizing: border-box; display: flex; flex-direction: column; }
+
+        /* モード切替ボタン */
+        .mode-selector { display: flex; gap: 10px; margin-bottom: 20px; }
+        .mode-btn {
+            flex: 1; padding: 12px; border: 2px solid var(--primary); background: none;
+            border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.2s;
         }
+        .mode-btn.active { background: var(--primary); color: white; }
 
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .pro-badge { background: #e3f2fd; color: #2196f3; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
-
-        .card { background: var(--card-bg); border-radius: 16px; padding: 15px; margin-bottom: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
-        .card label { display: block; font-size: 13px; font-weight: 600; color: var(--text-sub); margin-bottom: 8px; text-align: center; }
+        /* 入力カード */
+        .card {
+            background: var(--card); border-radius: 16px; padding: 20px; margin-bottom: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: 0.3s;
+        }
+        .card.disabled { opacity: 0.3; pointer-events: none; background: var(--disabled); }
+        .card label { display: block; font-size: 14px; font-weight: bold; color: var(--text-muted); margin-bottom: 10px; text-align: center; }
 
         .control { display: flex; justify-content: space-between; align-items: center; }
-        .btn-ctrl { background: none; border: none; font-size: 32px; color: var(--text-main); cursor: pointer; width: 40px; height: 40px; z-index: 10; }
+        .btn-step { width: 50px; height: 50px; border-radius: 50%; border: none; background: #eee; font-size: 24px; cursor: pointer; }
+        .val { font-size: 36px; font-weight: 800; }
+
+        /* 下部実行エリア */
+        .execute-area { margin-top: auto; padding-bottom: 40px; }
+        .start-btn {
+            width: 100%; padding: 20px; border-radius: 50px; border: none;
+            background: var(--primary); color: white; font-size: 20px; font-weight: bold;
+        }
+
+        /* 実行オーバーレイ */
+        #overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 100; display: none; flex-direction: column;
+            justify-content: center; align-items: center; color: white; transition: 0.3s;
+        }
+        #big-time { font-size: 120px; font-weight: 900; font-family: monospace; }
+        #stop-btn { margin-top: 40px; padding: 15px 40px; border: 2px solid white; background: none; color: white; border-radius: 30px; font-size: 18px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="mode-selector">
+        <button class="mode-btn active" onclick="setMode('timer')">タイマー</button>
+        <button class="mode-btn" onclick="setMode('repeat')">リピート</button>
+        <button class="mode-btn" onclick="setMode('interval')">インターバル</button>
+    </div>
+
+    <div class="card" id="card-time">
+        <label>時間</label>
+        <div class="control">
+            <button class="btn-step" onmousedown="startStep('time', -5)" ontouchstart="startStep('time', -5)">−</button>
+            <span class="val" id="display-time">00:20</span>
+            <button class="btn-step" onmousedown="startStep('time', 5)" ontouchstart="startStep('time', 5)">＋</button>
+        </div>
+    </div>
+
+    <div class="card" id="card-sets">
+        <label>回数 (セット)</label>
+        <div class="control">
+            <button class="btn-step" onmousedown="startStep('sets', -1)" ontouchstart="startStep('sets', -1)">−</button>
+            <span class="val" id="display-sets">8</span>
+            <button class="btn-step" onmousedown="startStep('sets', 1)" ontouchstart="startStep('sets', 1)">＋</button>
+        </div>
+    </div>
+
+    <div class="card" id="card-rest">
+        <label>休息</label>
+        <div class="control">
+            <button class="btn-step" onmousedown="startStep('rest', -5)" ontouchstart="startStep('rest', -5)">−</button>
+            <span class="val" id="display-rest">00:10</span>
+            <button class="btn-step" onmousedown="startStep('rest', 5)" ontouchstart="startStep('rest', 5)">＋</button>
+        </div>
+    </div>
+
+    <div class="execute-area">
+        <button class="start-btn" onclick="startTimer()">START</button>
+    </div>
+</div>
+
+<div id="overlay">
+    <div id="status-label" style="font-size: 24px; font-weight: bold;">READY</div>
+    <div id="big-time">00:00</div>
+    <div id="info-label" style="font-size: 18px; margin-top: 10px;"></div>
+    <button id="stop-btn" onclick="stopTimer()">STOP / CLOSE</button>
+</div>
+
+<script>
+    let mode = 'timer'; // timer, repeat, interval
+    let settings = { time: 20, sets: 8, rest: 10 };
+    let timerId = null;
+
+    // モード切り替え
+    function setMode(m) {
+        mode = m;
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.innerText.includes(m === 'timer' ? 'タイマー' : m === 'repeat' ? 'リピート' : 'インターバル')));
+        
+        document.getElementById('card-time').classList.remove('disabled');
+        document.getElementById('card-sets').classList.toggle('disabled', mode === 'timer');
+        document.getElementById('card-rest').classList.toggle('disabled', mode !== 'interval');
+        updateUI();
+    }
+
+    // 数値変更
+    let pT, pI;
+    function startStep(key, d) {
+        const run = () => {
+            if(key === 'sets') settings.sets = Math.max(1, settings.sets + d);
+            else settings[key] = Math.max(0, settings[key] + d);
+            updateUI();
+        };
+        run();
+        pI = 200;
+        const loop = () => { run(); if(pI > 50) pI -= 20; pT = setTimeout(loop, pI); };
+        pT = setTimeout(loop, 500);
+    }
+    window.addEventListener('mouseup', () => clearTimeout(pT));
+    window.addEventListener('touchend', () => clearTimeout(pT));
+
+    function updateUI() {
+        const fmt = s => `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+        document.getElementById('display-time').textContent = fmt(settings.time);
+        document.getElementById('display-sets').textContent = settings.sets;
+        document.getElementById('display-rest').textContent = fmt(settings.rest);
+    }
+
+    // タイマー実行
+    function startTimer() {
+        let s = 1, ph = 'work', rem = settings.time;
+        const ov = document.getElementById('overlay');
+        ov.style.display = 'flex';
+
+        const tick = () => {
+            const fmt = s => `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+            document.getElementById('big-time').textContent = fmt(rem);
+            
+            // モードに応じたラベル表示
+            if(mode === 'timer') {
+                document.getElementById('status-label').textContent = "TIMER";
+                document.getElementById('info-label').textContent = "";
+                ov.style.backgroundColor = "#2f3542";
+            } else {
+                document.getElementById('status-label').textContent = ph === 'work' ? "WORK" : "REST";
+                document.getElementById('info-label').textContent = `SET ${s} / ${settings.sets}`;
+                ov.style.backgroundColor = ph === 'work' ? "#4caf50" : "#2196f3";
+            }
+
+            if(rem <= 0) {
+                if(navigator.vibrate) navigator.vibrate(300);
+                if(mode === 'timer') return finish();
+                if(ph === 'work') {
+                    if(s >= settings.sets) return finish();
+                    if(mode === 'repeat') { s++; rem = settings.time; }
+                    else { ph = 'rest'; rem = settings.rest; }
+                } else {
+                    s++; ph = 'work'; rem = settings.time;
+                }
+            } else {
+                if(rem <= 3 && navigator.vibrate) navigator.vibrate(50);
+                rem--;
+            }
+            timerId = setTimeout(tick, 1000);
+        };
+        const finish = () => {
+            ov.style.backgroundColor = "#1a1a1a";
+            document.getElementById('big-time').textContent = "DONE";
+            if(navigator.vibrate) navigator.vibrate([200, 100, 200]);
+        };
+        tick();
+    }
+
+    function stopTimer() {
+        clearTimeout(timerId);
+        document.getElementById('overlay').style.display = 'none';
+    }
+
+    setMode('timer'); // 初期起動
+</script>
+</body>
+</html>
 
         /* 自作ドラムロール（スロット）スタイル */
         .picker-group { display: flex; align-items: center; gap: 5px; height: 60px; overflow: hidden; position: relative; }
