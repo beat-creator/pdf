@@ -1,1 +1,73 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Workout Timer</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://kit.fontawesome.com/your-code.js" crossorigin="anonymous"></script> </head>
+<body>
 
+    <div class="app-container">
+        <header class="header">
+            <h1>クイックワークアウト</h1>
+            <div class="header-icons">
+                <span class="icon">🔖</span>
+                <span class="pro-badge">PRO</span>
+            </div>
+        </header>
+
+        <main class="config-area">
+            <div class="card">
+                <label>セット</label>
+                <div class="control">
+                    <button class="btn-minus">−</button>
+                    <span class="value">8</span>
+                    <button class="btn-plus">＋</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <label class="label-active">トレーニング</label>
+                <div class="control">
+                    <button class="btn-minus">−</button>
+                    <span class="value">00:20</span>
+                    <button class="btn-plus">＋</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <label class="label-rest">休息</label>
+                <div class="control">
+                    <button class="btn-minus">−</button>
+                    <span class="value">00:10</span>
+                    <button class="btn-plus">＋</button>
+                </div>
+            </div>
+
+            <div class="option-row">
+                <span>最後の休息をスキップ</span>
+                <input type="checkbox" id="skip-rest" checked>
+            </div>
+
+            <button class="add-exercise">+ マルチエクササイズワークアウト</button>
+        </main>
+
+        <footer class="footer-action">
+            <button class="start-btn">
+                <span class="play-icon">▶</span>
+                <span class="start-text">ワークアウトを開始</span>
+                <span class="total-time">03:50</span>
+            </button>
+        </footer>
+
+        <nav class="tab-bar">
+            <div class="tab-item active">⏱️<br>タイマー</div>
+            <div class="tab-item">📖<br>ワークアウト</div>
+            <div class="tab-item">📅<br>履歴</div>
+            <div class="tab-item">⚙️<br>設定</div>
+        </nav>
+    </div>
+
+</body>
+</html>
