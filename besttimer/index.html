@@ -3,46 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ultimate Hybrid Timer Pro v3</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>Workout Timer Pro</title>
+    <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22WorkoutTimer%22,%22short_name%22:%22Timer%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22orientation%22:%22portrait%22}">
+    
     <style>
         :root {
             --bg: #f2f4f7; --card: #ffffff; --primary: #1c1c1e;
             --active: #34c759; --rest: #007aff; --muted: #8e8e93; --warning: #ffcc00;
         }
+        /* PCで端に寄せた時に文字が潰れないよう調整 */
         body { margin: 0; font-family: -apple-system, sans-serif; background: var(--bg); color: #333; overflow: hidden; user-select: none; }
-        .container { max-width: 500px; margin: 0 auto; padding: 15px; height: 100vh; display: flex; flex-direction: column; box-sizing: border-box; }
+        .container { max-width: 100%; height: 100vh; display: flex; flex-direction: column; padding: 10px; box-sizing: border-box; }
 
-        header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-        .mode-selector { flex: 1; display: flex; background: #e3e3e3; padding: 2px; border-radius: 12px; margin-right: 10px; }
-        .mode-btn { flex: 1; padding: 10px; border: none; background: none; border-radius: 10px; font-weight: bold; font-size: 14px; color: #777; cursor: pointer; }
+        header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+        .mode-selector { flex: 1; display: flex; background: #e3e3e3; padding: 2px; border-radius: 10px; margin-right: 10px; }
+        .mode-btn { flex: 1; padding: 8px 4px; border: none; background: none; border-radius: 8px; font-weight: bold; font-size: 12px; color: #777; cursor: pointer; white-space: nowrap; }
         .mode-btn.active { background: white; color: #000; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .save-icon { font-size: 24px; cursor: pointer; padding: 5px; }
+        .save-icon { font-size: 20px; cursor: pointer; }
 
-        .card { background: var(--card); border-radius: 20px; margin-bottom: 8px; padding: 0 20px; height: 105px; display: flex; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.02); transition: 0.3s; }
+        .card { background: var(--card); border-radius: 15px; margin-bottom: 6px; padding: 0 15px; height: 90px; display: flex; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
         .card.disabled { opacity: 0.15; pointer-events: none; filter: grayscale(1); }
-        .label-v { writing-mode: vertical-rl; text-orientation: upright; font-size: 11px; font-weight: bold; color: var(--muted); border-right: 1px solid #eee; padding-right: 12px; margin-right: 15px; height: 50%; }
+        .label-v { writing-mode: vertical-rl; text-orientation: upright; font-size: 10px; font-weight: bold; color: var(--muted); border-right: 1px solid #eee; padding-right: 8px; margin-right: 10px; height: 40%; }
         
-        .picker-group { flex: 1; display: flex; justify-content: center; align-items: center; gap: 4px; height: 100%; position: relative; }
-        .picker-col { height: 105px; width: 75px; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; outline: none; }
+        .picker-group { flex: 1; display: flex; justify-content: center; align-items: center; gap: 2px; height: 100%; position: relative; }
+        .picker-col { height: 90px; width: 60px; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; outline: none; }
         .picker-col::-webkit-scrollbar { display: none; }
-        .picker-list { padding: 105px 0; }
-        .picker-item { height: 105px; display: flex; align-items: center; justify-content: center; font-size: 34px; font-weight: 800; scroll-snap-align: center; color: #ddd; transition: 0.2s; cursor: pointer; }
+        .picker-list { padding: 90px 0; }
+        .picker-item { height: 90px; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 800; scroll-snap-align: center; color: #ddd; transition: 0.2s; cursor: pointer; }
         .picker-item.selected { color: #000; transform: scale(1.1); }
 
-        /* PC入力用隠しInput */
-        .picker-input { position: absolute; width: 60px; font-size: 34px; font-weight: 800; text-align: center; border: 2px solid var(--rest); border-radius: 10px; z-index: 10; display: none; }
+        .picker-input { position: absolute; width: 50px; font-size: 24px; font-weight: 800; text-align: center; border: 2px solid var(--rest); border-radius: 8px; z-index: 10; display: none; }
 
-        .total-box { text-align: center; font-size: 16px; font-weight: 900; color: var(--primary); margin-bottom: 10px; }
+        .total-box { text-align: center; font-size: 14px; font-weight: 900; color: var(--primary); margin: 5px 0; }
         #dashboard { position: fixed; inset: 0; background: var(--bg); z-index: 1000; display: none; flex-direction: column; align-items: center; justify-content: center; }
         
-        /* 警告点滅アニメーション */
         @keyframes flash { 0% { background: var(--warning); } 50% { background: #fff; } 100% { background: var(--warning); } }
         #dashboard.finished { animation: flash 0.5s infinite; }
 
-        .circle-ui { position: relative; width: 280px; height: 280px; margin: 20px 0; }
+        .circle-ui { position: relative; width: 220px; height: 220px; margin: 10px 0; }
         .ring-bar { fill: none; stroke-width: 12; stroke-linecap: round; stroke-dasharray: 628; stroke-dashoffset: 628; transition: stroke-dashoffset 0.2s linear; transform: rotate(-90deg); transform-origin: 50% 50%; }
-        .time-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 72px; font-weight: 900; }
-        .start-btn { width: 100%; padding: 22px; border-radius: 20px; border: none; background: var(--primary); color: white; font-size: 22px; font-weight: 900; margin-top: auto; cursor: pointer; }
+        .time-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 56px; font-weight: 900; }
+        .start-btn { width: 100%; padding: 18px; border-radius: 15px; border: none; background: var(--primary); color: white; font-size: 18px; font-weight: 900; margin-top: auto; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -57,22 +60,22 @@
     <div class="card" data-type="rest"><div class="label-v">Rest</div><div class="picker-group"><div class="picker-col" id="r-m"></div>分<div class="picker-col" id="r-s"></div>秒</div></div>
     <div class="card" data-type="sets"><div class="label-v">Sets</div><div class="picker-group"><div class="picker-col" id="s-v"></div>回</div></div>
     <div class="total-box">Total: <span id="total-disp">00:00</span></div>
-    <div style="display:flex; justify-content:center; gap:15px; margin-bottom:10px; font-size:13px; font-weight:bold; color:var(--muted);"><label><input type="checkbox" id="warm-up"> Start w/ Rest</label><label><input type="checkbox" id="skip-last" checked> Skip last rest</label></div>
-    <button class="start-btn" onclick="startWorkout()">START WORKOUT</button>
+    <div style="display:flex; justify-content:center; gap:10px; margin-bottom:8px; font-size:11px; font-weight:bold; color:var(--muted);"><label><input type="checkbox" id="warm-up"> WarmUp</label><label><input type="checkbox" id="skip-last" checked> SkipLastRest</label></div>
+    <button class="start-btn" onclick="startWorkout()">START</button>
 </div>
 
 <div id="dashboard">
-    <div id="ui-phase" style="font-size:24px; font-weight:900; margin-bottom:10px;">WORK</div>
+    <div id="ui-phase" style="font-size:20px; font-weight:900;">WORK</div>
     <div class="circle-ui">
         <svg viewBox="0 0 210 210"><circle cx="105" cy="105" r="100" fill="none" stroke="#eef0f5" stroke-width="8"/><circle id="progress" class="ring-bar" cx="105" cy="105" r="100" stroke="var(--active)"/></svg>
         <div class="time-text" id="ui-time">00:00</div>
     </div>
-    <div id="ui-sets" style="font-weight:bold; color:var(--muted);">SET 1 / 10</div>
-    <button id="stop-btn" class="start-btn" onclick="stopWorkout()" style="background:#ff3b30; width:80%; margin-top:40px;">STOP</button>
+    <div id="ui-sets" style="font-weight:bold; color:var(--muted); font-size: 14px;">SET 1 / 10</div>
+    <button id="stop-btn" class="start-btn" onclick="stopWorkout()" style="background:#ff3b30; width:80%; margin-top:20px;">STOP</button>
 </div>
 
 <script>
-    const H = 105;
+    const H = 90; // ピッカーの高さ調整
     let conf = { mode: 'timer', work: 0, rest: 0, sets: 1, skip: true, warm: false };
     let tId = null, wakeLock = null, alarmId = null;
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -107,7 +110,6 @@
         });
         el.appendChild(list);
 
-        // PC直接入力用インプット
         const input = document.createElement('input');
         input.className = 'picker-input';
         input.type = 'number';
@@ -129,8 +131,8 @@
 
         const mid = (max + 1) * H; el.scrollTop = mid;
         el.onscroll = () => {
-            if (el.scrollTop < mid - 500) el.scrollTop += mid;
-            if (el.scrollTop > mid * 2 + 500) el.scrollTop -= mid;
+            if (el.scrollTop < mid - 400) el.scrollTop += mid;
+            if (el.scrollTop > mid * 2 + 400) el.scrollTop -= mid;
             const idx = Math.round(el.scrollTop / H);
             el.querySelectorAll('.picker-item').forEach((it, i) => it.classList.toggle('selected', i === idx));
             sync();
@@ -201,30 +203,3 @@
     }
 
     function loadSettings() {
-        const saved = localStorage.getItem('workout_preset');
-        if (!saved) return;
-        const d = JSON.parse(saved);
-        document.querySelector(`[data-mode="${d.mode}"]`).click();
-        const setS = (id, v, m) => document.getElementById(id).scrollTop = (m + 1 + v) * H;
-        setS('w-m', d.workM, 59); setS('w-s', d.workS, 59);
-        setS('r-m', d.restM, 59); setS('r-s', d.restS, 59);
-        setS('s-v', d.sets, 99);
-        document.getElementById('warm-up').checked = d.warm;
-        document.getElementById('skip-last').checked = d.skip;
-        sync();
-    }
-
-    document.querySelectorAll('.mode-btn').forEach(b => b.onclick = () => {
-        document.querySelectorAll('.mode-btn').forEach(x => x.classList.remove('active'));
-        b.classList.add('active'); conf.mode = b.dataset.mode;
-        document.querySelector('[data-type="rest"]').classList.toggle('disabled', conf.mode !== 'interval');
-        document.querySelector('[data-type="sets"]').classList.toggle('disabled', conf.mode === 'timer');
-        sync();
-    });
-
-    mkPicker('w-m', 59); mkPicker('w-s', 59); mkPicker('r-m', 59); mkPicker('r-s', 59); mkPicker('s-v', 99);
-    document.getElementById('warm-up').onchange = sync; document.getElementById('skip-last').onchange = sync;
-    setTimeout(loadSettings, 100);
-</script>
-</body>
-</html>
