@@ -3,19 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Ultimate Hybrid Timer Pro - Final</title>
+    <title>Ultimate Hybrid Timer Pro - Final Plus</title>
     <style>
         :root {
             --bg: #f2f4f7; --card: #ffffff; --primary: #1c1c1e;
-            --active: #34c759; --rest: #007aff; --muted: #8e8e93;
+            --active: #34c759; --rest: #007aff; --muted: #8e8e93; --finish: #ffcc00;
         }
         body { margin: 0; font-family: -apple-system, sans-serif; background: var(--bg); color: #333; overflow: hidden; user-select: none; }
-        
-        /* 100svh でアドレスバー問題を解決 */
-        .container { 
-            max-width: 500px; margin: 0 auto; padding: 15px; 
-            height: 100svh; display: flex; flex-direction: column; box-sizing: border-box; 
-        }
+        .container { max-width: 500px; margin: 0 auto; padding: 15px; height: 100svh; display: flex; flex-direction: column; box-sizing: border-box; }
 
         header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
         .mode-selector { flex: 1; display: flex; background: #e3e3e3; padding: 2px; border-radius: 12px; margin-right: 10px; }
@@ -36,7 +31,7 @@
         .opt-row { display: flex; justify-content: center; gap: 15px; margin: 10px 0; font-size: 13px; color: var(--muted); font-weight: bold; }
         .total-box { text-align: center; font-size: 16px; font-weight: 900; color: var(--primary); margin-bottom: 10px; }
 
-        #dashboard { position: fixed; inset: 0; background: var(--bg); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; }
+        #dashboard { position: fixed; inset: 0; background: var(--bg); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; transition: background 0.2s; }
         .circle-ui { position: relative; width: 280px; height: 280px; margin: 20px 0; }
         .ring-bar { fill: none; stroke-width: 12; stroke-linecap: round; stroke-dasharray: 628; stroke-dashoffset: 628; transition: stroke-dashoffset 0.2s linear; transform: rotate(-90deg); transform-origin: 50% 50%; }
         .time-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 72px; font-weight: 900; font-family: monospace; }
@@ -45,12 +40,11 @@
         .modal { position: absolute; bottom: 0; width: 100%; background: white; border-radius: 25px 25px 0 0; padding: 20px; padding-bottom: calc(20px + env(safe-area-inset-bottom)); box-sizing: border-box; max-height: 70%; overflow-y: auto; }
         .preset-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #eee; }
 
-        /* ボタン調整 */
-        .start-btn { 
-            width: 100%; padding: 22px; border-radius: 20px; border: none; background: var(--primary); color: white; font-size: 22px; font-weight: 900; 
-            margin-top: auto; margin-bottom: 10px; cursor: pointer;
-            padding-bottom: calc(22px + env(safe-area-inset-bottom));
-        }
+        .start-btn { width: 100%; padding: 22px; border-radius: 20px; border: none; background: var(--primary); color: white; font-size: 22px; font-weight: 900; margin-top: auto; margin-bottom: 10px; cursor: pointer; padding-bottom: calc(22px + env(safe-area-inset-bottom)); }
+
+        /* 点滅アニメーション */
+        @keyframes flash-yellow { 0%, 100% { background: var(--bg); } 50% { background: var(--finish); } }
+        .flashing { animation: flash-yellow 0.5s infinite; }
     </style>
 </head>
 <body>
@@ -85,7 +79,7 @@
         <div class="time-text" id="ui-time">00:00</div>
     </div>
     <div id="ui-sets" style="font-weight:bold; color:var(--muted);">SET 1 / 1</div>
-    <button class="start-btn" onclick="stopWorkout()" style="background:#ff3b30; width:80%; margin-top:40px;">STOP</button>
+    <button id="dash-stop-btn" class="start-btn" onclick="stopWorkout()" style="background:#ff3b30; width:80%; margin-top:40px;">STOP</button>
 </div>
 
 <div id="modal-overlay" onclick="toggleModal(false)">
@@ -103,13 +97,23 @@
     let wakeLock = null;
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-    function beep(freq, dur) {
+    function beep(freq, dur, startTime = 0) {
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
         osc.connect(gain); gain.connect(audioCtx.destination);
-        osc.frequency.value = freq; gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-        osc.start(); gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + dur);
-        osc.stop(audioCtx.currentTime + dur);
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.1, audioCtx.currentTime + startTime);
+        osc.start(audioCtx.currentTime + startTime);
+        gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + startTime + dur);
+        osc.stop(audioCtx.currentTime + startTime + dur);
+    }
+
+    function playFinishAlarm() {
+        // ピピピピ、ピピピピというキッチンタイマー音を3回繰り返す
+        for(let i=0; i<3; i++) {
+            const base = i * 1.0;
+            [0, 0.2, 0.4, 0.6].forEach(t => beep(2500, 0.1, base + t));
+        }
     }
 
     async function requestWakeLock() {
@@ -139,7 +143,6 @@
             updateSelectedUI(el);
             sync();
         });
-        el.addEventListener('wheel', (e) => { e.preventDefault(); el.scrollBy({top: e.deltaY > 0 ? H : -H, behavior: 'smooth'}); }, {passive: false});
     }
 
     function updateSelectedUI(el) {
@@ -166,9 +169,7 @@
     }
 
     function setMode(mode) {
-        document.querySelectorAll('.mode-btn').forEach(b => {
-            b.classList.toggle('active', b.dataset.mode === mode);
-        });
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
         conf.mode = mode;
         document.getElementById('card-rest').classList.toggle('disabled', mode !== 'interval');
         document.getElementById('card-sets').classList.toggle('disabled', mode === 'timer');
@@ -182,7 +183,10 @@
         let s = 1, ph = (conf.mode === 'interval' && conf.warm) ? 'rest' : 'work';
         let rem = (ph === 'work') ? conf.work : conf.rest;
         let tot = rem;
-        document.getElementById('dashboard').style.display = 'flex';
+        const dash = document.getElementById('dashboard');
+        dash.style.display = 'flex';
+        dash.classList.remove('flashing');
+
         const tick = () => {
             document.getElementById('ui-time').textContent = `${String(Math.floor(rem/60)).padStart(2,'0')}:${String(rem%60).padStart(2,'0')}`;
             document.getElementById('ui-sets').textContent = conf.mode === 'timer' ? "" : `SET ${s} / ${conf.sets}`;
@@ -191,26 +195,50 @@
             document.getElementById('ui-phase').style.color = isW ? 'var(--active)' : 'var(--rest)';
             document.getElementById('progress').style.stroke = isW ? 'var(--active)' : 'var(--rest)';
             document.getElementById('progress').style.strokeDashoffset = 628 - (628 * (rem / tot));
+
             if (rem <= 3 && rem > 0) beep(880, 0.1);
+            
             if (rem === 0) {
-                beep(1760, 0.3);
-                if (conf.mode === 'timer' || (isW && s >= conf.sets)) return stopWorkout(true);
-                if (isW && conf.mode === 'interval') { ph = 'rest'; rem = conf.rest; tot = conf.rest; }
-                else { if(!isW) s++; ph = 'work'; rem = conf.work; tot = conf.work; }
+                // セット終了
+                if (isW) {
+                    if (conf.mode === 'timer' || (conf.mode === 'repeat' && s >= conf.sets) || (conf.mode === 'interval' && s >= conf.sets && conf.skip)) {
+                        return finishWorkout();
+                    }
+                    // 次へ（RESTまたはRepeatの次SET）
+                    if (conf.mode === 'interval') { ph = 'rest'; rem = conf.rest; tot = conf.rest; beep(1200, 0.3); }
+                    else { s++; rem = conf.work; tot = conf.work; beep(1760, 0.3); }
+                } else {
+                    // 休息終了
+                    if (conf.mode === 'interval' && s >= conf.sets) return finishWorkout();
+                    s++; ph = 'work'; rem = conf.work; tot = conf.work; beep(1760, 0.3);
+                }
             } else { rem--; }
             tId = setTimeout(tick, 1000);
         };
         tick();
     }
 
-    function stopWorkout(finish = false) {
-        clearTimeout(tId); if (wakeLock) wakeLock.release();
-        document.getElementById('dashboard').style.display = 'none';
-        if (finish) alert("Complete!");
+    function finishWorkout() {
+        clearTimeout(tId);
+        playFinishAlarm();
+        const dash = document.getElementById('dashboard');
+        dash.classList.add('flashing');
+        document.getElementById('ui-phase').textContent = "COMPLETE!";
+        document.getElementById('ui-phase').style.color = "#000";
+        document.getElementById('ui-time').textContent = "00:00";
+        document.getElementById('dash-stop-btn').textContent = "BACK";
+    }
+
+    function stopWorkout() {
+        clearTimeout(tId);
+        if (wakeLock) { wakeLock.release(); wakeLock = null; }
+        const dash = document.getElementById('dashboard');
+        dash.style.display = 'none';
+        dash.classList.remove('flashing');
+        document.getElementById('dash-stop-btn').textContent = "STOP";
     }
 
     function toggleModal(show) { document.getElementById('modal-overlay').style.display = show ? 'block' : 'none'; if (show) renderPresets(); }
-    
     function savePreset() {
         const name = prompt("Preset Name:", "My Training");
         if (!name) return;
@@ -219,7 +247,6 @@
         localStorage.setItem('timer_presets', JSON.stringify(p));
         renderPresets();
     }
-
     function renderPresets() {
         const list = document.getElementById('preset-list');
         const p = JSON.parse(localStorage.getItem('timer_presets') || '[]');
@@ -230,7 +257,6 @@
             </div>
         `).join('');
     }
-
     function loadPreset(id) {
         const p = JSON.parse(localStorage.getItem('timer_presets') || '[]').find(x => x.id === id);
         if (!p) return;
@@ -246,24 +272,14 @@
         document.getElementById('skip-last').checked = c.skip;
         sync(); toggleModal(false);
     }
-
     function deletePreset(id) {
         let p = JSON.parse(localStorage.getItem('timer_presets') || '[]').filter(x => x.id !== id);
         localStorage.setItem('timer_presets', JSON.stringify(p)); renderPresets();
     }
 
-    // --- Init ---
-    document.querySelectorAll('.mode-btn').forEach(b => {
-        b.onclick = () => setMode(b.dataset.mode);
-    });
-
-    mkPicker('w-m', 59); mkPicker('w-s', 59);
-    mkPicker('r-m', 59); mkPicker('r-s', 59);
-    mkPicker('s-v', 99);
-
-    // 起動時にTimerモードを適用
+    document.querySelectorAll('.mode-btn').forEach(b => b.onclick = () => setMode(b.dataset.mode));
+    mkPicker('w-m', 59); mkPicker('w-s', 59); mkPicker('r-m', 59); mkPicker('r-s', 59); mkPicker('s-v', 99);
     setMode('timer');
-
     document.getElementById('warm-up').onchange = sync;
     document.getElementById('skip-last').onchange = sync;
 </script>
