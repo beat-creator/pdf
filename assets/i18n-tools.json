@@ -86,5 +86,33 @@
       "en": "🔒 Secure Document Consolidation\nCombine multiple PDFs into one. Since it runs entirely in the browser, there's no risk of data leaks, making it ideal for remote work and sensitive projects.",
       "zh": "🔒 机密文件合并更安全\n将多个PDF文件整合为一个。由于完全在浏览器内运行，无需担心内容泄露，非常适合远程办公或处理机密案件。"
     }
+  },
+  "besttimer": {
+    "name": {
+      "ja": "セキュア万能タイマー",
+      "en": "Secure Universal Timer",
+      "zh": "安全万用计时器"
+    },
+    "top_name": {
+      "ja": "万能タイマー",
+      "en": "Timer",
+      "zh": "万用计时器"
+    },
+    "emoji": "🍅",
+    "seo_title": {
+      "ja": "セキュア万能タイマー｜Secure Toolkit - 集中力を高めるポモドーロ対応",
+      "en": "Secure Universal Timer | Secure Toolkit - Focus with Pomodoro",
+      "zh": "安全万用计时器｜Secure Toolkit - 提高专注力的番茄钟"
+    },
+    "meta_description": {
+      "ja": "ブラウザ上で動作する高機能タイマー。設定データはローカルにのみ保存され、外部への通信は一切発生しません。",
+      "en": "High-performance timer running in your browser. Data is saved locally; no external communication occurs.",
+      "zh": "在浏览器上运行的高機能计时器。设置数据仅保存在本地，绝不产生外部通信。"
+    },
+    "footer_desc": {
+      "ja": "🍅 集中と休息のサイクルを安全に管理\nポモドーロ・テクニックにも対応した万能タイマー。ブラウザ内で完結するため、作業内容や履歴が外部に送信される心配はありません。",
+      "en": "🍅 Manage Focus & Rest Cycles Safely\nA universal timer compatible with the Pomodoro technique. Since it works entirely in-browser, your tasks and history are never sent externally.",
+      "zh": "🍅 安全管理专注与休息周期\n支持番茄工作法的万用计时器。由于在浏览器内运行，您的工作内容和历史记录绝不会被发送到外部。"
+    }
   }
 }
