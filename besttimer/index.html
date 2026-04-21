@@ -3,49 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
-    <title>Workout Timer Pro</title>
-    <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22WorkoutTimer%22,%22short_name%22:%22Timer%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22orientation%22:%22portrait%22}">
-    
+    <title>Workout Timer</title>
     <style>
         :root {
             --bg: #f2f4f7; --card: #ffffff; --primary: #1c1c1e;
             --active: #34c759; --rest: #007aff; --muted: #8e8e93; --warning: #ffcc00;
         }
-        /* PCで端に寄せた時に文字が潰れないよう調整 */
         body { margin: 0; font-family: -apple-system, sans-serif; background: var(--bg); color: #333; overflow: hidden; user-select: none; }
-        .container { max-width: 100%; height: 100vh; display: flex; flex-direction: column; padding: 10px; box-sizing: border-box; }
-
-        header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-        .mode-selector { flex: 1; display: flex; background: #e3e3e3; padding: 2px; border-radius: 10px; margin-right: 10px; }
-        .mode-btn { flex: 1; padding: 8px 4px; border: none; background: none; border-radius: 8px; font-weight: bold; font-size: 12px; color: #777; cursor: pointer; white-space: nowrap; }
-        .mode-btn.active { background: white; color: #000; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .save-icon { font-size: 20px; cursor: pointer; }
-
-        .card { background: var(--card); border-radius: 15px; margin-bottom: 6px; padding: 0 15px; height: 90px; display: flex; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
-        .card.disabled { opacity: 0.15; pointer-events: none; filter: grayscale(1); }
-        .label-v { writing-mode: vertical-rl; text-orientation: upright; font-size: 10px; font-weight: bold; color: var(--muted); border-right: 1px solid #eee; padding-right: 8px; margin-right: 10px; height: 40%; }
         
-        .picker-group { flex: 1; display: flex; justify-content: center; align-items: center; gap: 2px; height: 100%; position: relative; }
-        .picker-col { height: 90px; width: 60px; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; outline: none; }
+        /* コンテナの余白を極限まで削る */
+        .container { max-width: 100%; height: 100vh; display: flex; flex-direction: column; padding: 6px; box-sizing: border-box; }
+
+        header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+        .mode-selector { flex: 1; display: flex; background: #e3e3e3; padding: 2px; border-radius: 6px; margin-right: 5px; }
+        .mode-btn { flex: 1; padding: 4px 1px; border: none; background: none; border-radius: 4px; font-weight: bold; font-size: 10px; color: #777; cursor: pointer; }
+        .mode-btn.active { background: white; color: #000; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .save-icon { font-size: 16px; cursor: pointer; padding: 2px; }
+
+        /* カードの高さを低く、フォントを小さく */
+        .card { background: var(--card); border-radius: 8px; margin-bottom: 3px; padding: 0 8px; height: 60px; display: flex; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .card.disabled { opacity: 0.15; pointer-events: none; filter: grayscale(1); }
+        .label-v { writing-mode: vertical-rl; text-orientation: upright; font-size: 8px; font-weight: bold; color: var(--muted); border-right: 1px solid #eee; padding-right: 4px; margin-right: 6px; height: 50%; }
+        
+        .picker-group { flex: 1; display: flex; justify-content: center; align-items: center; gap: 1px; height: 100%; position: relative; }
+        .picker-col { height: 60px; width: 45px; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; outline: none; }
         .picker-col::-webkit-scrollbar { display: none; }
-        .picker-list { padding: 90px 0; }
-        .picker-item { height: 90px; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 800; scroll-snap-align: center; color: #ddd; transition: 0.2s; cursor: pointer; }
+        .picker-list { padding: 60px 0; }
+        .picker-item { height: 60px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 800; scroll-snap-align: center; color: #ddd; transition: 0.2s; cursor: pointer; }
         .picker-item.selected { color: #000; transform: scale(1.1); }
 
-        .picker-input { position: absolute; width: 50px; font-size: 24px; font-weight: 800; text-align: center; border: 2px solid var(--rest); border-radius: 8px; z-index: 10; display: none; }
+        .picker-input { position: absolute; width: 35px; font-size: 16px; font-weight: 800; text-align: center; border: 1px solid var(--rest); border-radius: 4px; z-index: 10; display: none; background: white; }
 
-        .total-box { text-align: center; font-size: 14px; font-weight: 900; color: var(--primary); margin: 5px 0; }
-        #dashboard { position: fixed; inset: 0; background: var(--bg); z-index: 1000; display: none; flex-direction: column; align-items: center; justify-content: center; }
-        
+        .total-box { text-align: center; font-size: 11px; font-weight: 900; color: var(--primary); margin: 2px 0; }
+        .opt-row { display:flex; justify-content:center; gap:6px; margin-bottom:4px; font-size:9px; font-weight:bold; color:var(--muted); }
+        .opt-row input { transform: scale(0.8); margin: 0; }
+
+        #dashboard { position: fixed; inset: 0; background: var(--bg); z-index: 1000; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 10px; }
         @keyframes flash { 0% { background: var(--warning); } 50% { background: #fff; } 100% { background: var(--warning); } }
         #dashboard.finished { animation: flash 0.5s infinite; }
 
-        .circle-ui { position: relative; width: 220px; height: 220px; margin: 10px 0; }
-        .ring-bar { fill: none; stroke-width: 12; stroke-linecap: round; stroke-dasharray: 628; stroke-dashoffset: 628; transition: stroke-dashoffset 0.2s linear; transform: rotate(-90deg); transform-origin: 50% 50%; }
-        .time-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 56px; font-weight: 900; }
-        .start-btn { width: 100%; padding: 18px; border-radius: 15px; border: none; background: var(--primary); color: white; font-size: 18px; font-weight: 900; margin-top: auto; cursor: pointer; }
+        /* 実行画面もコンパクトに */
+        .circle-ui { position: relative; width: 140px; height: 140px; margin: 5px 0; }
+        .ring-bar { fill: none; stroke-width: 8; stroke-linecap: round; stroke-dasharray: 628; stroke-dashoffset: 628; transition: stroke-dashoffset 0.2s linear; transform: rotate(-90deg); transform-origin: 50% 50%; }
+        .time-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 32px; font-weight: 900; }
+        #ui-phase { font-size: 14px; font-weight: 900; }
+        #ui-sets { font-size: 10px; font-weight: bold; color: var(--muted); }
+
+        .start-btn { width: 100%; padding: 12px; border-radius: 8px; border: none; background: var(--primary); color: white; font-size: 14px; font-weight: 900; margin-top: auto; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -75,7 +79,8 @@
 </div>
 
 <script>
-    const H = 90; // ピッカーの高さ調整
+    
+    const H = 60; // ピッカーの高さ調整
     let conf = { mode: 'timer', work: 0, rest: 0, sets: 1, skip: true, warm: false };
     let tId = null, wakeLock = null, alarmId = null;
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
