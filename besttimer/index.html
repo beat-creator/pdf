@@ -9,82 +9,46 @@
             --bg: #f2f4f7; --card: #ffffff; --primary: #1c1c1e;
             --active: #34c759; --rest: #007aff; --muted: #8e8e93; --warning: #ffcc00;
         }
-        
-        /* 画面全体の高さをアドレスバーに左右されない設定に */
-        body { 
-            margin: 0; 
-            font-family: -apple-system, sans-serif; 
-            background: var(--bg); 
-            color: #333; 
-            overflow: hidden; 
-            user-select: none;
-            height: 100dvh; /* Dynamic Viewport Height: アドレスバーを除いた高さ */
-        }
-
-        .container { 
-            max-width: 500px; 
-            margin: 0 auto; 
-            padding: 10px; 
-            height: 100%; 
-            display: flex; 
-            flex-direction: column; 
-            box-sizing: border-box;
-            /* 下のアドレスバーやホームインジケーターを避ける余白 */
-            padding-bottom: calc(10px + env(safe-area-inset-bottom)); 
-        }
+        body { margin: 0; font-family: -apple-system, sans-serif; background: var(--bg); color: #333; overflow: hidden; user-select: none; height: 100dvh; }
+        .container { max-width: 500px; margin: 0 auto; padding: 10px; height: 100%; display: flex; flex-direction: column; box-sizing: border-box; padding-bottom: calc(10px + env(safe-area-inset-bottom)); }
 
         header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
         .mode-selector { flex: 1; display: flex; background: #e3e3e3; padding: 2px; border-radius: 12px; margin-right: 10px; }
-        .mode-btn { flex: 1; padding: 10px; border: none; background: none; border-radius: 10px; font-weight: bold; font-size: 14px; color: #777; cursor: pointer; transition: 0.2s; }
+        .mode-btn { flex: 1; padding: 10px; border: none; background: none; border-radius: 10px; font-weight: bold; font-size: 14px; color: #777; cursor: pointer; }
         .mode-btn.active { background: white; color: #000; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .save-icon { font-size: 24px; cursor: pointer; padding: 5px; }
 
-        .card { background: var(--card); border-radius: 20px; margin-bottom: 8px; padding: 0 20px; height: 105px; display: flex; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.02); position: relative; }
-        .card.disabled { opacity: 0.15; pointer-events: none; filter: grayscale(1); }
-        .label-v { writing-mode: vertical-rl; text-orientation: upright; font-size: 11px; font-weight: bold; color: var(--muted); border-right: 1px solid #eee; padding-right: 12px; margin-right: 15px; height: 50%; }
+        .card { background: var(--card); border-radius: 20px; margin-bottom: 8px; padding: 0 20px; height: 105px; display: flex; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.02); position: relative; transition: opacity 0.2s, transform 0.2s; }
         
+        /* 完全に非表示にするための設定 */
+        .card.hidden { display: none; }
+        .card.disabled { opacity: 0.15; pointer-events: none; filter: grayscale(1); }
+
+        .label-v { writing-mode: vertical-rl; text-orientation: upright; font-size: 11px; font-weight: bold; color: var(--muted); border-right: 1px solid #eee; padding-right: 12px; margin-right: 15px; height: 50%; }
         .picker-group { flex: 1; display: flex; justify-content: center; align-items: center; gap: 4px; height: 100%; position: relative; }
         .picker-col { height: 105px; width: 75px; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; outline: none; }
         .picker-col::-webkit-scrollbar { display: none; }
         .picker-list { padding: 105px 0; }
         .picker-item { height: 105px; display: flex; align-items: center; justify-content: center; font-size: 34px; font-weight: 800; scroll-snap-align: center; color: #ddd; transition: 0.2s; cursor: pointer; }
         .picker-item.selected { color: #000; transform: scale(1.1); }
-        
-        .picker-input { position: absolute; width: 60px; font-size: 30px; font-weight: 800; text-align: center; border: 2px solid var(--rest); border-radius: 10px; z-index: 10; display: none; background: #fff; }
 
-        .total-box { text-align: center; font-size: 16px; font-weight: 900; color: var(--primary); margin-bottom: 10px; }
-        .opt-row { display: flex; justify-content: center; gap: 15px; margin-bottom: 10px; font-size: 13px; color: var(--muted); font-weight: bold; }
-
-        /* --- PC・小ウィンドウ用：ガジェットモード（幅350px以下のとき） --- */
+        /* PCガジェットモード */
         @media (max-width: 350px) {
             .container { padding: 5px; padding-bottom: 5px; }
             .mode-btn { padding: 6px; font-size: 11px; }
-            .save-icon { font-size: 18px; }
-            .card { height: 60px; border-radius: 10px; margin-bottom: 4px; padding: 0 10px; }
-            .label-v { font-size: 9px; margin-right: 8px; padding-right: 8px; }
-            .picker-col { height: 60px; width: 50px; }
-            .picker-list { padding: 60px 0; }
-            .picker-item { height: 60px; font-size: 22px; }
-            .total-box { font-size: 12px; margin-bottom: 5px; }
-            .opt-row { font-size: 10px; margin-bottom: 5px; gap: 8px; }
-            .start-btn { padding: 15px; font-size: 18px; border-radius: 12px; }
-            .circle-ui { width: 160px; height: 160px; }
-            .time-text { font-size: 36px; }
+            .card { height: 62px; border-radius: 10px; margin-bottom: 4px; padding: 0 10px; }
+            .picker-col { height: 62px; width: 50px; }
+            .picker-list { padding: 62px 0; }
+            .picker-item { height: 62px; font-size: 22px; }
+            .start-btn { padding: 15px; font-size: 18px; }
         }
 
-        /* 実行画面：ここにもセーフエリア対策 */
-        #dashboard { 
-            position: fixed; inset: 0; background: var(--bg); z-index: 1000; 
-            display: none; flex-direction: column; align-items: center; justify-content: center; 
-            padding-bottom: env(safe-area-inset-bottom);
-        }
-        @keyframes flash { 0% { background: var(--warning); } 50% { background: #fff; } 100% { background: var(--warning); } }
-        #dashboard.finished { animation: flash 0.5s infinite; }
-
+        .total-box { text-align: center; font-size: 16px; font-weight: 900; color: var(--primary); margin-bottom: 10px; }
+        .opt-row { display: flex; justify-content: center; gap: 15px; margin-bottom: 10px; font-size: 13px; color: var(--muted); font-weight: bold; }
+        #dashboard { position: fixed; inset: 0; background: var(--bg); z-index: 1000; display: none; flex-direction: column; align-items: center; justify-content: center; padding-bottom: env(safe-area-inset-bottom); }
         .circle-ui { position: relative; width: 280px; height: 280px; margin: 20px 0; }
         .ring-bar { fill: none; stroke-width: 12; stroke-linecap: round; stroke-dasharray: 628; stroke-dashoffset: 628; transition: stroke-dashoffset 0.2s linear; transform: rotate(-90deg); transform-origin: 50% 50%; }
         .time-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 72px; font-weight: 900; }
-        
         .start-btn { width: 100%; padding: 22px; border-radius: 20px; border: none; background: var(--primary); color: white; font-size: 22px; font-weight: 900; margin-top: auto; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
     </style>
 </head>
@@ -106,7 +70,7 @@
     
     <div class="total-box">Total: <span id="total-disp">00:00</span></div>
     
-    <div class="opt-row">
+    <div class="opt-row" id="opt-row">
         <label><input type="checkbox" id="warm-up"> Start w/ Rest</label>
         <label><input type="checkbox" id="skip-last" checked> Skip last rest</label>
     </div>
@@ -130,26 +94,25 @@
     let tId = null, alarmId = null;
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-    function updateH() {
-        H = window.innerWidth <= 350 ? 60 : 105;
-    }
+    function updateH() { H = window.innerWidth <= 350 ? 62 : 105; }
     window.addEventListener('resize', updateH);
     updateH();
 
-    function beep(freq, dur, vol = 0.1) {
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.connect(gain); gain.connect(audioCtx.destination);
-        osc.frequency.value = freq; gain.gain.setValueAtTime(vol, audioCtx.currentTime);
-        osc.start(); gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + dur);
-        osc.stop(audioCtx.currentTime + dur);
-    }
+    // モードに合わせて表示を切り替える関数
+    function updateUIByMode() {
+        const isInterval = conf.mode === 'interval';
+        const isTimer = conf.mode === 'timer';
 
-    function playAlarm() {
-        alarmId = setInterval(() => {
-            beep(1200, 0.2, 0.2);
-            setTimeout(() => beep(1200, 0.2, 0.2), 250);
-        }, 1000);
+        // Restカードの制御
+        const restCard = document.querySelector('[data-type="rest"]');
+        restCard.classList.toggle('hidden', !isInterval);
+        
+        // Setsカードの制御
+        const setsCard = document.querySelector('[data-type="sets"]');
+        setsCard.classList.toggle('hidden', isTimer);
+
+        // オプション行の制御
+        document.getElementById('opt-row').style.visibility = isInterval ? 'visible' : 'hidden';
     }
 
     function mkPicker(id, max) {
@@ -165,24 +128,6 @@
             list.appendChild(it);
         });
         el.appendChild(list);
-
-        const input = document.createElement('input');
-        input.className = 'picker-input';
-        input.type = 'number';
-        el.parentElement.appendChild(input);
-
-        el.ondblclick = () => {
-            input.style.display = 'block';
-            input.value = Math.round(el.scrollTop / H) % (max + 1);
-            input.focus();
-        };
-        input.onblur = () => {
-            let val = Math.min(max, Math.max(0, parseInt(input.value) || 0));
-            el.scrollTo({top: (max + 1 + val) * H, behavior: 'smooth'});
-            input.style.display = 'none';
-        };
-        input.onkeydown = (e) => { if(e.key === 'Enter') input.blur(); };
-
         const mid = (max + 1) * H; el.scrollTop = mid;
         el.onscroll = () => {
             if (el.scrollTop < mid - 400) el.scrollTop += mid;
@@ -215,7 +160,6 @@
         if (conf.work <= 0 && !conf.warm) return;
         if (audioCtx.state === 'suspended') audioCtx.resume();
         document.getElementById('dashboard').style.display = 'flex';
-        document.getElementById('dashboard').classList.remove('finished');
         let s = 1, ph = (conf.mode === 'interval' && conf.warm) ? 'rest' : 'work', rem = (ph === 'work') ? conf.work : conf.rest, tot = rem;
         const tick = () => {
             document.getElementById('ui-time').textContent = `${String(Math.floor(rem/60)).padStart(2,'0')}:${String(rem%60).padStart(2,'0')}`;
@@ -225,13 +169,8 @@
             document.getElementById('ui-phase').style.color = isW ? 'var(--active)' : 'var(--rest)';
             document.getElementById('progress').style.stroke = isW ? 'var(--active)' : 'var(--rest)';
             document.getElementById('progress').style.strokeDashoffset = 628 - (628 * (rem / tot));
-            if (rem <= 3 && rem > 0) beep(880, 0.1);
             if (rem === 0) {
-                if (conf.mode === 'timer' || (isW && s >= conf.sets)) {
-                    document.getElementById('dashboard').classList.add('finished');
-                    document.getElementById('ui-phase').textContent = "FINISHED!"; playAlarm(); return;
-                }
-                beep(1760, 0.3);
+                if (conf.mode === 'timer' || (isW && s >= conf.sets)) { stopWorkout(); return; }
                 if (isW && conf.mode === 'interval') { ph = 'rest'; rem = conf.rest; tot = conf.rest; }
                 else { if(!isW) s++; ph = 'work'; rem = conf.work; tot = conf.work; }
             } else { rem--; }
@@ -240,15 +179,12 @@
         tick();
     }
 
-    function stopWorkout() {
-        clearTimeout(tId); clearInterval(alarmId);
-        document.getElementById('dashboard').style.display = 'none';
-    }
-
+    function stopWorkout() { clearTimeout(tId); document.getElementById('dashboard').style.display = 'none'; }
     function saveSettings() { localStorage.setItem('workout_preset', JSON.stringify(conf)); alert("Saved!"); }
 
     function loadSettings() {
-        const saved = localStorage.getItem('workout_preset'); if (!saved) return;
+        const saved = localStorage.getItem('workout_preset');
+        if (!saved) { updateUIByMode(); return; } // 保存データがない場合も初期UIを適用
         const d = JSON.parse(saved);
         document.querySelector(`[data-mode="${d.mode}"]`).click();
         const setS = (id, v, m) => document.getElementById(id).scrollTop = (m + 1 + v) * H;
@@ -258,20 +194,18 @@
         document.getElementById('warm-up').checked = d.warm;
         document.getElementById('skip-last').checked = d.skip;
         sync();
+        updateUIByMode(); // 読み込み後にUIを確定
     }
 
     document.querySelectorAll('.mode-btn').forEach(b => b.onclick = () => {
         document.querySelectorAll('.mode-btn').forEach(x => x.classList.remove('active'));
         b.classList.add('active'); conf.mode = b.dataset.mode;
-        document.querySelector('[data-type="rest"]').classList.toggle('disabled', conf.mode !== 'interval');
-        document.querySelector('[data-type="sets"]').classList.toggle('disabled', conf.mode === 'timer');
+        updateUIByMode();
         sync();
     });
 
     mkPicker('w-m', 59); mkPicker('w-s', 59); mkPicker('r-m', 59); mkPicker('r-s', 59); mkPicker('s-v', 99);
-    document.getElementById('warm-up').onchange = sync;
-    document.getElementById('skip-last').onchange = sync;
-    setTimeout(loadSettings, 100);
+    setTimeout(loadSettings, 50); // 少し遅らせて確実に初期表示を制御
 </script>
 </body>
 </html>
