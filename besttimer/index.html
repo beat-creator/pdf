@@ -2,24 +2,20 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ultimate Hybrid Timer Pro - Fixed</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Ultimate Hybrid Timer Pro - Final</title>
     <style>
         :root {
             --bg: #f2f4f7; --card: #ffffff; --primary: #1c1c1e;
             --active: #34c759; --rest: #007aff; --muted: #8e8e93;
         }
         body { margin: 0; font-family: -apple-system, sans-serif; background: var(--bg); color: #333; overflow: hidden; user-select: none; }
-        .container {
-    max-width: 500px;
-    margin: 0 auto;
-    padding: 15px;
-    /* 100vh を 100svh に変更 */
-    height: 100svh; 
-    display: flex;
-    flex-direction: column;
-    box-sizing: border-box;
-}
+        
+        /* 100svh でアドレスバー問題を解決 */
+        .container { 
+            max-width: 500px; margin: 0 auto; padding: 15px; 
+            height: 100svh; display: flex; flex-direction: column; box-sizing: border-box; 
+        }
 
         header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
         .mode-selector { flex: 1; display: flex; background: #e3e3e3; padding: 2px; border-radius: 12px; margin-right: 10px; }
@@ -27,49 +23,34 @@
         .mode-btn.active { background: white; color: #000; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .settings-btn { font-size: 24px; cursor: pointer; padding: 5px; }
 
-        /* カードとピッカーの構造 */
-        .card { background: var(--card); border-radius: 20px; margin-bottom: 8px; padding: 0 20px; height: 105px; display: flex; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.02); overflow: hidden; }
-        .card.disabled { opacity: 0.15; pointer-events: none; filter: grayscale(1); }
+        .card { background: var(--card); border-radius: 20px; margin-bottom: 8px; padding: 0 20px; height: 105px; display: flex; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.02); overflow: hidden; transition: 0.3s; }
+        .card.disabled { opacity: 0.1; pointer-events: none; filter: grayscale(1); }
         .label-v { writing-mode: vertical-rl; text-orientation: upright; font-size: 11px; font-weight: bold; color: var(--muted); border-right: 1px solid #eee; padding-right: 12px; margin-right: 15px; height: 50%; }
         
         .picker-group { flex: 1; display: flex; justify-content: center; align-items: center; gap: 4px; height: 105px; }
         .picker-col { height: 105px; width: 75px; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; outline: none; }
         .picker-col::-webkit-scrollbar { display: none; }
-        
-        .picker-list { padding: 0; margin: 0; }
         .picker-item { height: 105px; display: flex; align-items: center; justify-content: center; font-size: 34px; font-weight: 800; scroll-snap-align: center; color: #ddd; transition: 0.2s; cursor: pointer; }
         .picker-item.selected { color: #000; transform: scale(1.1); }
 
         .opt-row { display: flex; justify-content: center; gap: 15px; margin: 10px 0; font-size: 13px; color: var(--muted); font-weight: bold; }
         .total-box { text-align: center; font-size: 16px; font-weight: 900; color: var(--primary); margin-bottom: 10px; }
 
-        /* 実行画面・モーダル */
         #dashboard { position: fixed; inset: 0; background: var(--bg); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; }
         .circle-ui { position: relative; width: 280px; height: 280px; margin: 20px 0; }
         .ring-bar { fill: none; stroke-width: 12; stroke-linecap: round; stroke-dasharray: 628; stroke-dashoffset: 628; transition: stroke-dashoffset 0.2s linear; transform: rotate(-90deg); transform-origin: 50% 50%; }
         .time-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 72px; font-weight: 900; font-family: monospace; }
 
         #modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 3000; display: none; }
-        .modal { position: absolute; bottom: 0; width: 100%; background: white; border-radius: 25px 25px 0 0; padding: 20px; box-sizing: border-box; max-height: 70%; overflow-y: auto; }
+        .modal { position: absolute; bottom: 0; width: 100%; background: white; border-radius: 25px 25px 0 0; padding: 20px; padding-bottom: calc(20px + env(safe-area-inset-bottom)); box-sizing: border-box; max-height: 70%; overflow-y: auto; }
         .preset-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #eee; }
-        .del-btn { color: #ff3b30; font-size: 12px; font-weight: bold; }
 
-       .start-btn {
-    width: 100%;
-    padding: 22px;
-    border-radius: 20px;
-    border: none;
-    background: var(--primary);
-    color: white;
-    font-size: 22px;
-    font-weight: 900;
-    margin-top: auto;
-    /* ボタンのすぐ下に少しだけ隙間を作る（アドレスバー対策） */
-    margin-bottom: 10px; 
-    cursor: pointer;
-    /* iPhoneのホームバーがある場合でも被らないようにする呪文 */
-    padding-bottom: calc(22px + env(safe-area-inset-bottom));
-}
+        /* ボタン調整 */
+        .start-btn { 
+            width: 100%; padding: 22px; border-radius: 20px; border: none; background: var(--primary); color: white; font-size: 22px; font-weight: 900; 
+            margin-top: auto; margin-bottom: 10px; cursor: pointer;
+            padding-bottom: calc(22px + env(safe-area-inset-bottom));
+        }
     </style>
 </head>
 <body>
@@ -77,16 +58,16 @@
 <div class="container" id="setup-view">
     <header>
         <div class="mode-selector">
-            <button class="mode-btn active" data-mode="timer">Timer</button>
+            <button class="mode-btn" data-mode="timer">Timer</button>
             <button class="mode-btn" data-mode="repeat">Repeat</button>
             <button class="mode-btn" data-mode="interval">Interval</button>
         </div>
         <div class="settings-btn" onclick="toggleModal(true)">⚙️</div>
     </header>
 
-    <div class="card" data-type="work"><div class="label-v">Work</div><div class="picker-group"><div class="picker-col" id="w-m"></div>分<div class="picker-col" id="w-s"></div>秒</div></div>
-    <div class="card" data-type="rest"><div class="label-v">Rest</div><div class="picker-group"><div class="picker-col" id="r-m"></div>分<div class="picker-col" id="r-s"></div>秒</div></div>
-    <div class="card" data-type="sets"><div class="label-v">Sets</div><div class="picker-group"><div class="picker-col" id="s-v"></div>回</div></div>
+    <div class="card" data-type="work" id="card-work"><div class="label-v">Work</div><div class="picker-group"><div class="picker-col" id="w-m"></div>分<div class="picker-col" id="w-s"></div>秒</div></div>
+    <div class="card" data-type="rest" id="card-rest"><div class="label-v">Rest</div><div class="picker-group"><div class="picker-col" id="r-m"></div>分<div class="picker-col" id="r-s"></div>秒</div></div>
+    <div class="card" data-type="sets" id="card-sets"><div class="label-v">Sets</div><div class="picker-group"><div class="picker-col" id="s-v"></div>回</div></div>
     
     <div class="total-box">Total: <span id="total-disp">00:00</span></div>
     
@@ -110,13 +91,13 @@
 <div id="modal-overlay" onclick="toggleModal(false)">
     <div class="modal" onclick="event.stopPropagation()">
         <h3 style="margin-top:0;">Presets</h3>
-        <button class="start-btn" onclick="savePreset()" style="background:var(--active); font-size:16px; padding:12px; margin-bottom:15px;">Save Current Config</button>
+        <button class="start-btn" onclick="savePreset()" style="background:var(--active); font-size:16px; padding:12px; margin-bottom:15px; padding-bottom:12px;">Save Current Config</button>
         <div id="preset-list"></div>
     </div>
 </div>
 
 <script>
-    const H = 105; // アイテムの高さ。これがズレると死ぬ
+    const H = 105;
     let conf = { mode: 'timer', work: 0, rest: 0, sets: 1, skip: true, warm: false };
     let tId = null;
     let wakeLock = null;
@@ -135,48 +116,30 @@
         try { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); } catch (err) {}
     }
 
-    // --- ここが修正の核心 ---
     function mkPicker(id, max) {
         const el = document.getElementById(id);
         const nums = Array.from({length: max + 1}, (_, i) => String(i).padStart(2, '0'));
         const list = document.createElement('div');
         list.className = 'picker-list';
-        
-        // 3周分作成
         [...nums, ...nums, ...nums].forEach((n, i) => {
             const it = document.createElement('div');
             it.className = 'picker-item';
-            it.style.height = H + "px"; // 高さをJSで厳密に固定
+            it.style.height = H + "px";
             it.textContent = n;
             it.onclick = () => el.scrollTo({top: i * H, behavior: 'smooth'});
             list.appendChild(it);
         });
         el.appendChild(list);
-
-        // 真ん中のセットの「00」の絶対位置
         const midPoint = (max + 1) * H;
-
-        // 描画が完了してから初期位置に飛ばす
-        setTimeout(() => {
-            el.scrollTop = midPoint;
-            updateSelectedUI(el);
-            sync();
-        }, 50);
+        setTimeout(() => { el.scrollTop = midPoint; updateSelectedUI(el); sync(); }, 50);
 
         el.addEventListener('scroll', () => {
-            // 無限ループのワープ
             if (el.scrollTop < midPoint / 2) el.scrollTop += midPoint;
             if (el.scrollTop > midPoint * 1.5) el.scrollTop -= midPoint;
-            
             updateSelectedUI(el);
             sync();
         });
-
-        // マウスホイール対応
-        el.addEventListener('wheel', (e) => {
-            e.preventDefault();
-            el.scrollBy({top: e.deltaY > 0 ? H : -H, behavior: 'smooth'});
-        }, {passive: false});
+        el.addEventListener('wheel', (e) => { e.preventDefault(); el.scrollBy({top: e.deltaY > 0 ? H : -H, behavior: 'smooth'}); }, {passive: false});
     }
 
     function updateSelectedUI(el) {
@@ -202,7 +165,16 @@
         document.getElementById('total-disp').textContent = `${String(Math.floor(total/60)).padStart(2,'0')}:${String(total%60).padStart(2,'0')}`;
     }
 
-    // 実行・プリセット管理などのロジック（前述と同じ）
+    function setMode(mode) {
+        document.querySelectorAll('.mode-btn').forEach(b => {
+            b.classList.toggle('active', b.dataset.mode === mode);
+        });
+        conf.mode = mode;
+        document.getElementById('card-rest').classList.toggle('disabled', mode !== 'interval');
+        document.getElementById('card-sets').classList.toggle('disabled', mode === 'timer');
+        sync();
+    }
+
     function startWorkout() {
         if (conf.work <= 0 && !conf.warm) return;
         if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -230,12 +202,15 @@
         };
         tick();
     }
+
     function stopWorkout(finish = false) {
         clearTimeout(tId); if (wakeLock) wakeLock.release();
         document.getElementById('dashboard').style.display = 'none';
         if (finish) alert("Complete!");
     }
+
     function toggleModal(show) { document.getElementById('modal-overlay').style.display = show ? 'block' : 'none'; if (show) renderPresets(); }
+    
     function savePreset() {
         const name = prompt("Preset Name:", "My Training");
         if (!name) return;
@@ -244,48 +219,51 @@
         localStorage.setItem('timer_presets', JSON.stringify(p));
         renderPresets();
     }
+
     function renderPresets() {
         const list = document.getElementById('preset-list');
         const p = JSON.parse(localStorage.getItem('timer_presets') || '[]');
         list.innerHTML = p.map(x => `
             <div class="preset-item">
                 <div style="flex:1" onclick="loadPreset(${x.id})"><b>${x.name}</b><br><small>${x.config.mode}</small></div>
-                <div class="del-btn" onclick="deletePreset(${x.id})">Delete</div>
+                <div style="color:#ff3b30; font-weight:bold;" onclick="deletePreset(${x.id})">Delete</div>
             </div>
         `).join('');
     }
+
     function loadPreset(id) {
         const p = JSON.parse(localStorage.getItem('timer_presets') || '[]').find(x => x.id === id);
         if (!p) return;
         const c = p.config;
-        document.querySelector(`[data-mode="${c.mode}"]`).click();
-        const midPoint = (60) * H; // 分秒用
-        const midPointS = (100) * H; // セット用
-        document.getElementById('w-m').scrollTop = midPoint + (Math.floor(c.work / 60) * H);
-        document.getElementById('w-s').scrollTop = midPoint + (c.work % 60 * H);
-        document.getElementById('r-m').scrollTop = midPoint + (Math.floor(c.rest / 60) * H);
-        document.getElementById('r-s').scrollTop = midPoint + (c.rest % 60 * H);
-        document.getElementById('s-v').scrollTop = midPointS + (c.sets * H);
+        setMode(c.mode);
+        const mid60 = 60 * H, mid100 = 100 * H;
+        document.getElementById('w-m').scrollTop = mid60 + (Math.floor(c.work / 60) * H);
+        document.getElementById('w-s').scrollTop = mid60 + (c.work % 60 * H);
+        document.getElementById('r-m').scrollTop = mid60 + (Math.floor(c.rest / 60) * H);
+        document.getElementById('r-s').scrollTop = mid60 + (c.rest % 60 * H);
+        document.getElementById('s-v').scrollTop = mid100 + (c.sets * H);
         document.getElementById('warm-up').checked = c.warm;
         document.getElementById('skip-last').checked = c.skip;
         sync(); toggleModal(false);
     }
+
     function deletePreset(id) {
         let p = JSON.parse(localStorage.getItem('timer_presets') || '[]').filter(x => x.id !== id);
         localStorage.setItem('timer_presets', JSON.stringify(p)); renderPresets();
     }
 
-    // 初期化
-    document.querySelectorAll('.mode-btn').forEach(b => b.onclick = () => {
-        document.querySelectorAll('.mode-btn').forEach(x => x.classList.remove('active'));
-        b.classList.add('active'); conf.mode = b.dataset.mode;
-        document.querySelector('[data-type="rest"]').classList.toggle('disabled', conf.mode !== 'interval');
-        document.querySelector('[data-type="sets"]').classList.toggle('disabled', conf.mode === 'timer');
-        sync();
+    // --- Init ---
+    document.querySelectorAll('.mode-btn').forEach(b => {
+        b.onclick = () => setMode(b.dataset.mode);
     });
+
     mkPicker('w-m', 59); mkPicker('w-s', 59);
     mkPicker('r-m', 59); mkPicker('r-s', 59);
     mkPicker('s-v', 99);
+
+    // 起動時にTimerモードを適用
+    setMode('timer');
+
     document.getElementById('warm-up').onchange = sync;
     document.getElementById('skip-last').onchange = sync;
 </script>
