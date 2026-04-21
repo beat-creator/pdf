@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ultimate Hybrid Timer Pro</title>
+    <title>Ultimate Hybrid Timer Pro + Save</title>
     <style>
         :root {
             --bg: #f2f4f7; --card: #ffffff; --primary: #1c1c1e;
@@ -16,7 +16,7 @@
         .mode-selector { flex: 1; display: flex; background: #e3e3e3; padding: 2px; border-radius: 12px; margin-right: 10px; }
         .mode-btn { flex: 1; padding: 10px; border: none; background: none; border-radius: 10px; font-weight: bold; font-size: 14px; color: #777; cursor: pointer; }
         .mode-btn.active { background: white; color: #000; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .settings-btn { font-size: 24px; cursor: pointer; padding: 5px; }
+        .save-icon { font-size: 24px; cursor: pointer; padding: 5px; }
 
         .card { background: var(--card); border-radius: 20px; margin-bottom: 8px; padding: 0 20px; height: 105px; display: flex; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.02); transition: 0.3s; }
         .card.disabled { opacity: 0.15; pointer-events: none; filter: grayscale(1); }
@@ -49,7 +49,7 @@
             <button class="mode-btn" data-mode="repeat">Repeat</button>
             <button class="mode-btn" data-mode="interval">Interval</button>
         </div>
-        <div class="settings-btn" onclick="location.reload()">⚙️</div>
+        <div class="save-icon" onclick="saveSettings()">⚙️</div>
     </header>
 
     <div class="card" data-type="work"><div class="label-v">Work</div><div class="picker-group"><div class="picker-col" id="w-m"></div>分<div class="picker-col" id="w-s"></div>秒</div></div>
@@ -121,10 +121,12 @@
     }
 
     function sync() {
-        const get = (id, max) => Math.round(document.getElementById(id).scrollTop / H) % (max + 1);
-        conf.work = get('w-m', 59) * 60 + get('w-s', 59);
-        conf.rest = get('r-m', 59) * 60 + get('r-s', 59);
-        conf.sets = Math.max(1, get('s-v', 99));
+        const getVal = (id, max) => Math.round(document.getElementById(id).scrollTop / H) % (max + 1);
+        conf.workM = getVal('w-m', 59); conf.workS = getVal('w-s', 59);
+        conf.restM = getVal('r-m', 59); conf.restS = getVal('r-s', 59);
+        conf.sets = Math.max(1, getVal('s-v', 99));
+        conf.work = conf.workM * 60 + conf.workS;
+        conf.rest = conf.restM * 60 + conf.restS;
         conf.skip = document.getElementById('skip-last').checked;
         conf.warm = document.getElementById('warm-up').checked;
 
@@ -137,6 +139,35 @@
         document.getElementById('total-disp').textContent = `${String(Math.floor(total/60)).padStart(2,'0')}:${String(total%60).padStart(2,'0')}`;
     }
 
+    function saveSettings() {
+        localStorage.setItem('workout_preset', JSON.stringify(conf));
+        alert("設定を保存しました！次回起動時に自動で読み込まれます。");
+    }
+
+    function loadSettings() {
+        const saved = localStorage.getItem('workout_preset');
+        if (!saved) return;
+        const data = JSON.parse(saved);
+        
+        // モード復元
+        document.querySelector(`[data-mode="${data.mode}"]`).click();
+        
+        // ドラムロール復元（中央セットの位置へ飛ばす）
+        const setScroll = (id, val, max) => {
+            const el = document.getElementById(id);
+            el.scrollTop = (max + 1 + val) * H;
+        };
+        setScroll('w-m', data.workM, 59); setScroll('w-s', data.workS, 59);
+        setScroll('r-m', data.restM, 59); setScroll('r-s', data.restS, 59);
+        setScroll('s-v', data.sets, 99);
+        
+        // チェックボックス復元
+        document.getElementById('warm-up').checked = data.warm;
+        document.getElementById('skip-last').checked = data.skip;
+        sync();
+    }
+
+    // --- 以下、実行ロジック ---
     function startWorkout() {
         if (conf.work <= 0 && !conf.warm) return;
         requestWakeLock();
@@ -157,10 +188,7 @@
             if (rem <= 3 && rem > 0) beep(880, 0.1);
             if (rem === 0) {
                 beep(1760, 0.3);
-                if (conf.mode === 'timer' || (isW && s >= conf.sets)) {
-                    if (!isW && !conf.skip && s === conf.sets) { /* Stay for last rest */ }
-                    else return stopWorkout(true);
-                }
+                if (conf.mode === 'timer' || (isW && s >= conf.sets)) return stopWorkout(true);
                 if (isW && conf.mode === 'interval') { ph = 'rest'; rem = conf.rest; tot = conf.rest; }
                 else { if(!isW) s++; ph = 'work'; rem = conf.work; tot = conf.work; }
             } else { rem--; }
@@ -184,11 +212,15 @@
         sync();
     });
 
+    // 初期化
     mkPicker('w-m', 59); mkPicker('w-s', 59);
     mkPicker('r-m', 59); mkPicker('r-s', 59);
     mkPicker('s-v', 99);
     document.getElementById('warm-up').onchange = sync;
     document.getElementById('skip-last').onchange = sync;
+    
+    // 起動時に保存済み設定があればロード
+    setTimeout(loadSettings, 100);
 </script>
 </body>
 </html>
