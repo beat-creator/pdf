@@ -151,3 +151,13 @@ body {
     border-radius: 30px;
     font-size: 18px;
 }
+
+.picker-col {
+    height: 80px;
+    width: 60px;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
+    scrollbar-width: none;
+    padding-top: 20px;     /* ← ダミー上余白 */
+    padding-bottom: 20px;  /* ← ダミー下余白 */
+}
