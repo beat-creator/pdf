@@ -2,54 +2,53 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Workout Timer Pro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ultimate Hybrid Timer Pro</title>
     <style>
         :root {
             --bg: #f2f4f7; --card: #ffffff; --primary: #1c1c1e;
-            --active: #34c759; --rest: #007aff; --muted: #8e8e93; --warning: #ffcc00;
+            --active: #34c759; --rest: #007aff; --muted: #8e8e93;
         }
-        body { margin: 0; font-family: -apple-system, sans-serif; background: var(--bg); color: #333; overflow: hidden; user-select: none; height: 100dvh; }
-        .container { max-width: 500px; margin: 0 auto; padding: 10px; height: 100%; display: flex; flex-direction: column; box-sizing: border-box; padding-bottom: calc(10px + env(safe-area-inset-bottom)); }
+        body { margin: 0; font-family: -apple-system, sans-serif; background: var(--bg); color: #333; overflow: hidden; user-select: none; }
+        .container { max-width: 500px; margin: 0 auto; padding: 15px; height: 100vh; display: flex; flex-direction: column; box-sizing: border-box; }
 
-        header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+        /* --- UI Elements --- */
+        header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
         .mode-selector { flex: 1; display: flex; background: #e3e3e3; padding: 2px; border-radius: 12px; margin-right: 10px; }
         .mode-btn { flex: 1; padding: 10px; border: none; background: none; border-radius: 10px; font-weight: bold; font-size: 14px; color: #777; cursor: pointer; }
         .mode-btn.active { background: white; color: #000; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .save-icon { font-size: 24px; cursor: pointer; padding: 5px; }
+        .settings-btn { font-size: 24px; cursor: pointer; padding: 5px; }
 
-        .card { background: var(--card); border-radius: 20px; margin-bottom: 8px; padding: 0 20px; height: 105px; display: flex; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.02); position: relative; transition: opacity 0.2s, transform 0.2s; }
-        
-        /* 完全に非表示にするための設定 */
-        .card.hidden { display: none; }
+        .card { background: var(--card); border-radius: 20px; margin-bottom: 8px; padding: 0 20px; height: 105px; display: flex; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.02); transition: 0.3s; position: relative; }
         .card.disabled { opacity: 0.15; pointer-events: none; filter: grayscale(1); }
-
         .label-v { writing-mode: vertical-rl; text-orientation: upright; font-size: 11px; font-weight: bold; color: var(--muted); border-right: 1px solid #eee; padding-right: 12px; margin-right: 15px; height: 50%; }
-        .picker-group { flex: 1; display: flex; justify-content: center; align-items: center; gap: 4px; height: 100%; position: relative; }
+        
+        /* --- Hybrid Picker --- */
+        .picker-group { flex: 1; display: flex; justify-content: center; align-items: center; gap: 4px; height: 100%; }
         .picker-col { height: 105px; width: 75px; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; outline: none; }
         .picker-col::-webkit-scrollbar { display: none; }
         .picker-list { padding: 105px 0; }
         .picker-item { height: 105px; display: flex; align-items: center; justify-content: center; font-size: 34px; font-weight: 800; scroll-snap-align: center; color: #ddd; transition: 0.2s; cursor: pointer; }
         .picker-item.selected { color: #000; transform: scale(1.1); }
 
-        /* PCガジェットモード */
-        @media (max-width: 350px) {
-            .container { padding: 5px; padding-bottom: 5px; }
-            .mode-btn { padding: 6px; font-size: 11px; }
-            .card { height: 62px; border-radius: 10px; margin-bottom: 4px; padding: 0 10px; }
-            .picker-col { height: 62px; width: 50px; }
-            .picker-list { padding: 62px 0; }
-            .picker-item { height: 62px; font-size: 22px; }
-            .start-btn { padding: 15px; font-size: 18px; }
-        }
-
+        .opt-row { display: flex; justify-content: center; gap: 15px; margin: 10px 0; font-size: 13px; color: var(--muted); font-weight: bold; }
         .total-box { text-align: center; font-size: 16px; font-weight: 900; color: var(--primary); margin-bottom: 10px; }
-        .opt-row { display: flex; justify-content: center; gap: 15px; margin-bottom: 10px; font-size: 13px; color: var(--muted); font-weight: bold; }
-        #dashboard { position: fixed; inset: 0; background: var(--bg); z-index: 1000; display: none; flex-direction: column; align-items: center; justify-content: center; padding-bottom: env(safe-area-inset-bottom); }
+
+        /* --- Dashboard --- */
+        #dashboard { position: fixed; inset: 0; background: var(--bg); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; }
         .circle-ui { position: relative; width: 280px; height: 280px; margin: 20px 0; }
         .ring-bar { fill: none; stroke-width: 12; stroke-linecap: round; stroke-dasharray: 628; stroke-dashoffset: 628; transition: stroke-dashoffset 0.2s linear; transform: rotate(-90deg); transform-origin: 50% 50%; }
-        .time-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 72px; font-weight: 900; }
-        .start-btn { width: 100%; padding: 22px; border-radius: 20px; border: none; background: var(--primary); color: white; font-size: 22px; font-weight: 900; margin-top: auto; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .time-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 72px; font-weight: 900; font-family: monospace; }
+
+        /* --- Modal (Presets) --- */
+        #modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 3000; display: none; }
+        .modal { position: absolute; bottom: 0; width: 100%; background: white; border-radius: 25px 25px 0 0; padding: 20px; box-sizing: border-box; max-height: 70%; overflow-y: auto; }
+        .preset-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #eee; }
+        .preset-name { font-weight: bold; flex: 1; cursor: pointer; }
+        .del-btn { color: #ff3b30; font-size: 12px; font-weight: bold; padding: 5px 10px; }
+
+        .start-btn { width: 100%; padding: 22px; border-radius: 20px; border: none; background: var(--primary); color: white; font-size: 22px; font-weight: 900; margin-top: auto; cursor: pointer; }
+        .save-action-btn { background: var(--active); color: white; border: none; padding: 12px; width: 100%; border-radius: 12px; font-weight: bold; margin-bottom: 15px; }
     </style>
 </head>
 <body>
@@ -61,7 +60,7 @@
             <button class="mode-btn" data-mode="repeat">Repeat</button>
             <button class="mode-btn" data-mode="interval">Interval</button>
         </div>
-        <div class="save-icon" onclick="saveSettings()">⚙️</div>
+        <div class="settings-btn" onclick="toggleModal(true)">⚙️</div>
     </header>
 
     <div class="card" data-type="work"><div class="label-v">Work</div><div class="picker-group"><div class="picker-col" id="w-m"></div>分<div class="picker-col" id="w-s"></div>秒</div></div>
@@ -70,7 +69,7 @@
     
     <div class="total-box">Total: <span id="total-disp">00:00</span></div>
     
-    <div class="opt-row" id="opt-row">
+    <div class="opt-row">
         <label><input type="checkbox" id="warm-up"> Start w/ Rest</label>
         <label><input type="checkbox" id="skip-last" checked> Skip last rest</label>
     </div>
@@ -84,37 +83,40 @@
         <svg viewBox="0 0 210 210"><circle cx="105" cy="105" r="100" fill="none" stroke="#eef0f5" stroke-width="8"/><circle id="progress" class="ring-bar" cx="105" cy="105" r="100" stroke="var(--active)"/></svg>
         <div class="time-text" id="ui-time">00:00</div>
     </div>
-    <div id="ui-sets" style="font-weight:bold; color:var(--muted);">SET 1 / 10</div>
+    <div id="ui-sets" style="font-weight:bold; color:var(--muted);">SET 1 / 1</div>
     <button class="start-btn" onclick="stopWorkout()" style="background:#ff3b30; width:80%; margin-top:40px;">STOP</button>
 </div>
 
+<div id="modal-overlay" onclick="toggleModal(false)">
+    <div class="modal" onclick="event.stopPropagation()">
+        <h3 style="margin-top:0;">Presets</h3>
+        <button class="save-action-btn" onclick="savePreset()">Current Config to Favorites</button>
+        <div id="preset-list"></div>
+        <button class="start-btn" onclick="toggleModal(false)" style="background:#eee; color:#333; font-size:14px; padding:10px; margin-top:15px;">Close</button>
+    </div>
+</div>
+
 <script>
-    let H = 105;
+    const H = 105;
     let conf = { mode: 'timer', work: 0, rest: 0, sets: 1, skip: true, warm: false };
-    let tId = null, alarmId = null;
+    let tId = null;
+    let wakeLock = null;
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-    function updateH() { H = window.innerWidth <= 350 ? 62 : 105; }
-    window.addEventListener('resize', updateH);
-    updateH();
-
-    // モードに合わせて表示を切り替える関数
-    function updateUIByMode() {
-        const isInterval = conf.mode === 'interval';
-        const isTimer = conf.mode === 'timer';
-
-        // Restカードの制御
-        const restCard = document.querySelector('[data-type="rest"]');
-        restCard.classList.toggle('hidden', !isInterval);
-        
-        // Setsカードの制御
-        const setsCard = document.querySelector('[data-type="sets"]');
-        setsCard.classList.toggle('hidden', isTimer);
-
-        // オプション行の制御
-        document.getElementById('opt-row').style.visibility = isInterval ? 'visible' : 'hidden';
+    function beep(freq, dur) {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.frequency.value = freq; gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        osc.start(); gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + dur);
+        osc.stop(audioCtx.currentTime + dur);
     }
 
+    async function requestWakeLock() {
+        try { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); } catch (err) {}
+    }
+
+    // --- Picker Logic ---
     function mkPicker(id, max) {
         const el = document.getElementById(id);
         const nums = Array.from({length: max + 1}, (_, i) => String(i).padStart(2, '0'));
@@ -129,24 +131,30 @@
         });
         el.appendChild(list);
         const mid = (max + 1) * H; el.scrollTop = mid;
-        el.onscroll = () => {
-            if (el.scrollTop < mid - 400) el.scrollTop += mid;
-            if (el.scrollTop > mid * 2 + 400) el.scrollTop -= mid;
+        el.addEventListener('scroll', () => {
+            if (el.scrollTop < mid - 500) el.scrollTop += mid;
+            if (el.scrollTop > mid * 2 + 500) el.scrollTop -= mid;
             const idx = Math.round(el.scrollTop / H);
             el.querySelectorAll('.picker-item').forEach((it, i) => it.classList.toggle('selected', i === idx));
             sync();
-        };
+        });
+        el.addEventListener('wheel', (e) => { e.preventDefault(); el.scrollBy({top: e.deltaY > 0 ? H : -H, behavior: 'smooth'}); }, {passive: false});
+    }
+
+    function scrollPickerTo(id, val, max) {
+        const el = document.getElementById(id);
+        const mid = (max + 1) * H;
+        el.scrollTo({ top: mid + (val * H), behavior: 'smooth' });
     }
 
     function sync() {
-        const getVal = (id, max) => Math.round(document.getElementById(id).scrollTop / H) % (max + 1);
-        conf.workM = getVal('w-m', 59); conf.workS = getVal('w-s', 59);
-        conf.restM = getVal('r-m', 59); conf.restS = getVal('r-s', 59);
-        conf.sets = Math.max(1, getVal('s-v', 99));
-        conf.work = conf.workM * 60 + conf.workS;
-        conf.rest = conf.restM * 60 + conf.restS;
+        const get = (id, max) => Math.round(document.getElementById(id).scrollTop / H) % (max + 1);
+        conf.work = get('w-m', 59) * 60 + get('w-s', 59);
+        conf.rest = get('r-m', 59) * 60 + get('r-s', 59);
+        conf.sets = Math.max(1, get('s-v', 99));
         conf.skip = document.getElementById('skip-last').checked;
         conf.warm = document.getElementById('warm-up').checked;
+
         let total = (conf.mode === 'timer') ? conf.work : conf.work * conf.sets;
         if (conf.mode === 'interval') {
             let rCount = conf.skip ? conf.sets - 1 : conf.sets;
@@ -156,11 +164,16 @@
         document.getElementById('total-disp').textContent = `${String(Math.floor(total/60)).padStart(2,'0')}:${String(total%60).padStart(2,'0')}`;
     }
 
+    // --- Workout Logic ---
     function startWorkout() {
         if (conf.work <= 0 && !conf.warm) return;
         if (audioCtx.state === 'suspended') audioCtx.resume();
+        requestWakeLock();
+        let s = 1, ph = (conf.mode === 'interval' && conf.warm) ? 'rest' : 'work';
+        let rem = (ph === 'work') ? conf.work : conf.rest;
+        let tot = rem;
         document.getElementById('dashboard').style.display = 'flex';
-        let s = 1, ph = (conf.mode === 'interval' && conf.warm) ? 'rest' : 'work', rem = (ph === 'work') ? conf.work : conf.rest, tot = rem;
+
         const tick = () => {
             document.getElementById('ui-time').textContent = `${String(Math.floor(rem/60)).padStart(2,'0')}:${String(rem%60).padStart(2,'0')}`;
             document.getElementById('ui-sets').textContent = conf.mode === 'timer' ? "" : `SET ${s} / ${conf.sets}`;
@@ -169,8 +182,14 @@
             document.getElementById('ui-phase').style.color = isW ? 'var(--active)' : 'var(--rest)';
             document.getElementById('progress').style.stroke = isW ? 'var(--active)' : 'var(--rest)';
             document.getElementById('progress').style.strokeDashoffset = 628 - (628 * (rem / tot));
+
+            if (rem <= 3 && rem > 0) beep(880, 0.1);
             if (rem === 0) {
-                if (conf.mode === 'timer' || (isW && s >= conf.sets)) { stopWorkout(); return; }
+                beep(1760, 0.3);
+                if (conf.mode === 'timer' || (isW && s >= conf.sets)) {
+                    if (!isW && !conf.skip && s === conf.sets) { /* cool down mode */ }
+                    else return stopWorkout(true);
+                }
                 if (isW && conf.mode === 'interval') { ph = 'rest'; rem = conf.rest; tot = conf.rest; }
                 else { if(!isW) s++; ph = 'work'; rem = conf.work; tot = conf.work; }
             } else { rem--; }
@@ -179,33 +198,82 @@
         tick();
     }
 
-    function stopWorkout() { clearTimeout(tId); document.getElementById('dashboard').style.display = 'none'; }
-    function saveSettings() { localStorage.setItem('workout_preset', JSON.stringify(conf)); alert("Saved!"); }
-
-    function loadSettings() {
-        const saved = localStorage.getItem('workout_preset');
-        if (!saved) { updateUIByMode(); return; } // 保存データがない場合も初期UIを適用
-        const d = JSON.parse(saved);
-        document.querySelector(`[data-mode="${d.mode}"]`).click();
-        const setS = (id, v, m) => document.getElementById(id).scrollTop = (m + 1 + v) * H;
-        setS('w-m', d.workM, 59); setS('w-s', d.workS, 59);
-        setS('r-m', d.restM, 59); setS('r-s', d.restS, 59);
-        setS('s-v', d.sets, 99);
-        document.getElementById('warm-up').checked = d.warm;
-        document.getElementById('skip-last').checked = d.skip;
-        sync();
-        updateUIByMode(); // 読み込み後にUIを確定
+    function stopWorkout(finish = false) {
+        clearTimeout(tId);
+        if (wakeLock) { wakeLock.release(); wakeLock = null; }
+        document.getElementById('dashboard').style.display = 'none';
+        if (finish) alert("Workout Complete!");
     }
 
+    // --- Preset Logic ---
+    function toggleModal(show) {
+        document.getElementById('modal-overlay').style.display = show ? 'block' : 'none';
+        if (show) renderPresets();
+    }
+
+    function savePreset() {
+        const name = prompt("Preset Name:", "My Workout");
+        if (!name) return;
+        const presets = JSON.parse(localStorage.getItem('timer_presets') || '[]');
+        presets.push({ id: Date.now(), name, config: { ...conf } });
+        localStorage.setItem('timer_presets', JSON.stringify(presets));
+        renderPresets();
+    }
+
+    function renderPresets() {
+        const list = document.getElementById('preset-list');
+        const presets = JSON.parse(localStorage.getItem('timer_presets') || '[]');
+        list.innerHTML = presets.map(p => `
+            <div class="preset-item">
+                <div class="preset-name" onclick="loadPreset(${p.id})">${p.name} <br><small style="color:#999">${p.config.mode}</small></div>
+                <div class="del-btn" onclick="deletePreset(${p.id})">Delete</div>
+            </div>
+        `).join('');
+    }
+
+    function loadPreset(id) {
+        const presets = JSON.parse(localStorage.getItem('timer_presets') || '[]');
+        const p = presets.find(x => x.id === id);
+        if (!p) return;
+        const c = p.config;
+        
+        // モード変更
+        document.querySelector(`[data-mode="${c.mode}"]`).click();
+        
+        // スクロール
+        scrollPickerTo('w-m', Math.floor(c.work / 60), 59);
+        scrollPickerTo('w-s', c.work % 60, 59);
+        scrollPickerTo('r-m', Math.floor(c.rest / 60), 59);
+        scrollPickerTo('r-s', c.rest % 60, 59);
+        scrollPickerTo('s-v', c.sets, 99);
+        
+        document.getElementById('warm-up').checked = c.warm;
+        document.getElementById('skip-last').checked = c.skip;
+        sync();
+        toggleModal(false);
+    }
+
+    function deletePreset(id) {
+        let presets = JSON.parse(localStorage.getItem('timer_presets') || '[]');
+        presets = presets.filter(p => p.id !== id);
+        localStorage.setItem('timer_presets', JSON.stringify(presets));
+        renderPresets();
+    }
+
+    // --- Init ---
     document.querySelectorAll('.mode-btn').forEach(b => b.onclick = () => {
         document.querySelectorAll('.mode-btn').forEach(x => x.classList.remove('active'));
         b.classList.add('active'); conf.mode = b.dataset.mode;
-        updateUIByMode();
+        document.querySelector('[data-type="rest"]').classList.toggle('disabled', conf.mode !== 'interval');
+        document.querySelector('[data-type="sets"]').classList.toggle('disabled', conf.mode === 'timer');
         sync();
     });
 
-    mkPicker('w-m', 59); mkPicker('w-s', 59); mkPicker('r-m', 59); mkPicker('r-s', 59); mkPicker('s-v', 99);
-    setTimeout(loadSettings, 50); // 少し遅らせて確実に初期表示を制御
+    mkPicker('w-m', 59); mkPicker('w-s', 59);
+    mkPicker('r-m', 59); mkPicker('r-s', 59);
+    mkPicker('s-v', 99);
+    document.getElementById('warm-up').onchange = sync;
+    document.getElementById('skip-last').onchange = sync;
 </script>
 </body>
 </html>
