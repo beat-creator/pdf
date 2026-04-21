@@ -3,50 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ultimate Timer Hybrid Fixed</title>
+    <title>Ultimate Hybrid Timer Pro</title>
     <style>
         :root {
             --bg: #f2f4f7; --card: #ffffff; --primary: #1c1c1e;
             --active: #34c759; --rest: #007aff; --muted: #8e8e93;
         }
-
         body { margin: 0; font-family: -apple-system, sans-serif; background: var(--bg); color: #333; overflow: hidden; user-select: none; }
         .container { max-width: 500px; margin: 0 auto; padding: 15px; height: 100vh; display: flex; flex-direction: column; box-sizing: border-box; }
 
-        /* --- Header & Settings --- */
         header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
         .mode-selector { flex: 1; display: flex; background: #e3e3e3; padding: 2px; border-radius: 12px; margin-right: 10px; }
         .mode-btn { flex: 1; padding: 10px; border: none; background: none; border-radius: 10px; font-weight: bold; font-size: 14px; color: #777; cursor: pointer; }
         .mode-btn.active { background: white; color: #000; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .settings-btn { font-size: 24px; cursor: pointer; padding: 5px; }
 
-        /* --- Hybrid Picker Layout --- */
-        .card { background: var(--card); border-radius: 20px; margin-bottom: 10px; padding: 0 20px; height: 110px; display: flex; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.02); transition: opacity 0.3s; }
+        .card { background: var(--card); border-radius: 20px; margin-bottom: 8px; padding: 0 20px; height: 105px; display: flex; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.02); transition: 0.3s; }
         .card.disabled { opacity: 0.15; pointer-events: none; filter: grayscale(1); }
         .label-v { writing-mode: vertical-rl; text-orientation: upright; font-size: 11px; font-weight: bold; color: var(--muted); border-right: 1px solid #eee; padding-right: 12px; margin-right: 15px; height: 50%; }
         
-        .picker-group { flex: 1; display: flex; justify-content: center; align-items: center; gap: 4px; height: 100%; position: relative; }
-        .picker-col { height: 110px; width: 80px; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; outline: none; }
+        .picker-group { flex: 1; display: flex; justify-content: center; align-items: center; gap: 4px; height: 100%; }
+        .picker-col { height: 105px; width: 75px; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; outline: none; }
         .picker-col::-webkit-scrollbar { display: none; }
-        .picker-list { padding: 110px 0; }
-        .picker-item { height: 110px; display: flex; align-items: center; justify-content: center; font-size: 38px; font-weight: 800; scroll-snap-align: center; color: #ddd; transition: color 0.2s; cursor: pointer; }
+        .picker-list { padding: 105px 0; }
+        .picker-item { height: 105px; display: flex; align-items: center; justify-content: center; font-size: 34px; font-weight: 800; scroll-snap-align: center; color: #ddd; transition: 0.2s; cursor: pointer; }
         .picker-item.selected { color: #000; transform: scale(1.1); }
 
-        /* --- Dashboard (Timer Running) --- */
+        .opt-row { display: flex; justify-content: center; gap: 15px; margin: 10px 0; font-size: 13px; color: var(--muted); font-weight: bold; }
+        .total-box { text-align: center; font-size: 16px; font-weight: 900; color: var(--primary); margin-bottom: 10px; }
+
         #dashboard { position: fixed; inset: 0; background: var(--bg); z-index: 1000; display: none; flex-direction: column; align-items: center; justify-content: center; }
         .circle-ui { position: relative; width: 280px; height: 280px; margin: 20px 0; }
-        .ring-bg { fill: none; stroke: #eef0f5; stroke-width: 8; }
-        .ring-bar { fill: none; stroke-width: 12; stroke-linecap: round; stroke-dasharray: 628; stroke-dashoffset: 628; transition: stroke-dashoffset 0.2s linear, stroke 0.3s; transform: rotate(-90deg); transform-origin: 50% 50%; }
-        .time-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 72px; font-weight: 900; font-family: 'Courier New', monospace; }
-        .phase-label { font-size: 24px; font-weight: 900; letter-spacing: 5px; color: var(--active); margin-bottom: 10px; }
-        .sets-count { font-weight: bold; color: var(--muted); margin-top: 10px; }
+        .ring-bar { fill: none; stroke-width: 12; stroke-linecap: round; stroke-dasharray: 628; stroke-dashoffset: 628; transition: stroke-dashoffset 0.2s linear; transform: rotate(-90deg); transform-origin: 50% 50%; }
+        .time-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 72px; font-weight: 900; }
 
-        .start-btn { width: 100%; padding: 22px; border-radius: 20px; border: none; background: var(--primary); color: white; font-size: 24px; font-weight: 900; margin-top: auto; cursor: pointer; }
+        .start-btn { width: 100%; padding: 22px; border-radius: 20px; border: none; background: var(--primary); color: white; font-size: 22px; font-weight: 900; margin-top: auto; cursor: pointer; }
     </style>
 </head>
 <body>
 
-<div class="container">
+<div class="container" id="setup-view">
     <header>
         <div class="mode-selector">
             <button class="mode-btn active" data-mode="timer">Timer</button>
@@ -56,33 +52,49 @@
         <div class="settings-btn" onclick="location.reload()">⚙️</div>
     </header>
 
-    <div id="setup-view" style="flex:1; display:flex; flex-direction:column;">
-        <div class="card" data-type="work"><div class="label-v">Work</div><div class="picker-group"><div class="picker-col" id="w-m"></div>分<div class="picker-col" id="w-s"></div>秒</div></div>
-        <div class="card" data-type="rest"><div class="label-v">Rest</div><div class="picker-group"><div class="picker-col" id="r-m"></div>分<div class="picker-col" id="r-s"></div>秒</div></div>
-        <div class="card" data-type="sets"><div class="label-v">Sets</div><div class="picker-group"><div class="picker-col" id="s-v"></div>回</div></div>
-        
-        <div style="text-align:center; margin:10px 0; font-weight:bold; color:var(--muted);">Total: <span id="total-disp">00:00</span></div>
-        <label style="display:flex; justify-content:center; gap:8px; font-size:14px; color:var(--muted); font-weight:bold;">
-            <input type="checkbox" id="skip-check" checked> Skip last rest
-        </label>
-        <button class="start-btn" onclick="run()">START WORKOUT</button>
+    <div class="card" data-type="work"><div class="label-v">Work</div><div class="picker-group"><div class="picker-col" id="w-m"></div>分<div class="picker-col" id="w-s"></div>秒</div></div>
+    <div class="card" data-type="rest"><div class="label-v">Rest</div><div class="picker-group"><div class="picker-col" id="r-m"></div>分<div class="picker-col" id="r-s"></div>秒</div></div>
+    <div class="card" data-type="sets"><div class="label-v">Sets</div><div class="picker-group"><div class="picker-col" id="s-v"></div>回</div></div>
+    
+    <div class="total-box">Total: <span id="total-disp">00:00</span></div>
+    
+    <div class="opt-row">
+        <label><input type="checkbox" id="warm-up"> Start w/ Rest</label>
+        <label><input type="checkbox" id="skip-last" checked> Skip last rest</label>
     </div>
+    
+    <button class="start-btn" onclick="startWorkout()">START WORKOUT</button>
 </div>
 
 <div id="dashboard">
-    <div id="ui-phase" class="phase-label">WORK</div>
+    <div id="ui-phase" style="font-size:24px; font-weight:900; margin-bottom:10px;">WORK</div>
     <div class="circle-ui">
-        <svg viewBox="0 0 210 210"><circle class="ring-bg" cx="105" cy="105" r="100"/><circle id="progress" class="ring-bar" cx="105" cy="105" r="100" stroke="var(--active)"/></svg>
+        <svg viewBox="0 0 210 210"><circle cx="105" cy="105" r="100" fill="none" stroke="#eef0f5" stroke-width="8"/><circle id="progress" class="ring-bar" cx="105" cy="105" r="100" stroke="var(--active)"/></svg>
         <div class="time-text" id="ui-time">00:00</div>
     </div>
-    <div id="ui-sets" class="sets-count">SET 1 / 10</div>
-    <button class="start-btn" onclick="stop()" style="background:#ff3b30; width:80%; margin-top:40px;">STOP</button>
+    <div id="ui-sets" style="font-weight:bold; color:var(--muted);">SET 1 / 10</div>
+    <button class="start-btn" onclick="stopWorkout()" style="background:#ff3b30; width:80%; margin-top:40px;">STOP</button>
 </div>
 
 <script>
-    const H = 110;
-    let conf = { mode: 'timer', work: 0, rest: 0, sets: 1, skip: true };
+    const H = 105;
+    let conf = { mode: 'timer', work: 0, rest: 0, sets: 1, skip: true, warm: false };
     let tId = null;
+    let wakeLock = null;
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function beep(freq, dur) {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.frequency.value = freq; gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        osc.start(); gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + dur);
+        osc.stop(audioCtx.currentTime + dur);
+    }
+
+    async function requestWakeLock() {
+        try { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); } catch (err) {}
+    }
 
     function mkPicker(id, max) {
         const el = document.getElementById(id);
@@ -97,9 +109,7 @@
             list.appendChild(it);
         });
         el.appendChild(list);
-        const mid = (max + 1) * H;
-        el.scrollTop = mid;
-
+        const mid = (max + 1) * H; el.scrollTop = mid;
         el.addEventListener('scroll', () => {
             if (el.scrollTop < mid - 500) el.scrollTop += mid;
             if (el.scrollTop > mid * 2 + 500) el.scrollTop -= mid;
@@ -107,7 +117,6 @@
             el.querySelectorAll('.picker-item').forEach((it, i) => it.classList.toggle('selected', i === idx));
             sync();
         });
-
         el.addEventListener('wheel', (e) => { e.preventDefault(); el.scrollBy({top: e.deltaY > 0 ? H : -H, behavior: 'smooth'}); }, {passive: false});
     }
 
@@ -116,45 +125,60 @@
         conf.work = get('w-m', 59) * 60 + get('w-s', 59);
         conf.rest = get('r-m', 59) * 60 + get('r-s', 59);
         conf.sets = Math.max(1, get('s-v', 99));
-        conf.skip = document.getElementById('skip-check').checked;
+        conf.skip = document.getElementById('skip-last').checked;
+        conf.warm = document.getElementById('warm-up').checked;
 
-        let total = conf.mode === 'timer' ? conf.work : conf.work * conf.sets;
-        if (conf.mode === 'interval') total += conf.rest * (conf.skip ? conf.sets - 1 : conf.sets);
+        let total = (conf.mode === 'timer') ? conf.work : conf.work * conf.sets;
+        if (conf.mode === 'interval') {
+            let rCount = conf.skip ? conf.sets - 1 : conf.sets;
+            if (conf.warm) rCount++; 
+            total += conf.rest * rCount;
+        }
         document.getElementById('total-disp').textContent = `${String(Math.floor(total/60)).padStart(2,'0')}:${String(total%60).padStart(2,'0')}`;
     }
 
-    function run() {
-        if (conf.work <= 0) return alert("時間を設定してね！");
-        let s = 1, ph = 'work', rem = conf.work, tot = conf.work;
+    function startWorkout() {
+        if (conf.work <= 0 && !conf.warm) return;
+        requestWakeLock();
+        let s = 1, ph = (conf.mode === 'interval' && conf.warm) ? 'rest' : 'work';
+        let rem = (ph === 'work') ? conf.work : conf.rest;
+        let tot = rem;
         document.getElementById('dashboard').style.display = 'flex';
 
         const tick = () => {
-            const m = String(Math.floor(rem/60)).padStart(2,'0'), sec = String(rem%60).padStart(2,'0');
-            document.getElementById('ui-time').textContent = `${m}:${sec}`;
+            document.getElementById('ui-time').textContent = `${String(Math.floor(rem/60)).padStart(2,'0')}:${String(rem%60).padStart(2,'0')}`;
             document.getElementById('ui-sets').textContent = conf.mode === 'timer' ? "" : `SET ${s} / ${conf.sets}`;
             const isW = ph === 'work';
-            document.getElementById('ui-phase').textContent = isW ? "WORK" : "REST";
+            document.getElementById('ui-phase').textContent = isW ? "WORK" : (conf.warm && s === 1 && ph === 'rest' ? "WARM UP" : "REST");
             document.getElementById('ui-phase').style.color = isW ? 'var(--active)' : 'var(--rest)';
             document.getElementById('progress').style.stroke = isW ? 'var(--active)' : 'var(--rest)';
             document.getElementById('progress').style.strokeDashoffset = 628 - (628 * (rem / tot));
 
-            if (rem <= 0) {
-                if (conf.mode === 'timer' || (isW && s >= conf.sets)) return alert("お疲れ様！");
+            if (rem <= 3 && rem > 0) beep(880, 0.1);
+            if (rem === 0) {
+                beep(1760, 0.3);
+                if (conf.mode === 'timer' || (isW && s >= conf.sets)) {
+                    if (!isW && !conf.skip && s === conf.sets) { /* Stay for last rest */ }
+                    else return stopWorkout(true);
+                }
                 if (isW && conf.mode === 'interval') { ph = 'rest'; rem = conf.rest; tot = conf.rest; }
-                else { s++; ph = 'work'; rem = conf.work; tot = conf.work; }
+                else { if(!isW) s++; ph = 'work'; rem = conf.work; tot = conf.work; }
             } else { rem--; }
             tId = setTimeout(tick, 1000);
         };
         tick();
     }
 
-    function stop() { clearTimeout(tId); document.getElementById('dashboard').style.display = 'none'; }
+    function stopWorkout(finish = false) {
+        clearTimeout(tId);
+        if (wakeLock) { wakeLock.release(); wakeLock = null; }
+        document.getElementById('dashboard').style.display = 'none';
+        if (finish) alert("Workout Complete!");
+    }
 
-    // モード切替
     document.querySelectorAll('.mode-btn').forEach(b => b.onclick = () => {
         document.querySelectorAll('.mode-btn').forEach(x => x.classList.remove('active'));
-        b.classList.add('active');
-        conf.mode = b.dataset.mode;
+        b.classList.add('active'); conf.mode = b.dataset.mode;
         document.querySelector('[data-type="rest"]').classList.toggle('disabled', conf.mode !== 'interval');
         document.querySelector('[data-type="sets"]').classList.toggle('disabled', conf.mode === 'timer');
         sync();
@@ -163,6 +187,8 @@
     mkPicker('w-m', 59); mkPicker('w-s', 59);
     mkPicker('r-m', 59); mkPicker('r-s', 59);
     mkPicker('s-v', 99);
+    document.getElementById('warm-up').onchange = sync;
+    document.getElementById('skip-last').onchange = sync;
 </script>
 </body>
 </html>
