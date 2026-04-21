@@ -3,37 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Loop Picker Timer</title>
+    <title>Ultimate Workout Timer Pro</title>
     <style>
-        :root { --bg: #f8f9fa; --card: #ffffff; --primary: #1c1c1e; }
-        body { margin: 0; font-family: sans-serif; background: var(--bg); overflow: hidden; user-select: none; }
+        :root {
+            --bg: #f2f4f7; --card: #ffffff; --primary: #1c1c1e;
+            --active: #34c759; --rest: #007aff; --muted: #8e8e93;
+        }
+        body { margin: 0; font-family: -apple-system, sans-serif; background: var(--bg); color: #333; overflow: hidden; user-select: none; }
         .container { max-width: 500px; margin: 0 auto; padding: 15px; height: 100vh; display: flex; flex-direction: column; box-sizing: border-box; }
 
-        header { display: flex; align-items: center; margin-bottom: 15px; position: relative; }
-        .mode-selector { flex: 1; display: flex; background: #e3e3e3; padding: 3px; border-radius: 12px; margin-right: 45px; }
-        .mode-btn { flex: 1; padding: 10px; border: none; background: none; border-radius: 10px; font-weight: bold; font-size: 13px; color: #666; }
-        .mode-btn.active { background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); color: #000; }
-        .setting-trigger { position: absolute; right: 0; font-size: 24px; border: none; background: none; }
+        /* Header & Icons */
+        header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+        .mode-selector { flex: 1; display: flex; background: #e3e3e3; padding: 2px; border-radius: 12px; margin-right: 10px; }
+        .mode-btn { flex: 1; padding: 10px; border: none; background: none; border-radius: 10px; font-weight: bold; font-size: 14px; color: #777; }
+        .mode-btn.active { background: white; color: #000; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .settings-icon { font-size: 28px; cursor: pointer; color: var(--muted); padding: 5px; line-height: 1; }
 
-        .setting-row { background: var(--card); border-radius: 20px; margin-bottom: 10px; display: flex; align-items: center; padding: 0 15px; height: 110px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
-        .label-v { writing-mode: vertical-rl; text-orientation: upright; font-size: 11px; font-weight: bold; color: #8e8e93; border-right: 1px solid #eee; padding-right: 10px; margin-right: 10px; height: 60%; }
+        /* Picker Layout */
+        .card { background: var(--card); border-radius: 20px; margin-bottom: 10px; padding: 0 20px; height: 110px; display: flex; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+        .label-v { writing-mode: vertical-rl; text-orientation: upright; font-size: 12px; font-weight: bold; color: var(--muted); border-right: 1px solid #eee; padding-right: 12px; margin-right: 15px; height: 50%; }
         
-        /* ループピッカー */
-        .picker-group { flex: 1; display: flex; justify-content: center; align-items: center; gap: 5px; height: 100%; }
-        .picker-col { height: 110px; width: 75px; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+        .picker-group { flex: 1; display: flex; justify-content: center; align-items: center; gap: 4px; height: 100%; }
+        .picker-col { height: 110px; width: 70px; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; -ms-overflow-style: none; }
         .picker-col::-webkit-scrollbar { display: none; }
-        .picker-item { height: 110px; display: flex; align-items: center; justify-content: center; font-size: 34px; font-weight: 800; scroll-snap-align: center; color: #000; }
+        .picker-item { height: 110px; display: flex; align-items: center; justify-content: center; font-size: 36px; font-weight: 800; scroll-snap-align: center; color: #000; }
 
-        .main-btn { width: 100%; padding: 22px; border-radius: 20px; border: none; background: var(--primary); color: white; font-size: 24px; font-weight: 900; margin-top: auto; }
-
-        #dashboard { position: fixed; inset: 0; background: var(--bg); z-index: 100; display: none; flex-direction: column; align-items: center; justify-content: center; }
-        .time-text { font-size: 80px; font-weight: 900; }
+        .start-btn { width: 100%; padding: 22px; border-radius: 20px; border: none; background: var(--primary); color: white; font-size: 24px; font-weight: 900; margin-top: auto; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <header>
+        <div class="mode-selector">
+            <button class="mode-btn active">タイマー</button>
+            <button class="mode-btn">リピート</button>
+            <button class="mode-btn">インターバル</button>
+        </div>
+        <div class="settings-icon" onclick="location.reload()">⚙️</div>
+    </header>
+
+    <div style="flex:1; display:flex; flex-direction:column;">
+        <div class="card">
+            <div class="label-v">時間</div>
+            <div class="picker-group">
+                <div class="picker-col" id="p-m"></div>分
+                <div class="picker-col" id="p-s"></div>秒
+            </div>
+        </div>
+        <div class="card" id="row-sets">
+            <div class="label-v">回数</div>
+            <div class="picker-group">
+                <div class="picker-col" id="p-sets"></div>回
+            </div>
+        </div>
+        <button class="start-btn" onclick="runTimer()">START</button>
+    </div>
+</div>
+
+<script>
+    const ITEM_H = 110;
+
+    // 無限ループピッカーの生成
+    function createLoopPicker(id, max) {
+        const el = document.getElementById(id);
+        const nums = Array.from({length: max + 1}, (_, i) => String(i).padStart(2, '0'));
+        // 3周分（前・中・後）を連結して無限に見せる
+        [...nums, ...nums, ...nums].forEach(n => {
+            const div = document.createElement('div');
+            div.className = 'picker-item';
+            div.textContent = n;
+            el.appendChild(div);
+        });
+
+        const midPoint = (max + 1) * ITEM_H;
+        el.scrollTop = midPoint; // 最初は真ん中のセットの「00」に飛ばす
+
+        el.addEventListener('scroll', () => {
+            if (el.scrollTop < midPoint - (ITEM_H * 5)) el.scrollTop += midPoint;
+            if (el.scrollTop > midPoint * 2 + (ITEM_H * 5)) el.scrollTop -= midPoint;
+        });
+    }
+
+    function runTimer() {
+        const getVal = (id, max) => Math.round(document.getElementById(id).scrollTop / ITEM_H) % (max + 1);
+        const m = getVal('p-m', 59);
+        const s = getVal('p-s', 59);
+        const sets = getVal('p-sets', 99);
+        
+        if (m === 0 && s === 0) {
+            alert("時間を設定してください");
+            return;
+        }
+        alert(`${m}分${s}秒、${sets}回で開始します！`);
+    }
+
+    // 初期化
+    createLoopPicker('p-m', 59);
+    createLoopPicker('p-s', 59);
+    createLoopPicker('p-sets', 99);
+</script>
+</body>
+</html>
         <div class="mode-selector">
             <button class="mode-btn active" onclick="setMode('timer')">タイマー</button>
             <button class="mode-btn" onclick="setMode('repeat')">リピート</button>
