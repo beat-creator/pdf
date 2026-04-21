@@ -87,7 +87,10 @@
       "zh": "🔒 机密文件合并更安全\n将多个PDF文件整合为一个。由于完全在浏览器内运行，无需担心内容泄露，非常适合远程办公或处理机密案件。"
     }
   },
-  "besttimer": {
+ "besttimer": {
+    "id": 5,
+    "emoji": "🍅",
+    "color": { "primary": "#ef4444", "bg": "#fef2f2" },
     "name": {
       "ja": "セキュア万能タイマー",
       "en": "Secure Universal Timer",
@@ -98,7 +101,6 @@
       "en": "Timer",
       "zh": "万用计时器"
     },
-    "emoji": "🍅",
     "seo_title": {
       "ja": "セキュア万能タイマー｜Secure Toolkit - 集中力を高めるポモドーロ対応",
       "en": "Secure Universal Timer | Secure Toolkit - Focus with Pomodoro",
