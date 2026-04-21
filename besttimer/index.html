@@ -102,4 +102,176 @@
 
     <div class="card" data-type="work"><div class="label-v">Work</div><div class="picker-group"><div class="picker-col" id="w-m"></div>分<div class="picker-col" id="w-s"></div>秒</div></div>
     <div class="card" data-type="rest"><div class="label-v">Rest</div><div class="picker-group"><div class="picker-col" id="r-m"></div>分<div class="picker-col" id="r-s"></div>秒</div></div>
-    <div class="card" data-type="sets"><div class="label-v">Sets</div><div class="picker-group"><div class="picker-col" id="s-v">
+    <div class="card" data-type="sets"><div class="label-v">Sets</div><div class="picker-group"><div class="picker-col" id="s-v"></div>回</div></div>
+    
+    <div class="total-box">Total: <span id="total-disp">00:00</span></div>
+    
+    <div class="opt-row">
+        <label><input type="checkbox" id="warm-up"> Start w/ Rest</label>
+        <label><input type="checkbox" id="skip-last" checked> Skip last rest</label>
+    </div>
+    
+    <button class="start-btn" onclick="startWorkout()">START WORKOUT</button>
+</div>
+
+<div id="dashboard">
+    <div id="ui-phase" style="font-size:24px; font-weight:900; margin-bottom:10px;">WORK</div>
+    <div class="circle-ui">
+        <svg viewBox="0 0 210 210"><circle cx="105" cy="105" r="100" fill="none" stroke="#eef0f5" stroke-width="8"/><circle id="progress" class="ring-bar" cx="105" cy="105" r="100" stroke="var(--active)"/></svg>
+        <div class="time-text" id="ui-time">00:00</div>
+    </div>
+    <div id="ui-sets" style="font-weight:bold; color:var(--muted);">SET 1 / 10</div>
+    <button class="start-btn" onclick="stopWorkout()" style="background:#ff3b30; width:80%; margin-top:40px;">STOP</button>
+</div>
+
+<script>
+    let H = 105;
+    let conf = { mode: 'timer', work: 0, rest: 0, sets: 1, skip: true, warm: false };
+    let tId = null, alarmId = null;
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function updateH() {
+        H = window.innerWidth <= 350 ? 60 : 105;
+    }
+    window.addEventListener('resize', updateH);
+    updateH();
+
+    function beep(freq, dur, vol = 0.1) {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.frequency.value = freq; gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+        osc.start(); gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + dur);
+        osc.stop(audioCtx.currentTime + dur);
+    }
+
+    function playAlarm() {
+        alarmId = setInterval(() => {
+            beep(1200, 0.2, 0.2);
+            setTimeout(() => beep(1200, 0.2, 0.2), 250);
+        }, 1000);
+    }
+
+    function mkPicker(id, max) {
+        const el = document.getElementById(id);
+        const nums = Array.from({length: max + 1}, (_, i) => String(i).padStart(2, '0'));
+        const list = document.createElement('div');
+        list.className = 'picker-list';
+        [...nums, ...nums, ...nums].forEach((n, i) => {
+            const it = document.createElement('div');
+            it.className = 'picker-item';
+            it.textContent = n;
+            it.onclick = () => el.scrollTo({top: i * H, behavior: 'smooth'});
+            list.appendChild(it);
+        });
+        el.appendChild(list);
+
+        const input = document.createElement('input');
+        input.className = 'picker-input';
+        input.type = 'number';
+        el.parentElement.appendChild(input);
+
+        el.ondblclick = () => {
+            input.style.display = 'block';
+            input.value = Math.round(el.scrollTop / H) % (max + 1);
+            input.focus();
+        };
+        input.onblur = () => {
+            let val = Math.min(max, Math.max(0, parseInt(input.value) || 0));
+            el.scrollTo({top: (max + 1 + val) * H, behavior: 'smooth'});
+            input.style.display = 'none';
+        };
+        input.onkeydown = (e) => { if(e.key === 'Enter') input.blur(); };
+
+        const mid = (max + 1) * H; el.scrollTop = mid;
+        el.onscroll = () => {
+            if (el.scrollTop < mid - 400) el.scrollTop += mid;
+            if (el.scrollTop > mid * 2 + 400) el.scrollTop -= mid;
+            const idx = Math.round(el.scrollTop / H);
+            el.querySelectorAll('.picker-item').forEach((it, i) => it.classList.toggle('selected', i === idx));
+            sync();
+        };
+    }
+
+    function sync() {
+        const getVal = (id, max) => Math.round(document.getElementById(id).scrollTop / H) % (max + 1);
+        conf.workM = getVal('w-m', 59); conf.workS = getVal('w-s', 59);
+        conf.restM = getVal('r-m', 59); conf.restS = getVal('r-s', 59);
+        conf.sets = Math.max(1, getVal('s-v', 99));
+        conf.work = conf.workM * 60 + conf.workS;
+        conf.rest = conf.restM * 60 + conf.restS;
+        conf.skip = document.getElementById('skip-last').checked;
+        conf.warm = document.getElementById('warm-up').checked;
+        let total = (conf.mode === 'timer') ? conf.work : conf.work * conf.sets;
+        if (conf.mode === 'interval') {
+            let rCount = conf.skip ? conf.sets - 1 : conf.sets;
+            if (conf.warm) rCount++; 
+            total += conf.rest * rCount;
+        }
+        document.getElementById('total-disp').textContent = `${String(Math.floor(total/60)).padStart(2,'0')}:${String(total%60).padStart(2,'0')}`;
+    }
+
+    function startWorkout() {
+        if (conf.work <= 0 && !conf.warm) return;
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        document.getElementById('dashboard').style.display = 'flex';
+        document.getElementById('dashboard').classList.remove('finished');
+        let s = 1, ph = (conf.mode === 'interval' && conf.warm) ? 'rest' : 'work', rem = (ph === 'work') ? conf.work : conf.rest, tot = rem;
+        const tick = () => {
+            document.getElementById('ui-time').textContent = `${String(Math.floor(rem/60)).padStart(2,'0')}:${String(rem%60).padStart(2,'0')}`;
+            document.getElementById('ui-sets').textContent = conf.mode === 'timer' ? "" : `SET ${s} / ${conf.sets}`;
+            const isW = ph === 'work';
+            document.getElementById('ui-phase').textContent = isW ? "WORK" : (conf.warm && s === 1 && ph === 'rest' ? "WARM UP" : "REST");
+            document.getElementById('ui-phase').style.color = isW ? 'var(--active)' : 'var(--rest)';
+            document.getElementById('progress').style.stroke = isW ? 'var(--active)' : 'var(--rest)';
+            document.getElementById('progress').style.strokeDashoffset = 628 - (628 * (rem / tot));
+            if (rem <= 3 && rem > 0) beep(880, 0.1);
+            if (rem === 0) {
+                if (conf.mode === 'timer' || (isW && s >= conf.sets)) {
+                    document.getElementById('dashboard').classList.add('finished');
+                    document.getElementById('ui-phase').textContent = "FINISHED!"; playAlarm(); return;
+                }
+                beep(1760, 0.3);
+                if (isW && conf.mode === 'interval') { ph = 'rest'; rem = conf.rest; tot = conf.rest; }
+                else { if(!isW) s++; ph = 'work'; rem = conf.work; tot = conf.work; }
+            } else { rem--; }
+            tId = setTimeout(tick, 1000);
+        };
+        tick();
+    }
+
+    function stopWorkout() {
+        clearTimeout(tId); clearInterval(alarmId);
+        document.getElementById('dashboard').style.display = 'none';
+    }
+
+    function saveSettings() { localStorage.setItem('workout_preset', JSON.stringify(conf)); alert("Saved!"); }
+
+    function loadSettings() {
+        const saved = localStorage.getItem('workout_preset'); if (!saved) return;
+        const d = JSON.parse(saved);
+        document.querySelector(`[data-mode="${d.mode}"]`).click();
+        const setS = (id, v, m) => document.getElementById(id).scrollTop = (m + 1 + v) * H;
+        setS('w-m', d.workM, 59); setS('w-s', d.workS, 59);
+        setS('r-m', d.restM, 59); setS('r-s', d.restS, 59);
+        setS('s-v', d.sets, 99);
+        document.getElementById('warm-up').checked = d.warm;
+        document.getElementById('skip-last').checked = d.skip;
+        sync();
+    }
+
+    document.querySelectorAll('.mode-btn').forEach(b => b.onclick = () => {
+        document.querySelectorAll('.mode-btn').forEach(x => x.classList.remove('active'));
+        b.classList.add('active'); conf.mode = b.dataset.mode;
+        document.querySelector('[data-type="rest"]').classList.toggle('disabled', conf.mode !== 'interval');
+        document.querySelector('[data-type="sets"]').classList.toggle('disabled', conf.mode === 'timer');
+        sync();
+    });
+
+    mkPicker('w-m', 59); mkPicker('w-s', 59); mkPicker('r-m', 59); mkPicker('r-s', 59); mkPicker('s-v', 99);
+    document.getElementById('warm-up').onchange = sync;
+    document.getElementById('skip-last').onchange = sync;
+    setTimeout(loadSettings, 100);
+</script>
+</body>
+</html>
