@@ -10,7 +10,16 @@
             --active: #34c759; --rest: #007aff; --muted: #8e8e93;
         }
         body { margin: 0; font-family: -apple-system, sans-serif; background: var(--bg); color: #333; overflow: hidden; user-select: none; }
-        .container { max-width: 500px; margin: 0 auto; padding: 15px; height: 100vh; display: flex; flex-direction: column; box-sizing: border-box; }
+        .container {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 15px;
+    /* 100vh を 100svh に変更 */
+    height: 100svh; 
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
 
         header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
         .mode-selector { flex: 1; display: flex; background: #e3e3e3; padding: 2px; border-radius: 12px; margin-right: 10px; }
@@ -45,7 +54,22 @@
         .preset-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #eee; }
         .del-btn { color: #ff3b30; font-size: 12px; font-weight: bold; }
 
-        .start-btn { width: 100%; padding: 22px; border-radius: 20px; border: none; background: var(--primary); color: white; font-size: 22px; font-weight: 900; margin-top: auto; cursor: pointer; }
+       .start-btn {
+    width: 100%;
+    padding: 22px;
+    border-radius: 20px;
+    border: none;
+    background: var(--primary);
+    color: white;
+    font-size: 22px;
+    font-weight: 900;
+    margin-top: auto;
+    /* ボタンのすぐ下に少しだけ隙間を作る（アドレスバー対策） */
+    margin-bottom: 10px; 
+    cursor: pointer;
+    /* iPhoneのホームバーがある場合でも被らないようにする呪文 */
+    padding-bottom: calc(22px + env(safe-area-inset-bottom));
+}
     </style>
 </head>
 <body>
