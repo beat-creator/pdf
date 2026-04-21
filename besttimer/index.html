@@ -203,3 +203,30 @@
     }
 
     function loadSettings() {
+        const saved = localStorage.getItem('workout_preset');
+        if (!saved) return;
+        const d = JSON.parse(saved);
+        document.querySelector(`[data-mode="${d.mode}"]`).click();
+        const setS = (id, v, m) => document.getElementById(id).scrollTop = (m + 1 + v) * H;
+        setS('w-m', d.workM, 59); setS('w-s', d.workS, 59);
+        setS('r-m', d.restM, 59); setS('r-s', d.restS, 59);
+        setS('s-v', d.sets, 99);
+        document.getElementById('warm-up').checked = d.warm;
+        document.getElementById('skip-last').checked = d.skip;
+        sync();
+    }
+
+    document.querySelectorAll('.mode-btn').forEach(b => b.onclick = () => {
+        document.querySelectorAll('.mode-btn').forEach(x => x.classList.remove('active'));
+        b.classList.add('active'); conf.mode = b.dataset.mode;
+        document.querySelector('[data-type="rest"]').classList.toggle('disabled', conf.mode !== 'interval');
+        document.querySelector('[data-type="sets"]').classList.toggle('disabled', conf.mode === 'timer');
+        sync();
+    });
+
+    mkPicker('w-m', 59); mkPicker('w-s', 59); mkPicker('r-m', 59); mkPicker('r-s', 59); mkPicker('s-v', 99);
+    document.getElementById('warm-up').onchange = sync; document.getElementById('skip-last').onchange = sync;
+    setTimeout(loadSettings, 100);
+</script>
+</body>
+</html>
