@@ -63,10 +63,18 @@ body {
 .label-active { color: var(--active-color) !important; font-weight: bold; }
 .label-rest { color: var(--rest-color) !important; font-weight: bold; }
 
+
 .control {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    height: 60px;          /* ← 追加 */
+}
+
+.value {
+    font-size: 36px;
+    font-weight: bold;
+    line-height: 1;        /* ← 追加（縦ズレ防止） */
 }
 
 .btn-minus, .btn-plus {
@@ -78,10 +86,6 @@ body {
     width: 50px;
 }
 
-.value {
-    font-size: 36px;
-    font-weight: bold;
-}
 
 /* 開始ボタン */
 .start-btn {
