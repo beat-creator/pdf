@@ -3,37 +3,129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ultimate Workout Timer Pro</title>
+    <title>Loop Picker Timer</title>
     <style>
-        :root {
-            --bg: #f2f4f7; --card: #ffffff; --primary: #1c1c1e;
-            --active: #34c759; --rest: #007aff; --muted: #8e8e93;
-            --warning: #ffcc00;
-        }
-
-        body { margin: 0; font-family: -apple-system, sans-serif; background: var(--bg); color: #333; overflow: hidden; user-select: none; }
+        :root { --bg: #f8f9fa; --card: #ffffff; --primary: #1c1c1e; }
+        body { margin: 0; font-family: sans-serif; background: var(--bg); overflow: hidden; user-select: none; }
         .container { max-width: 500px; margin: 0 auto; padding: 15px; height: 100vh; display: flex; flex-direction: column; box-sizing: border-box; }
 
-        /* Header & Modes */
-        header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-        .mode-selector { flex: 1; display: flex; background: #e3e3e3; padding: 2px; border-radius: 12px; margin-right: 10px; }
-        .mode-btn { flex: 1; padding: 10px; border: none; background: none; border-radius: 10px; font-weight: bold; font-size: 14px; cursor: pointer; }
-        .mode-btn.active { background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        
-        .presets { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none; min-height: 40px; }
-        .preset-btn { padding: 6px 15px; background: #fff; border-radius: 20px; font-size: 12px; font-weight: bold; white-space: nowrap; border: 1px solid #eee; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        header { display: flex; align-items: center; margin-bottom: 15px; position: relative; }
+        .mode-selector { flex: 1; display: flex; background: #e3e3e3; padding: 3px; border-radius: 12px; margin-right: 45px; }
+        .mode-btn { flex: 1; padding: 10px; border: none; background: none; border-radius: 10px; font-weight: bold; font-size: 13px; color: #666; }
+        .mode-btn.active { background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); color: #000; }
+        .setting-trigger { position: absolute; right: 0; font-size: 24px; border: none; background: none; }
 
-        /* Settings Rows */
-        .setting-row { background: var(--card); border-radius: 16px; margin-bottom: 8px; display: flex; align-items: center; padding: 0 20px; height: 85px; transition: 0.3s; }
-        .setting-row.disabled { opacity: 0.1; pointer-events: none; transform: scale(0.98); }
-        .label-v { writing-mode: vertical-rl; text-orientation: upright; font-size: 11px; font-weight: bold; color: var(--muted); padding-right: 15px; border-right: 1px solid #f0f0f0; }
+        .setting-row { background: var(--card); border-radius: 20px; margin-bottom: 10px; display: flex; align-items: center; padding: 0 15px; height: 110px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
+        .label-v { writing-mode: vertical-rl; text-orientation: upright; font-size: 11px; font-weight: bold; color: #8e8e93; border-right: 1px solid #eee; padding-right: 10px; margin-right: 10px; height: 60%; }
         
-        .picker-group { flex: 1; display: flex; justify-content: center; align-items: center; gap: 8px; height: 100%; overflow: hidden; }
-        .picker-col { height: 80px; width: 60px; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; }
+        /* ループピッカー */
+        .picker-group { flex: 1; display: flex; justify-content: center; align-items: center; gap: 5px; height: 100%; }
+        .picker-col { height: 110px; width: 75px; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
         .picker-col::-webkit-scrollbar { display: none; }
-        .picker-item { height: 40px; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 700; scroll-snap-align: center; color: #ddd; }
-        .picker-item.selected { color: var(--primary); font-size: 32px; }
+        .picker-item { height: 110px; display: flex; align-items: center; justify-content: center; font-size: 34px; font-weight: 800; scroll-snap-align: center; color: #000; }
 
+        .main-btn { width: 100%; padding: 22px; border-radius: 20px; border: none; background: var(--primary); color: white; font-size: 24px; font-weight: 900; margin-top: auto; }
+
+        #dashboard { position: fixed; inset: 0; background: var(--bg); z-index: 100; display: none; flex-direction: column; align-items: center; justify-content: center; }
+        .time-text { font-size: 80px; font-weight: 900; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div class="mode-selector">
+            <button class="mode-btn active" onclick="setMode('timer')">タイマー</button>
+            <button class="mode-btn" onclick="setMode('repeat')">リピート</button>
+            <button class="mode-btn" onclick="setMode('interval')">インターバル</button>
+        </div>
+        <button class="setting-trigger" onclick="location.reload()">🔄</button>
+    </header>
+
+    <div id="setup-view" style="flex:1; display:flex; flex-direction:column;">
+        <div class="setting-row" id="row-time">
+            <div class="label-v">時間</div>
+            <div class="picker-group">
+                <div class="picker-col" id="p-m"></div>分
+                <div class="picker-col" id="p-s"></div>秒
+            </div>
+        </div>
+        <div class="setting-row" id="row-sets">
+            <div class="label-v">回数</div>
+            <div class="picker-group"><div class="picker-col" id="p-sets"></div>回</div>
+        </div>
+        <button class="main-btn" onclick="start()">START</button>
+    </div>
+</div>
+
+<div id="dashboard">
+    <div id="ui-time" class="time-text">00:00</div>
+    <button class="main-btn" onclick="location.reload()" style="background:#ff3b30; width:80%; margin-top:50px;">STOP</button>
+</div>
+
+<script>
+    const ITEM_H = 110; // 1項目の高さ
+
+    function mkLoopPicker(id, max) {
+        const el = document.getElementById(id);
+        const nums = Array.from({length: max + 1}, (_, i) => String(i).padStart(2, '0'));
+        // 3セット連結してループに見せる
+        const fullList = [...nums, ...nums, ...nums];
+        
+        fullList.forEach(n => {
+            const div = document.createElement('div');
+            div.className = 'picker-item';
+            div.textContent = n;
+            el.appendChild(div);
+        });
+
+        // 初期位置を中央セットの「00」にする
+        const midOffset = (max + 1) * ITEM_H;
+        el.scrollTop = midOffset;
+
+        el.addEventListener('scroll', () => {
+            const current = el.scrollTop;
+            // 上下の端に近づいたら中央へワープ
+            if (current < midOffset - 500) {
+                el.scrollTop = current + midOffset;
+            } else if (current > midOffset * 2 + 500) {
+                el.scrollTop = current - midOffset;
+            }
+        });
+    }
+
+    function start() {
+        // STARTを押した瞬間に、ど真ん中にある数字を計算
+        const getVal = (id, max) => {
+            const rawIdx = Math.round(document.getElementById(id).scrollTop / ITEM_H);
+            return rawIdx % (max + 1);
+        };
+
+        const m = getVal('p-m', 59);
+        const s = getVal('p-s', 59);
+        let rem = m * 60 + s;
+        if(rem <= 0) return;
+
+        document.getElementById('dashboard').style.display = 'flex';
+        const timer = setInterval(() => {
+            if(rem <= 0) {
+                clearInterval(timer);
+                document.getElementById('ui-time').textContent = "終了";
+                return;
+            }
+            rem--;
+            document.getElementById('ui-time').textContent = 
+                `${String(Math.floor(rem/60)).padStart(2,'0')}:${String(rem%60).padStart(2,'0')}`;
+        }, 1000);
+    }
+
+    // 初期化
+    mkLoopPicker('p-m', 59);
+    mkLoopPicker('p-s', 59);
+    mkLoopPicker('p-sets', 99);
+</script>
+</body>
+</html>
         .main-btn { width: 100%; padding: 20px; border-radius: 16px; border: none; background: var(--primary); color: white; font-size: 22px; font-weight: 900; margin-top: 10px; cursor: pointer; transition: transform 0.1s; }
         .main-btn:active { transform: scale(0.98); }
 
