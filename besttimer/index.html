@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Ultimate Hybrid Timer Pro - Row Edition</title>
+    <title>Ultimate Hybrid Timer - Logical Edition</title>
     <style>
         :root {
             --bg: #f2f4f7; --card: #ffffff; --primary: #1c1c1e;
             --active: #34c759; --rest: #007aff; --muted: #8e8e93; --finish: #ffcc00;
         }
         body { margin: 0; font-family: -apple-system, sans-serif; background: var(--bg); color: #333; overflow: hidden; user-select: none; }
-        .container { height: 100svh; display: flex; flex-direction: column; box-sizing: border-box; }
+        .container { height: 100svh; display: flex; flex-direction: column; }
         .content { flex: 1; overflow-y: auto; padding: 15px; padding-bottom: 100px; }
 
         /* クイック行レイアウト */
@@ -20,28 +20,22 @@
             box-shadow: 0 2px 6px rgba(0,0,0,0.04);
         }
         .quick-info { flex: 1; display: flex; align-items: center; gap: 12px; }
-        .quick-emoji { font-size: 24px; }
+        .quick-emoji { font-size: 24px; min-width: 30px; text-align: center; }
         .quick-text-group { display: flex; flex-direction: column; }
         .quick-title { font-weight: bold; font-size: 15px; }
         .quick-desc { font-size: 12px; color: var(--muted); }
 
-        /* 行内ボタン */
         .row-btn-group { display: flex; gap: 8px; }
-        .btn-mini-tune { 
-            background: #f0f0f5; color: var(--primary); border: none; 
-            padding: 10px 15px; border-radius: 10px; font-weight: bold; font-size: 13px;
-        }
-        .btn-mini-start { 
-            background: var(--primary); color: white; border: none; 
-            padding: 10px 18px; border-radius: 10px; font-weight: bold; font-size: 13px;
-        }
+        .btn-mini-tune { background: #f0f0f5; color: var(--primary); border: none; padding: 10px 15px; border-radius: 10px; font-weight: bold; }
+        .btn-mini-start { background: var(--primary); color: white; border: none; padding: 10px 18px; border-radius: 10px; font-weight: bold; }
 
-        /* 以下、既存の優秀なロジック用スタイル */
+        /* タブバー */
         .tab-bar { position: fixed; bottom: 0; width: 100%; height: 70px; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); display: flex; border-top: 1px solid #ddd; padding-bottom: env(safe-area-inset-bottom); z-index: 1000; }
         .tab-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 10px; color: var(--muted); font-weight: bold; }
         .tab-item.active { color: var(--primary); }
         .tab-icon { font-size: 20px; margin-bottom: 2px; }
 
+        /* カスタム設定用 */
         .card { background: var(--card); border-radius: 20px; margin-bottom: 8px; padding: 0 20px; height: 105px; display: flex; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.02); overflow: hidden; }
         .card.disabled { opacity: 0.1; pointer-events: none; filter: grayscale(1); }
         .label-v { writing-mode: vertical-rl; text-orientation: upright; font-size: 11px; font-weight: bold; color: var(--muted); border-right: 1px solid #eee; padding-right: 12px; margin-right: 15px; height: 50%; }
@@ -51,11 +45,12 @@
         .picker-item { height: 105px; display: flex; align-items: center; justify-content: center; font-size: 34px; font-weight: 800; scroll-snap-align: center; color: #ddd; }
         .picker-item.selected { color: #000; transform: scale(1.1); }
 
+        /* 実行画面 */
         #dashboard { position: fixed; inset: 0; background: var(--bg); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; }
         .circle-ui { position: relative; width: 280px; height: 280px; margin: 20px 0; }
         .ring-bar { fill: none; stroke-width: 12; stroke-linecap: round; stroke-dasharray: 628; stroke-dashoffset: 628; transition: stroke-dashoffset 0.2s linear; transform: rotate(-90deg); transform-origin: 50% 50%; }
         .time-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 72px; font-weight: 900; font-family: monospace; }
-        .start-btn { width: 80%; padding: 20px; border-radius: 18px; border: none; background: var(--primary); color: white; font-size: 20px; font-weight: 900; margin-top: 20px; }
+        .start-btn { width: 80%; padding: 20px; border-radius: 18px; border: none; background: var(--primary); color: white; font-size: 20px; font-weight: 900; }
         
         @keyframes flash-yellow { 0%, 100% { background: var(--bg); } 50% { background: var(--finish); } }
         .flashing { animation: flash-yellow 0.5s infinite; }
@@ -69,15 +64,21 @@
 <div class="container">
     <div id="page-quick" class="content">
         <h2 style="margin-bottom:20px; padding-left:5px;">Quick Actions</h2>
-        <div id="quick-list-container">
+        <div id="quick-list">
             <script>
+                // 並び順：時間順、かつ Timer -> Repeat -> Interval
                 const presets = [
+                    // Timer (単発)
                     {m:'timer', w:180, r:0, s:1, e:'🍜', t:'カップ麺', d:'3分'},
-                    {m:'interval', w:20, r:10, s:8, e:'🏋️', t:'HIIT (タバタ)', d:'20s/10s × 8'},
-                    {m:'timer', w:900, r:0, s:1, e:'💤', t:'パワーナップ', d:'15分'},
-                    {m:'timer', w:420, r:0, s:1, e:'🥚', t:'半熟ゆで卵', d:'7分'},
-                    {m:'repeat', w:25*60, r:300, s:1, e:'🍅', t:'ポモドーロ', d:'25分'},
-                    {m:'interval', w:30, r:5, s:10, e:'🧘', t:'ストレッチ', d:'30s × 10'}
+                    {m:'timer', w:300, r:0, s:1, e:'🧘', t:'瞑想', d:'5分'},
+                    {m:'timer', w:420, r:0, s:1, e:'🥚', t:'ゆで卵', d:'7分'},
+                    {m:'timer', w:600, r:0, s:1, e:'🧹', t:'10分集中', d:'掃除・片付け'},
+                    {m:'timer', w:900, r:0, s:1, e:'💤', t:'仮眠', d:'15分'},
+                    // Repeat & Interval
+                    {m:'repeat', w:60, r:0, s:10, e:'📝', t:'ゼロ秒思考', d:'1分 × 10回'},
+                    {m:'interval', w:20, r:10, s:8, e:'🏋️', t:'HIIT', d:'20s/10s × 8'},
+                    {m:'interval', w:30, r:5, s:10, e:'🤸', t:'ストレッチ', d:'30s × 10'},
+                    {m:'interval', w:25*60, r:300, s:4, e:'🍅', t:'ポモドーロ', d:'25m/5m × 4'}
                 ];
                 document.write(presets.map(p => `
                     <div class="quick-row">
@@ -89,8 +90,8 @@
                             </div>
                         </div>
                         <div class="row-btn-group">
-                            <button class="btn-mini-tune" onclick="quickAction('${p.m}', ${p.w}, ${p.r}, ${p.s}, '${p.t}', true)">⚙️</button>
-                            <button class="btn-mini-start" onclick="quickAction('${p.m}', ${p.w}, ${p.r}, ${p.s}, '${p.t}', false)">▶️</button>
+                            <button class="btn-mini-tune" onclick="quickAction('${p.m}', ${p.w}, ${p.r}, ${p.s}, true)">⚙️</button>
+                            <button class="btn-mini-start" onclick="quickAction('${p.m}', ${p.w}, ${p.r}, ${p.s}, false)">▶️</button>
                         </div>
                     </div>
                 `).join(''));
@@ -108,14 +109,14 @@
         <div class="card" id="card-rest"><div class="label-v">Rest</div><div class="picker-group"><div class="picker-col" id="r-m"></div>分<div class="picker-col" id="r-s"></div>秒</div></div>
         <div class="card" id="card-sets"><div class="label-v">Sets</div><div class="picker-group"><div class="picker-col" id="s-v"></div>回</div></div>
         <div style="text-align:center; margin-top:20px;">
-            <div style="font-weight:900; margin-bottom:10px;">Total: <span id="total-disp">00:00</span></div>
+            <div style="font-weight:900; font-size:20px; margin-bottom:15px;">Total: <span id="total-disp">00:00</span></div>
             <button class="start-btn" onclick="startWorkout()" style="width:100%">START</button>
         </div>
     </div>
 
     <div id="page-fav" class="content" style="display:none">
         <h2 style="margin-bottom:20px">Favorites</h2>
-        <button class="btn-mini-start" onclick="savePreset()" style="width:100%; padding:15px; margin-bottom:20px;">+ 現在の設定を保存</button>
+        <button class="btn-mini-start" onclick="savePreset()" style="width:100%; padding:15px; margin-bottom:20px;">+ 保存する</button>
         <div id="preset-list"></div>
     </div>
 
@@ -133,7 +134,7 @@
         <div class="time-text" id="ui-time">00:00</div>
     </div>
     <div id="ui-sets" style="font-weight:bold; color:var(--muted);">SET 1 / 1</div>
-    <button class="start-btn" onclick="stopWorkout()" style="background:#ff3b30; width:80%;">STOP</button>
+    <button class="start-btn" onclick="stopWorkout()" style="background:#ff3b30; width:80%; margin-top:40px;">STOP</button>
 </div>
 
 <script>
@@ -151,52 +152,51 @@
         osc.stop(audioCtx.currentTime + startTime + dur);
     }
 
-    function switchTab(target) {
+    function switchTab(t) {
         document.querySelectorAll('.content').forEach(p => p.style.display = 'none');
-        document.getElementById('page-' + target).style.display = 'block';
-        document.querySelectorAll('.tab-item').forEach(t => t.classList.toggle('active', t.innerText.includes(target === 'quick' ? 'クイック' : target === 'custom' ? 'カスタム' : '保存済み')));
-        if(target === 'fav') renderPresets();
+        document.getElementById('page-' + t).style.display = 'block';
+        document.querySelectorAll('.tab-item').forEach(i => i.classList.toggle('active', i.innerText.includes(t === 'quick' ? 'クイック' : t === 'custom' ? 'カスタム' : '保存')));
+        if(t === 'fav') renderPresets();
     }
 
-    function quickAction(mode, w, r, s, label, onlyTune) {
-        setMode(mode);
-        const mid60 = 60 * H, mid100 = 100 * H;
-        document.getElementById('w-m').scrollTop = mid60 + (Math.floor(w / 60) * H);
-        document.getElementById('w-s').scrollTop = mid60 + (w % 60 * H);
-        document.getElementById('r-m').scrollTop = mid60 + (Math.floor(r / 60) * H);
-        document.getElementById('r-s').scrollTop = mid60 + (r % 60 * H);
-        document.getElementById('s-v').scrollTop = mid100 + (s * H);
+    function quickAction(m, w, r, s, onlyTune) {
+        setMode(m);
+        const mid60 = 60*H, mid100 = 100*H;
+        document.getElementById('w-m').scrollTop = mid60 + (Math.floor(w/60)*H);
+        document.getElementById('w-s').scrollTop = mid60 + (w%60*H);
+        document.getElementById('r-m').scrollTop = mid60 + (Math.floor(r/60)*H);
+        document.getElementById('r-s').scrollTop = mid60 + (r%60*H);
+        document.getElementById('s-v').scrollTop = mid100 + (s*H);
         sync();
-        if (onlyTune) { switchTab('custom'); } 
-        else { startWorkout(); }
+        if (onlyTune) switchTab('custom'); else startWorkout();
     }
 
     function mkPicker(id, max) {
         const el = document.getElementById(id);
+        const nums = Array.from({length: max+1}, (_, i) => String(i).padStart(2, '0'));
         const list = document.createElement('div');
-        const nums = Array.from({length: max + 1}, (_, i) => String(i).padStart(2, '0'));
         [...nums, ...nums, ...nums].forEach((n, i) => {
             const it = document.createElement('div');
-            it.className = 'picker-item'; it.style.height = H + "px"; it.textContent = n;
-            it.onclick = () => el.scrollTo({top: i * H, behavior: 'smooth'});
+            it.className = 'picker-item'; it.style.height = H+"px"; it.textContent = n;
+            it.onclick = () => el.scrollTo({top: i*H, behavior:'smooth'});
             list.appendChild(it);
         });
         el.appendChild(list);
-        const mid = (max + 1) * H;
+        const mid = (max+1)*H;
         setTimeout(() => { el.scrollTop = mid; sync(); }, 50);
         el.addEventListener('scroll', () => {
-            if (el.scrollTop < mid / 2) el.scrollTop += mid;
-            if (el.scrollTop > mid * 1.5) el.scrollTop -= mid;
-            el.querySelectorAll('.picker-item').forEach((it, i) => it.classList.toggle('selected', i === Math.round(el.scrollTop / H)));
+            if (el.scrollTop < mid/2) el.scrollTop += mid;
+            if (el.scrollTop > mid*1.5) el.scrollTop -= mid;
+            el.querySelectorAll('.picker-item').forEach((it, i) => it.classList.toggle('selected', i === Math.round(el.scrollTop/H)));
             sync();
         });
     }
 
     function sync() {
-        const getV = (id, max) => Math.round(document.getElementById(id).scrollTop / H) % (max + 1);
-        conf.work = getV('w-m', 59) * 60 + getV('w-s', 59);
-        conf.rest = getV('r-m', 59) * 60 + getV('r-s', 59);
-        conf.sets = Math.max(1, getV('s-v', 99));
+        const getV = (id, max) => Math.round(document.getElementById(id).scrollTop/H) % (max+1);
+        conf.work = getV('w-m',59)*60 + getV('w-s',59);
+        conf.rest = getV('r-m',59)*60 + getV('r-s',59);
+        conf.sets = Math.max(1, getV('s-v',99));
         let total = (conf.mode === 'timer') ? conf.work : (conf.work + conf.rest) * conf.sets;
         document.getElementById('total-disp').textContent = `${String(Math.floor(total/60)).padStart(2,'0')}:${String(total%60).padStart(2,'0')}`;
     }
@@ -224,14 +224,14 @@
                 if (isW && (conf.mode === 'timer' || (conf.mode === 'repeat' && s >= conf.sets))) return finish();
                 if (isW && conf.mode === 'interval') { ph = 'rest'; rem = conf.rest; tot = conf.rest; beep(1200, 0.3); }
                 else { if (ph === 'rest' && s >= conf.sets) return finish(); if(ph==='rest')s++; ph = 'work'; rem = conf.work; tot = conf.work; beep(1760, 0.3); }
-            } else { rem--; }
+            } else rem--;
             tId = setTimeout(tick, 1000);
         };
         tick();
     }
 
     function finish() {
-        clearTimeout(tId); for(let i=0; i<3; i++) [0, 0.2, 0.4, 0.6].forEach(t => beep(2500, 0.1, i + t));
+        clearTimeout(tId); for(let i=0; i<3; i++) [0, 0.2, 0.4, 0.6].forEach(t => beep(2500, 0.1, i+t));
         document.getElementById('dashboard').classList.add('flashing');
         document.getElementById('ui-phase').textContent = "COMPLETE!";
     }
@@ -244,7 +244,7 @@
             <div class="quick-row">
                 <div class="quick-info"><b>${x.name}</b></div>
                 <div class="row-btn-group">
-                    <button class="btn-mini-start" onclick="quickAction('${x.config.mode}', ${x.config.work}, ${x.config.rest}, ${x.config.sets}, '${x.name}', false)">▶️</button>
+                    <button class="btn-mini-start" onclick="quickAction('${x.config.mode}', ${x.config.work}, ${x.config.rest}, ${x.config.sets}, false)">▶️</button>
                     <button class="btn-mini-tune" style="color:red" onclick="deletePreset(${x.id})">×</button>
                 </div>
             </div>
