@@ -81,8 +81,4 @@ async function initI18n() {
     }
 }
 
-document.addEventListener('DOMContentLoaded', initI18<section class="ai-log-section">
-    </section>
-
-
-</script>n);
+document.addEventListener('DOMContentLoaded', initI18n);
