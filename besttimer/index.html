@@ -3,73 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Ultimate Hybrid Timer Pro - Final Plus</title>
+    <title>Ultimate Hybrid Timer Pro - Tab Edition</title>
     <style>
         :root {
             --bg: #f2f4f7; --card: #ffffff; --primary: #1c1c1e;
             --active: #34c759; --rest: #007aff; --muted: #8e8e93; --finish: #ffcc00;
         }
         body { margin: 0; font-family: -apple-system, sans-serif; background: var(--bg); color: #333; overflow: hidden; user-select: none; }
-        .container { max-width: 500px; margin: 0 auto; padding: 15px; height: 100svh; display: flex; flex-direction: column; box-sizing: border-box; }
+        
+        /* 全体コンテナ */
+        .container { height: 100svh; display: flex; flex-direction: column; box-sizing: border-box; }
+        .content { flex: 1; overflow-y: auto; padding: 15px; padding-bottom: 80px; }
 
-        header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-        .mode-selector { flex: 1; display: flex; background: #e3e3e3; padding: 2px; border-radius: 12px; margin-right: 10px; }
-        .mode-btn { flex: 1; padding: 10px; border: none; background: none; border-radius: 10px; font-weight: bold; font-size: 14px; color: #777; cursor: pointer; }
-        .mode-btn.active { background: white; color: #000; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .settings-btn { font-size: 24px; cursor: pointer; padding: 5px; }
+        /* タブバー */
+        .tab-bar { 
+            position: fixed; bottom: 0; width: 100%; height: 70px; 
+            background: rgba(255,255,255,0.9); backdrop-filter: blur(10px);
+            display: flex; justify-content: space-around; align-items: center;
+            border-top: 1px solid #ddd; padding-bottom: env(safe-area-inset-bottom);
+            z-index: 1000;
+        }
+        .tab-item { display: flex; flex-direction: column; align-items: center; font-size: 10px; color: var(--muted); font-weight: bold; flex: 1; cursor: pointer; }
+        .tab-item.active { color: var(--primary); }
+        .tab-icon { font-size: 24px; margin-bottom: 2px; }
 
+        /* クイックページ */
+        .quick-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .quick-card { 
+            background: var(--card); border-radius: 18px; padding: 20px; 
+            display: flex; flex-direction: column; align-items: center; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05); cursor: pointer; transition: 0.2s;
+        }
+        .quick-card:active { transform: scale(0.95); background: #eee; }
+        .quick-emoji { font-size: 32px; margin-bottom: 8px; }
+        .quick-title { font-weight: bold; font-size: 14px; }
+        .quick-desc { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+        /* カスタム設定画面（既存のカード） */
         .card { background: var(--card); border-radius: 20px; margin-bottom: 8px; padding: 0 20px; height: 105px; display: flex; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.02); overflow: hidden; transition: 0.3s; }
         .card.disabled { opacity: 0.1; pointer-events: none; filter: grayscale(1); }
         .label-v { writing-mode: vertical-rl; text-orientation: upright; font-size: 11px; font-weight: bold; color: var(--muted); border-right: 1px solid #eee; padding-right: 12px; margin-right: 15px; height: 50%; }
         
         .picker-group { flex: 1; display: flex; justify-content: center; align-items: center; gap: 4px; height: 105px; }
-        .picker-col { height: 105px; width: 75px; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; outline: none; }
+        .picker-col { height: 105px; width: 75px; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; }
         .picker-col::-webkit-scrollbar { display: none; }
-        .picker-item { height: 105px; display: flex; align-items: center; justify-content: center; font-size: 34px; font-weight: 800; scroll-snap-align: center; color: #ddd; transition: 0.2s; cursor: pointer; }
+        .picker-item { height: 105px; display: flex; align-items: center; justify-content: center; font-size: 34px; font-weight: 800; scroll-snap-align: center; color: #ddd; transition: 0.2s; }
         .picker-item.selected { color: #000; transform: scale(1.1); }
 
-        .opt-row { display: flex; justify-content: center; gap: 15px; margin: 10px 0; font-size: 13px; color: var(--muted); font-weight: bold; }
-        .total-box { text-align: center; font-size: 16px; font-weight: 900; color: var(--primary); margin-bottom: 10px; }
+        /* 共通アクションエリア */
+        .action-area { margin-top: auto; padding: 10px 0; }
+        .total-box { text-align: center; font-size: 16px; font-weight: 900; margin-bottom: 10px; }
+        .btn-group { display: flex; gap: 10px; }
+        .start-btn { flex: 2; padding: 20px; border-radius: 18px; border: none; background: var(--primary); color: white; font-size: 20px; font-weight: 900; cursor: pointer; }
+        .tune-btn { flex: 1; padding: 20px; border-radius: 18px; border: 2px solid var(--primary); background: transparent; font-size: 16px; font-weight: bold; cursor: pointer; }
 
-        #dashboard { position: fixed; inset: 0; background: var(--bg); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; transition: background 0.2s; }
+        /* 実行画面 */
+        #dashboard { position: fixed; inset: 0; background: var(--bg); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; }
         .circle-ui { position: relative; width: 280px; height: 280px; margin: 20px 0; }
         .ring-bar { fill: none; stroke-width: 12; stroke-linecap: round; stroke-dasharray: 628; stroke-dashoffset: 628; transition: stroke-dashoffset 0.2s linear; transform: rotate(-90deg); transform-origin: 50% 50%; }
         .time-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 72px; font-weight: 900; font-family: monospace; }
 
-        #modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 3000; display: none; }
-        .modal { position: absolute; bottom: 0; width: 100%; background: white; border-radius: 25px 25px 0 0; padding: 20px; padding-bottom: calc(20px + env(safe-area-inset-bottom)); box-sizing: border-box; max-height: 70%; overflow-y: auto; }
-        .preset-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #eee; }
-
-        .start-btn { width: 100%; padding: 22px; border-radius: 20px; border: none; background: var(--primary); color: white; font-size: 22px; font-weight: 900; margin-top: auto; margin-bottom: 10px; cursor: pointer; padding-bottom: calc(22px + env(safe-area-inset-bottom)); }
-
-        /* 点滅アニメーション */
         @keyframes flash-yellow { 0%, 100% { background: var(--bg); } 50% { background: var(--finish); } }
         .flashing { animation: flash-yellow 0.5s infinite; }
+        .mode-selector { display: flex; background: #e3e3e3; padding: 2px; border-radius: 12px; margin-bottom: 15px; }
+        .mode-btn { flex: 1; padding: 10px; border: none; background: none; border-radius: 10px; font-weight: bold; font-size: 14px; color: #777; cursor: pointer; }
+        .mode-btn.active { background: white; color: #000; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body>
 
-<div class="container" id="setup-view">
-    <header>
+<div class="container">
+    <div id="page-quick" class="content">
+        <h2 style="margin-bottom:20px">Quick Start</h2>
+        <div class="quick-grid">
+            <div class="quick-card" onclick="quickLoad('timer', 180, 0, 1, '🍜 3分')">
+                <div class="quick-emoji">🍜</div><div class="quick-title">カップ麺</div><div class="quick-desc">3分</div>
+            </div>
+            <div class="quick-card" onclick="quickLoad('interval', 20, 10, 8, '🏋️ タバタ')">
+                <div class="quick-emoji">🏋️</div><div class="quick-title">HIIT (タバタ)</div><div class="quick-desc">20s/10s × 8</div>
+            </div>
+            <div class="quick-card" onclick="quickLoad('timer', 900, 0, 1, '💤 仮眠')">
+                <div class="quick-emoji">💤</div><div class="quick-title">パワーナップ</div><div class="quick-desc">15分</div>
+            </div>
+            <div class="quick-card" onclick="quickLoad('timer', 420, 0, 1, '🥚 ゆで卵')">
+                <div class="quick-emoji">🥚</div><div class="quick-title">半熟卵</div><div class="quick-desc">7分</div>
+            </div>
+            <div class="quick-card" onclick="quickLoad('repeat', 25*60, 300, 1, '🍅 ポモドーロ')">
+                <div class="quick-emoji">🍅</div><div class="quick-title">集中</div><div class="quick-desc">25分</div>
+            </div>
+            <div class="quick-card" onclick="quickLoad('interval', 30, 0, 10, '🧘 ストレッチ')">
+                <div class="quick-emoji">🧘</div><div class="quick-title">ストレッチ</div><div class="quick-desc">30s × 10</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="page-custom" class="content" style="display:none">
         <div class="mode-selector">
             <button class="mode-btn" data-mode="timer">Timer</button>
             <button class="mode-btn" data-mode="repeat">Repeat</button>
             <button class="mode-btn" data-mode="interval">Interval</button>
         </div>
-        <div class="settings-btn" onclick="toggleModal(true)">⚙️</div>
-    </header>
-
-    <div class="card" data-type="work" id="card-work"><div class="label-v">Work</div><div class="picker-group"><div class="picker-col" id="w-m"></div>分<div class="picker-col" id="w-s"></div>秒</div></div>
-    <div class="card" data-type="rest" id="card-rest"><div class="label-v">Rest</div><div class="picker-group"><div class="picker-col" id="r-m"></div>分<div class="picker-col" id="r-s"></div>秒</div></div>
-    <div class="card" data-type="sets" id="card-sets"><div class="label-v">Sets</div><div class="picker-group"><div class="picker-col" id="s-v"></div>回</div></div>
-    
-    <div class="total-box">Total: <span id="total-disp">00:00</span></div>
-    
-    <div class="opt-row">
-        <label><input type="checkbox" id="warm-up"> Start w/ Rest</label>
-        <label><input type="checkbox" id="skip-last" checked> Skip last rest</label>
+        <div class="card" id="card-work"><div class="label-v">Work</div><div class="picker-group"><div class="picker-col" id="w-m"></div>分<div class="picker-col" id="w-s"></div>秒</div></div>
+        <div class="card" id="card-rest"><div class="label-v">Rest</div><div class="picker-group"><div class="picker-col" id="r-m"></div>分<div class="picker-col" id="r-s"></div>秒</div></div>
+        <div class="card" id="card-sets"><div class="label-v">Sets</div><div class="picker-group"><div class="picker-col" id="s-v"></div>回</div></div>
+        <div class="opt-row" style="display:flex; justify:center; gap:10px; margin:10px 0; font-size:12px; color:var(--muted)">
+            <label><input type="checkbox" id="warm-up"> Start w/ Rest</label>
+            <label><input type="checkbox" id="skip-last" checked> Skip last rest</label>
+        </div>
     </div>
-    <button class="start-btn" onclick="startWorkout()">START WORKOUT</button>
+
+    <div id="page-fav" class="content" style="display:none">
+        <h2 style="margin-bottom:20px">Favorites</h2>
+        <button class="tune-btn" onclick="savePreset()" style="width:100%; margin-bottom:15px;">+ 現在の設定を保存</button>
+        <div id="preset-list"></div>
+    </div>
+
+    <div class="action-area" style="padding: 15px; background: #fff; border-top: 1px solid #eee;">
+        <div class="total-box">Selected: <span id="current-name">None</span> (<span id="total-disp">00:00</span>)</div>
+        <div class="btn-group">
+            <button class="tune-btn" id="go-tune-btn" onclick="switchTab('custom')">設定</button>
+            <button class="start-btn" onclick="startWorkout()">開始</button>
+        </div>
+    </div>
+
+    <div class="tab-bar">
+        <div class="tab-item active" onclick="switchTab('quick')"><span class="tab-icon">⚡</span>クイック</div>
+        <div class="tab-item" onclick="switchTab('custom')"><span class="tab-icon">⚙️</span>カスタム</div>
+        <div class="tab-item" onclick="switchTab('fav')"><span class="tab-icon">⭐</span>保存済み</div>
+    </div>
 </div>
 
 <div id="dashboard">
@@ -82,17 +143,9 @@
     <button id="dash-stop-btn" class="start-btn" onclick="stopWorkout()" style="background:#ff3b30; width:80%; margin-top:40px;">STOP</button>
 </div>
 
-<div id="modal-overlay" onclick="toggleModal(false)">
-    <div class="modal" onclick="event.stopPropagation()">
-        <h3 style="margin-top:0;">Presets</h3>
-        <button class="start-btn" onclick="savePreset()" style="background:var(--active); font-size:16px; padding:12px; margin-bottom:15px; padding-bottom:12px;">Save Current Config</button>
-        <div id="preset-list"></div>
-    </div>
-</div>
-
 <script>
     const H = 105;
-    let conf = { mode: 'timer', work: 0, rest: 0, sets: 1, skip: true, warm: false };
+    let conf = { mode: 'timer', work: 0, rest: 0, sets: 1, skip: true, warm: false, name: 'None' };
     let tId = null;
     let wakeLock = null;
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -109,15 +162,19 @@
     }
 
     function playFinishAlarm() {
-        // ピピピピ、ピピピピというキッチンタイマー音を3回繰り返す
         for(let i=0; i<3; i++) {
             const base = i * 1.0;
             [0, 0.2, 0.4, 0.6].forEach(t => beep(2500, 0.1, base + t));
         }
     }
 
-    async function requestWakeLock() {
-        try { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); } catch (err) {}
+    function switchTab(target) {
+        document.querySelectorAll('.content').forEach(p => p.style.display = 'none');
+        document.getElementById('page-' + target).style.display = 'block';
+        document.querySelectorAll('.tab-item').forEach(t => {
+            t.classList.toggle('active', t.innerText.includes(target === 'quick' ? 'クイック' : target === 'custom' ? 'カスタム' : '保存済み'));
+        });
+        if(target === 'fav') renderPresets();
     }
 
     function mkPicker(id, max) {
@@ -130,25 +187,38 @@
             it.className = 'picker-item';
             it.style.height = H + "px";
             it.textContent = n;
-            it.onclick = () => el.scrollTo({top: i * H, behavior: 'smooth'});
+            it.onclick = () => { el.scrollTo({top: i * H, behavior: 'smooth'}); conf.name = 'Custom'; };
             list.appendChild(it);
         });
         el.appendChild(list);
         const midPoint = (max + 1) * H;
-        setTimeout(() => { el.scrollTop = midPoint; updateSelectedUI(el); sync(); }, 50);
-
+        setTimeout(() => { el.scrollTop = midPoint; updateUI(el); }, 50);
         el.addEventListener('scroll', () => {
             if (el.scrollTop < midPoint / 2) el.scrollTop += midPoint;
             if (el.scrollTop > midPoint * 1.5) el.scrollTop -= midPoint;
-            updateSelectedUI(el);
+            updateUI(el);
             sync();
         });
     }
 
-    function updateSelectedUI(el) {
+    function updateUI(el) {
         const idx = Math.round(el.scrollTop / H);
-        const items = el.querySelectorAll('.picker-item');
-        items.forEach((it, i) => it.classList.toggle('selected', i === idx));
+        el.querySelectorAll('.picker-item').forEach((it, i) => it.classList.toggle('selected', i === idx));
+    }
+
+    function quickLoad(mode, w, r, s, label) {
+        setMode(mode);
+        const mid60 = 60 * H, mid100 = 100 * H;
+        document.getElementById('w-m').scrollTop = mid60 + (Math.floor(w / 60) * H);
+        document.getElementById('w-s').scrollTop = mid60 + (w % 60 * H);
+        document.getElementById('r-m').scrollTop = mid60 + (Math.floor(r / 60) * H);
+        document.getElementById('r-s').scrollTop = mid60 + (r % 60 * H);
+        document.getElementById('s-v').scrollTop = mid100 + (s * H);
+        conf.name = label;
+        sync();
+        // 視覚的フィードバック
+        document.getElementById('current-name').style.color = 'var(--active)';
+        setTimeout(() => document.getElementById('current-name').style.color = 'inherit', 500);
     }
 
     function sync() {
@@ -166,6 +236,7 @@
             total += conf.rest * rCount;
         }
         document.getElementById('total-disp').textContent = `${String(Math.floor(total/60)).padStart(2,'0')}:${String(total%60).padStart(2,'0')}`;
+        document.getElementById('current-name').textContent = conf.name;
     }
 
     function setMode(mode) {
@@ -179,7 +250,6 @@
     function startWorkout() {
         if (conf.work <= 0 && !conf.warm) return;
         if (audioCtx.state === 'suspended') audioCtx.resume();
-        requestWakeLock();
         let s = 1, ph = (conf.mode === 'interval' && conf.warm) ? 'rest' : 'work';
         let rem = (ph === 'work') ? conf.work : conf.rest;
         let tot = rem;
@@ -191,25 +261,19 @@
             document.getElementById('ui-time').textContent = `${String(Math.floor(rem/60)).padStart(2,'0')}:${String(rem%60).padStart(2,'0')}`;
             document.getElementById('ui-sets').textContent = conf.mode === 'timer' ? "" : `SET ${s} / ${conf.sets}`;
             const isW = ph === 'work';
-            document.getElementById('ui-phase').textContent = isW ? "WORK" : (conf.warm && s === 1 && ph === 'rest' ? "WARM UP" : "REST");
+            document.getElementById('ui-phase').textContent = isW ? "WORK" : "REST";
             document.getElementById('ui-phase').style.color = isW ? 'var(--active)' : 'var(--rest)';
             document.getElementById('progress').style.stroke = isW ? 'var(--active)' : 'var(--rest)';
             document.getElementById('progress').style.strokeDashoffset = 628 - (628 * (rem / tot));
 
             if (rem <= 3 && rem > 0) beep(880, 0.1);
-            
             if (rem === 0) {
-                // セット終了
                 if (isW) {
-                    if (conf.mode === 'timer' || (conf.mode === 'repeat' && s >= conf.sets) || (conf.mode === 'interval' && s >= conf.sets && conf.skip)) {
-                        return finishWorkout();
-                    }
-                    // 次へ（RESTまたはRepeatの次SET）
+                    if (conf.mode === 'timer' || (s >= conf.sets)) return finishWorkout();
                     if (conf.mode === 'interval') { ph = 'rest'; rem = conf.rest; tot = conf.rest; beep(1200, 0.3); }
                     else { s++; rem = conf.work; tot = conf.work; beep(1760, 0.3); }
                 } else {
-                    // 休息終了
-                    if (conf.mode === 'interval' && s >= conf.sets) return finishWorkout();
+                    if (s >= conf.sets) return finishWorkout();
                     s++; ph = 'work'; rem = conf.work; tot = conf.work; beep(1760, 0.3);
                 }
             } else { rem--; }
@@ -219,69 +283,47 @@
     }
 
     function finishWorkout() {
-        clearTimeout(tId);
-        playFinishAlarm();
+        clearTimeout(tId); playFinishAlarm();
         const dash = document.getElementById('dashboard');
         dash.classList.add('flashing');
         document.getElementById('ui-phase').textContent = "COMPLETE!";
-        document.getElementById('ui-phase').style.color = "#000";
-        document.getElementById('ui-time').textContent = "00:00";
         document.getElementById('dash-stop-btn').textContent = "BACK";
     }
 
     function stopWorkout() {
-        clearTimeout(tId);
-        if (wakeLock) { wakeLock.release(); wakeLock = null; }
-        const dash = document.getElementById('dashboard');
-        dash.style.display = 'none';
-        dash.classList.remove('flashing');
+        clearTimeout(tId); document.getElementById('dashboard').style.display = 'none';
         document.getElementById('dash-stop-btn').textContent = "STOP";
     }
 
-    function toggleModal(show) { document.getElementById('modal-overlay').style.display = show ? 'block' : 'none'; if (show) renderPresets(); }
-    function savePreset() {
-        const name = prompt("Preset Name:", "My Training");
-        if (!name) return;
-        const p = JSON.parse(localStorage.getItem('timer_presets') || '[]');
-        p.push({ id: Date.now(), name, config: { ...conf } });
-        localStorage.setItem('timer_presets', JSON.stringify(p));
-        renderPresets();
-    }
     function renderPresets() {
         const list = document.getElementById('preset-list');
         const p = JSON.parse(localStorage.getItem('timer_presets') || '[]');
         list.innerHTML = p.map(x => `
-            <div class="preset-item">
-                <div style="flex:1" onclick="loadPreset(${x.id})"><b>${x.name}</b><br><small>${x.config.mode}</small></div>
-                <div style="color:#ff3b30; font-weight:bold;" onclick="deletePreset(${x.id})">Delete</div>
+            <div class="card" style="height:60px; margin-bottom:10px; justify-content:space-between; padding: 0 15px;">
+                <div onclick='quickLoad("${x.config.mode}", ${x.config.work}, ${x.config.rest}, ${x.config.sets}, "${x.name}"); switchTab("quick");'>
+                    <b>${x.name}</b> <small style="color:var(--muted)">${x.config.mode}</small>
+                </div>
+                <div style="color:red" onclick="deletePreset(${x.id})">×</div>
             </div>
         `).join('');
     }
-    function loadPreset(id) {
-        const p = JSON.parse(localStorage.getItem('timer_presets') || '[]').find(x => x.id === id);
-        if (!p) return;
-        const c = p.config;
-        setMode(c.mode);
-        const mid60 = 60 * H, mid100 = 100 * H;
-        document.getElementById('w-m').scrollTop = mid60 + (Math.floor(c.work / 60) * H);
-        document.getElementById('w-s').scrollTop = mid60 + (c.work % 60 * H);
-        document.getElementById('r-m').scrollTop = mid60 + (Math.floor(c.rest / 60) * H);
-        document.getElementById('r-s').scrollTop = mid60 + (c.rest % 60 * H);
-        document.getElementById('s-v').scrollTop = mid100 + (c.sets * H);
-        document.getElementById('warm-up').checked = c.warm;
-        document.getElementById('skip-last').checked = c.skip;
-        sync(); toggleModal(false);
+
+    function savePreset() {
+        const name = prompt("保存名:", "My Setting"); if(!name) return;
+        const p = JSON.parse(localStorage.getItem('timer_presets') || '[]');
+        p.push({ id: Date.now(), name, config: { ...conf } });
+        localStorage.setItem('timer_presets', JSON.stringify(p)); renderPresets();
     }
+    
     function deletePreset(id) {
         let p = JSON.parse(localStorage.getItem('timer_presets') || '[]').filter(x => x.id !== id);
         localStorage.setItem('timer_presets', JSON.stringify(p)); renderPresets();
     }
 
-    document.querySelectorAll('.mode-btn').forEach(b => b.onclick = () => setMode(b.dataset.mode));
+    // Init
+    document.querySelectorAll('.mode-btn').forEach(b => b.onclick = () => { setMode(b.dataset.mode); conf.name = 'Custom'; });
     mkPicker('w-m', 59); mkPicker('w-s', 59); mkPicker('r-m', 59); mkPicker('r-s', 59); mkPicker('s-v', 99);
     setMode('timer');
-    document.getElementById('warm-up').onchange = sync;
-    document.getElementById('skip-last').onchange = sync;
 </script>
 </body>
 </html>
