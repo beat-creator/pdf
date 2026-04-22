@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Ultimate Hybrid Timer - Fixed Edition</title>
+    <title>Ultimate Hybrid Timer - Perfect Sync</title>
     <style>
         :root {
             --bg: #f2f4f7; --card: #ffffff; --primary: #1c1c1e;
@@ -39,7 +39,7 @@
         .picker-group { flex: 1; display: flex; justify-content: center; align-items: center; gap: 4px; height: 105px; }
         .picker-col { height: 105px; width: 75px; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; outline: none; }
         .picker-col::-webkit-scrollbar { display: none; }
-        .picker-item { height: 105px; display: flex; align-items: center; justify-content: center; font-size: 34px; font-weight: 800; scroll-snap-align: center; color: #ddd; transition: 0.2s; }
+        .picker-item { height: 105px; display: flex; align-items: center; justify-content: center; font-size: 34px; font-weight: 800; scroll-snap-align: center; color: #ddd; }
         .picker-item.selected { color: #000; transform: scale(1.1); }
 
         #dashboard { position: fixed; inset: 0; background: var(--bg); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; }
@@ -48,8 +48,8 @@
         .time-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 72px; font-weight: 900; font-family: monospace; }
         .start-btn { width: 80%; padding: 20px; border-radius: 18px; border: none; background: var(--primary); color: white; font-size: 20px; font-weight: 900; cursor: pointer; }
         
-        @keyframes flash-yellow { 0%, 100% { background: var(--bg); } 50% { background: var(--finish); } }
         .flashing { animation: flash-yellow 0.5s infinite; }
+        @keyframes flash-yellow { 0%, 100% { background: var(--bg); } 50% { background: var(--finish); } }
         .mode-selector { display: flex; background: #e3e3e3; padding: 2px; border-radius: 12px; margin-bottom: 15px; }
         .mode-btn { flex: 1; padding: 10px; border: none; background: none; border-radius: 10px; font-weight: bold; font-size: 14px; color: #777; cursor: pointer; }
         .mode-btn.active { background: white; color: #000; }
@@ -132,7 +132,7 @@
 
 <script>
     const H = 105;
-    let conf = { mode: 'timer', work: 0, rest: 0, sets: 1 };
+    let conf = { mode: 'timer', work: 180, rest: 0, sets: 1 }; // デフォルト値を明示
     let tId = null;
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
@@ -153,11 +153,16 @@
         if(t === 'fav') renderPresets();
     }
 
-    // 修正：クイックアクション時に値を直書きして同期を確実にする
+    // 修正：スクロール位置に関係なく引数の値を強制適用する
     function quickAction(m, w, r, s, onlyTune) {
-        setMode(m);
-        conf.work = w; conf.rest = r; conf.sets = s;
+        // 先にデータを確定させる
+        conf.mode = m; 
+        conf.work = w; 
+        conf.rest = r; 
+        conf.sets = s;
         
+        // UI（ピッカーとモードボタン）を追随させる
+        setModeUI(m);
         const mid60 = 60*H, mid100 = 100*H;
         document.getElementById('w-m').scrollTop = mid60 + (Math.floor(w/60)*H);
         document.getElementById('w-s').scrollTop = mid60 + (w%60*H);
@@ -165,8 +170,13 @@
         document.getElementById('r-s').scrollTop = mid60 + (r%60*H);
         document.getElementById('s-v').scrollTop = mid100 + (s*H);
         
-        sync(); // 合計表示を更新
-        if (onlyTune) switchTab('custom'); else startWorkout();
+        updateTotalDisplay();
+        
+        if (onlyTune) {
+            switchTab('custom'); 
+        } else {
+            startWorkout();
+        }
     }
 
     function mkPicker(id, max) {
@@ -184,70 +194,75 @@
         el.scrollTop = mid;
         el.addEventListener('scroll', () => {
             if (el.scrollTop < mid/2) el.scrollTop += mid;
-            if (el.scrollTop > mid*1.5) el.scrollTop -= mid;
+            if (el.scrollTop > mid * 1.5) el.scrollTop -= mid;
             el.querySelectorAll('.picker-item').forEach((it, i) => it.classList.toggle('selected', i === Math.round(el.scrollTop/H)));
-            sync();
+            // スクロールで動かしたときだけconfを更新
+            syncFromPickers();
         });
     }
 
-    function sync() {
+    function syncFromPickers() {
         const getV = (id, max) => {
             const el = document.getElementById(id);
-            if(!el) return 0;
             return Math.round(el.scrollTop/H) % (max+1);
         };
-        // スクロール位置から値を読み取る
         conf.work = getV('w-m',59)*60 + getV('w-s',59);
         conf.rest = getV('r-m',59)*60 + getV('r-s',59);
         conf.sets = Math.max(1, getV('s-v',99));
-        
+        updateTotalDisplay();
+    }
+
+    function updateTotalDisplay() {
         let total = (conf.mode === 'timer') ? conf.work : (conf.work + conf.rest) * conf.sets;
         document.getElementById('total-disp').textContent = `${String(Math.floor(total/60)).padStart(2,'0')}:${String(total%60).padStart(2,'0')}`;
     }
 
-    function setMode(m) {
-        conf.mode = m; 
+    function setModeUI(m) {
         document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === m));
         document.getElementById('card-rest').classList.toggle('disabled', m === 'timer');
         document.getElementById('card-sets').classList.toggle('disabled', m === 'timer');
-        sync();
     }
 
     function startWorkout() {
         if (conf.work <= 0 && conf.rest <= 0) return;
         if (audioCtx.state === 'suspended') audioCtx.resume();
         
-        let s = 1, ph = 'work', rem = conf.work, tot = rem;
-        // もしWorkが0ならRestから開始
-        if(rem === 0 && conf.rest > 0) { ph = 'rest'; rem = conf.rest; tot = rem; }
+        // 実行用変数をコピー
+        let currentSet = 1;
+        let phase = (conf.work > 0) ? 'work' : 'rest';
+        let remaining = (phase === 'work') ? conf.work : conf.rest;
+        let totalPhaseTime = remaining;
 
         const dash = document.getElementById('dashboard');
         dash.style.display = 'flex'; dash.classList.remove('flashing');
         
         const tick = () => {
-            document.getElementById('ui-time').textContent = `${String(Math.floor(rem/60)).padStart(2,'0')}:${String(rem%60).padStart(2,'0')}`;
-            document.getElementById('ui-sets').textContent = conf.mode === 'timer' ? "" : `SET ${s} / ${conf.sets}`;
+            document.getElementById('ui-time').textContent = `${String(Math.floor(remaining/60)).padStart(2,'0')}:${String(remaining%60).padStart(2,'0')}`;
+            document.getElementById('ui-sets').textContent = conf.mode === 'timer' ? "" : `SET ${currentSet} / ${conf.sets}`;
             
-            const isW = ph === 'work';
+            const isW = phase === 'work';
             document.getElementById('ui-phase').textContent = isW ? "WORK" : "REST";
             document.getElementById('progress').style.stroke = isW ? 'var(--active)' : 'var(--rest)';
-            document.getElementById('progress').style.strokeDashoffset = 628 - (628 * (rem / tot));
+            document.getElementById('progress').style.strokeDashoffset = 628 - (628 * (remaining / totalPhaseTime));
             
-            if (rem <= 3 && rem > 0) beep(880, 0.1);
+            if (remaining <= 3 && remaining > 0) beep(880, 0.1);
             
-            if (rem === 0) {
-                if (isW) {
-                    // Work終了時
-                    if (conf.mode === 'timer' || (conf.mode === 'repeat' && s >= conf.sets) || (conf.mode === 'interval' && s >= conf.sets && conf.rest === 0)) return finish();
-                    if (conf.mode === 'interval' && conf.rest > 0) { ph = 'rest'; rem = conf.rest; tot = conf.rest; beep(1200, 0.3); }
-                    else { s++; rem = conf.work; tot = conf.work; beep(1760, 0.3); }
+            if (remaining === 0) {
+                if (phase === 'work') {
+                    if (conf.mode === 'timer' || (conf.mode === 'repeat' && currentSet >= conf.sets) || (conf.mode === 'interval' && currentSet >= conf.sets && conf.rest === 0)) {
+                        return finish();
+                    }
+                    if (conf.mode === 'interval' && conf.rest > 0) {
+                        phase = 'rest'; remaining = conf.rest; totalPhaseTime = conf.rest; beep(1200, 0.3);
+                    } else {
+                        currentSet++; remaining = conf.work; totalPhaseTime = conf.work; beep(1760, 0.3);
+                    }
                 } else {
-                    // Rest終了時
-                    if (s >= conf.sets) return finish();
-                    s++; ph = 'work'; rem = conf.work; tot = conf.work; beep(1760, 0.3);
+                    if (currentSet >= conf.sets) return finish();
+                    currentSet++; phase = 'work'; remaining = conf.work; totalPhaseTime = conf.work; beep(1760, 0.3);
                 }
             } else {
-                rem--;
+                remaining--;
             }
             tId = setTimeout(tick, 1000);
         };
@@ -291,11 +306,17 @@
     }
 
     // 初期化
-    document.querySelectorAll('.mode-btn').forEach(b => b.onclick = () => setMode(b.dataset.mode));
+    document.querySelectorAll('.mode-btn').forEach(b => {
+        b.onclick = () => {
+            conf.mode = b.dataset.mode;
+            setModeUI(conf.mode);
+            updateTotalDisplay();
+        };
+    });
     mkPicker('w-m', 59); mkPicker('w-s', 59); mkPicker('r-m', 59); mkPicker('r-s', 59); mkPicker('s-v', 99);
     
-    // 初回ロード時に1秒待って同期（ブラウザのレンダリング待ち）
-    setTimeout(sync, 200);
+    // 初回表示
+    setTimeout(updateTotalDisplay, 100);
 </script>
 </body>
 </html>
