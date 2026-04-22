@@ -142,7 +142,7 @@
             white-space: pre-wrap;
         }
 
-        /* AI開発ログのスタイル追加 */
+        /* AI開発ログのスタイル（無骨なコンソール風） */
         .ai-log-section {
             margin: 40px auto;
             max-width: 580px;
@@ -193,11 +193,6 @@
             margin-top: 20px;
             font-size: 0.8rem;
         }
-        .cta-link {
-            color: #fbbf24;
-            text-decoration: none;
-            border-bottom: 1px dashed #fbbf24;
-        }
         .blink {
             animation: blink 1s infinite;
             color: #00ff41;
@@ -247,7 +242,6 @@
 
     <section class="benefits-section">
         <h2 data-i18n="top.hero_title"></h2>
-        
         <div id="features-container">
             <div class="benefit-item">
                 <h3 data-i18n="top.features.0.title"></h3>
@@ -279,9 +273,6 @@
             </div>
             <div class="log-footer">
                 <span class="blink">>>></span> 
-                <a href="https://x.com/intent/tweet?text=@Takataka_Dev%20こんなツールが欲しい！" target="_blank" class="cta-link">
-                    次のネタをリクエストする（欲しがる）
-                </a>
             </div>
         </div>
     </section>
@@ -301,20 +292,17 @@
             const res = await fetch('./diary.json');
             if (!res.ok) return;
             const data = await res.json();
-            
             const dateEl = document.getElementById('diary-date');
             const textEl = document.getElementById('diary-text');
-            
             if (dateEl) dateEl.textContent = data.date.replace(/-/g, '.');
             if (textEl) {
                 const lang = (navigator.language || "").startsWith('en') ? 'en' : 'ja';
                 textEl.textContent = data.content[lang] || data.content['ja'];
             }
         } catch (e) {
-            console.log("Diary component ready.");
+            console.log("Diary active.");
         }
     }
-    // 画面の読み込み完了後に実行
     window.addEventListener('load', loadDiary);
 })();
 </script>
