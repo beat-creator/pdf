@@ -84,26 +84,5 @@ async function initI18n() {
 document.addEventListener('DOMContentLoaded', initI18<section class="ai-log-section">
     </section>
 
-<script src="./js/i18n-engine.js"></script>
-<script>
-    // i18n-engine.js が読み込まれた「後」に実行
-    async function loadLatestDiary() {
-        try {
-            const response = await fetch('./diary.json');
-            const data = await response.json();
-            
-            // 日付をセット
-            document.getElementById('diary-date').textContent = data.date.replace(/-/g, '.');
-            
-            // i18n-engine.jsが管理している「現在の言語」を取得
-            // もし localStorage などを使っていればそれを参照
-            const lang = localStorage.getItem('selectedLanguage') || 'ja';
-            
-            const content = data.content[lang] || data.content['ja'];
-            document.getElementById('diary-text').textContent = content;
-        } catch (e) {
-            document.getElementById('diary-text').textContent = "LOG: 待機中... 接続を確認しています。";
-        }
-    }
-    window.addEventListener('DOMContentLoaded', loadLatestDiary);
+
 </script>n);
