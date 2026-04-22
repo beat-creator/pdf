@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Ultimate Hybrid Timer - Perfect Sync</title>
+    <title>Ultimate Hybrid Timer - Stable Picker</title>
     <style>
         :root {
             --bg: #f2f4f7; --card: #ffffff; --primary: #1c1c1e;
@@ -37,9 +37,9 @@
         .card.disabled { opacity: 0.1; pointer-events: none; filter: grayscale(1); }
         .label-v { writing-mode: vertical-rl; text-orientation: upright; font-size: 11px; font-weight: bold; color: var(--muted); border-right: 1px solid #eee; padding-right: 12px; margin-right: 15px; height: 50%; }
         .picker-group { flex: 1; display: flex; justify-content: center; align-items: center; gap: 4px; height: 105px; }
-        .picker-col { height: 105px; width: 75px; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; outline: none; }
+        .picker-col { height: 105px; width: 75px; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; outline: none; -ms-overflow-style: none; }
         .picker-col::-webkit-scrollbar { display: none; }
-        .picker-item { height: 105px; display: flex; align-items: center; justify-content: center; font-size: 34px; font-weight: 800; scroll-snap-align: center; color: #ddd; }
+        .picker-item { height: 105px; display: flex; align-items: center; justify-content: center; font-size: 34px; font-weight: 800; scroll-snap-align: center; color: #ddd; transition: color 0.2s; }
         .picker-item.selected { color: #000; transform: scale(1.1); }
 
         #dashboard { position: fixed; inset: 0; background: var(--bg); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; }
@@ -132,7 +132,7 @@
 
 <script>
     const H = 105;
-    let conf = { mode: 'timer', work: 180, rest: 0, sets: 1 }; // デフォルト値を明示
+    let conf = { mode: 'timer', work: 180, rest: 0, sets: 1 };
     let tId = null;
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
@@ -153,30 +153,43 @@
         if(t === 'fav') renderPresets();
     }
 
-    // 修正：スクロール位置に関係なく引数の値を強制適用する
+    // 修正：ピッカーのスクロールを強制同期させる
+    function setPickerValue(id, val, max) {
+        const el = document.getElementById(id);
+        const mid = (max + 1) * H;
+        const targetScroll = mid + (val * H);
+        
+        // 瞬時に移動（behavior: auto）
+        el.scrollTo({ top: targetScroll, behavior: 'auto' });
+        
+        // 移動後に確実に描画を合わせる
+        requestAnimationFrame(() => {
+            el.scrollTo({ top: targetScroll, behavior: 'auto' });
+            // selected クラスを更新
+            el.querySelectorAll('.picker-item').forEach((it, i) => {
+                it.classList.toggle('selected', i === Math.round(targetScroll / H));
+            });
+        });
+    }
+
     function quickAction(m, w, r, s, onlyTune) {
-        // 先にデータを確定させる
         conf.mode = m; 
         conf.work = w; 
         conf.rest = r; 
         conf.sets = s;
         
-        // UI（ピッカーとモードボタン）を追随させる
         setModeUI(m);
-        const mid60 = 60*H, mid100 = 100*H;
-        document.getElementById('w-m').scrollTop = mid60 + (Math.floor(w/60)*H);
-        document.getElementById('w-s').scrollTop = mid60 + (w%60*H);
-        document.getElementById('r-m').scrollTop = mid60 + (Math.floor(r/60)*H);
-        document.getElementById('r-s').scrollTop = mid60 + (r%60*H);
-        document.getElementById('s-v').scrollTop = mid100 + (s*H);
+        
+        // 各ピッカーを引数の値で強制移動
+        setPickerValue('w-m', Math.floor(w/60), 59);
+        setPickerValue('w-s', w%60, 59);
+        setPickerValue('r-m', Math.floor(r/60), 59);
+        setPickerValue('r-s', r%60, 59);
+        setPickerValue('s-v', s, 99);
         
         updateTotalDisplay();
         
-        if (onlyTune) {
-            switchTab('custom'); 
-        } else {
-            startWorkout();
-        }
+        if (onlyTune) switchTab('custom'); else startWorkout();
     }
 
     function mkPicker(id, max) {
@@ -196,7 +209,6 @@
             if (el.scrollTop < mid/2) el.scrollTop += mid;
             if (el.scrollTop > mid * 1.5) el.scrollTop -= mid;
             el.querySelectorAll('.picker-item').forEach((it, i) => it.classList.toggle('selected', i === Math.round(el.scrollTop/H)));
-            // スクロールで動かしたときだけconfを更新
             syncFromPickers();
         });
     }
@@ -227,7 +239,6 @@
         if (conf.work <= 0 && conf.rest <= 0) return;
         if (audioCtx.state === 'suspended') audioCtx.resume();
         
-        // 実行用変数をコピー
         let currentSet = 1;
         let phase = (conf.work > 0) ? 'work' : 'rest';
         let remaining = (phase === 'work') ? conf.work : conf.rest;
@@ -246,12 +257,9 @@
             document.getElementById('progress').style.strokeDashoffset = 628 - (628 * (remaining / totalPhaseTime));
             
             if (remaining <= 3 && remaining > 0) beep(880, 0.1);
-            
             if (remaining === 0) {
                 if (phase === 'work') {
-                    if (conf.mode === 'timer' || (conf.mode === 'repeat' && currentSet >= conf.sets) || (conf.mode === 'interval' && currentSet >= conf.sets && conf.rest === 0)) {
-                        return finish();
-                    }
+                    if (conf.mode === 'timer' || (conf.mode === 'repeat' && currentSet >= conf.sets) || (conf.mode === 'interval' && currentSet >= conf.sets && conf.rest === 0)) return finish();
                     if (conf.mode === 'interval' && conf.rest > 0) {
                         phase = 'rest'; remaining = conf.rest; totalPhaseTime = conf.rest; beep(1200, 0.3);
                     } else {
@@ -261,9 +269,7 @@
                     if (currentSet >= conf.sets) return finish();
                     currentSet++; phase = 'work'; remaining = conf.work; totalPhaseTime = conf.work; beep(1760, 0.3);
                 }
-            } else {
-                remaining--;
-            }
+            } else remaining--;
             tId = setTimeout(tick, 1000);
         };
         tick();
@@ -305,7 +311,6 @@
         localStorage.setItem('timer_presets', JSON.stringify(JSON.parse(localStorage.getItem('timer_presets')).filter(x => x.id !== id))); renderPresets();
     }
 
-    // 初期化
     document.querySelectorAll('.mode-btn').forEach(b => {
         b.onclick = () => {
             conf.mode = b.dataset.mode;
@@ -315,7 +320,6 @@
     });
     mkPicker('w-m', 59); mkPicker('w-s', 59); mkPicker('r-m', 59); mkPicker('r-s', 59); mkPicker('s-v', 99);
     
-    // 初回表示
     setTimeout(updateTotalDisplay, 100);
 </script>
 </body>
