@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Ultimate Hybrid Timer - Logical Edition</title>
+    <title>Ultimate Hybrid Timer - Fixed Edition</title>
     <style>
         :root {
             --bg: #f2f4f7; --card: #ffffff; --primary: #1c1c1e;
@@ -13,7 +13,6 @@
         .container { height: 100svh; display: flex; flex-direction: column; }
         .content { flex: 1; overflow-y: auto; padding: 15px; padding-bottom: 100px; }
 
-        /* クイック行レイアウト */
         .quick-row { 
             background: var(--card); border-radius: 16px; padding: 12px 15px; 
             margin-bottom: 10px; display: flex; align-items: center; 
@@ -26,31 +25,28 @@
         .quick-desc { font-size: 12px; color: var(--muted); }
 
         .row-btn-group { display: flex; gap: 8px; }
-        .btn-mini-tune { background: #f0f0f5; color: var(--primary); border: none; padding: 10px 15px; border-radius: 10px; font-weight: bold; }
-        .btn-mini-start { background: var(--primary); color: white; border: none; padding: 10px 18px; border-radius: 10px; font-weight: bold; }
+        .btn-mini-tune { background: #f0f0f5; color: var(--primary); border: none; padding: 10px 15px; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        .btn-mini-start { background: var(--primary); color: white; border: none; padding: 10px 18px; border-radius: 10px; font-weight: bold; cursor: pointer; }
 
-        /* タブバー */
         .tab-bar { position: fixed; bottom: 0; width: 100%; height: 70px; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); display: flex; border-top: 1px solid #ddd; padding-bottom: env(safe-area-inset-bottom); z-index: 1000; }
-        .tab-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 10px; color: var(--muted); font-weight: bold; }
+        .tab-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 10px; color: var(--muted); font-weight: bold; cursor: pointer; }
         .tab-item.active { color: var(--primary); }
         .tab-icon { font-size: 20px; margin-bottom: 2px; }
 
-        /* カスタム設定用 */
         .card { background: var(--card); border-radius: 20px; margin-bottom: 8px; padding: 0 20px; height: 105px; display: flex; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.02); overflow: hidden; }
         .card.disabled { opacity: 0.1; pointer-events: none; filter: grayscale(1); }
         .label-v { writing-mode: vertical-rl; text-orientation: upright; font-size: 11px; font-weight: bold; color: var(--muted); border-right: 1px solid #eee; padding-right: 12px; margin-right: 15px; height: 50%; }
         .picker-group { flex: 1; display: flex; justify-content: center; align-items: center; gap: 4px; height: 105px; }
-        .picker-col { height: 105px; width: 75px; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; }
+        .picker-col { height: 105px; width: 75px; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; outline: none; }
         .picker-col::-webkit-scrollbar { display: none; }
-        .picker-item { height: 105px; display: flex; align-items: center; justify-content: center; font-size: 34px; font-weight: 800; scroll-snap-align: center; color: #ddd; }
+        .picker-item { height: 105px; display: flex; align-items: center; justify-content: center; font-size: 34px; font-weight: 800; scroll-snap-align: center; color: #ddd; transition: 0.2s; }
         .picker-item.selected { color: #000; transform: scale(1.1); }
 
-        /* 実行画面 */
         #dashboard { position: fixed; inset: 0; background: var(--bg); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; }
         .circle-ui { position: relative; width: 280px; height: 280px; margin: 20px 0; }
         .ring-bar { fill: none; stroke-width: 12; stroke-linecap: round; stroke-dasharray: 628; stroke-dashoffset: 628; transition: stroke-dashoffset 0.2s linear; transform: rotate(-90deg); transform-origin: 50% 50%; }
         .time-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 72px; font-weight: 900; font-family: monospace; }
-        .start-btn { width: 80%; padding: 20px; border-radius: 18px; border: none; background: var(--primary); color: white; font-size: 20px; font-weight: 900; }
+        .start-btn { width: 80%; padding: 20px; border-radius: 18px; border: none; background: var(--primary); color: white; font-size: 20px; font-weight: 900; cursor: pointer; }
         
         @keyframes flash-yellow { 0%, 100% { background: var(--bg); } 50% { background: var(--finish); } }
         .flashing { animation: flash-yellow 0.5s infinite; }
@@ -66,15 +62,12 @@
         <h2 style="margin-bottom:20px; padding-left:5px;">Quick Actions</h2>
         <div id="quick-list">
             <script>
-                // 並び順：時間順、かつ Timer -> Repeat -> Interval
                 const presets = [
-                    // Timer (単発)
                     {m:'timer', w:180, r:0, s:1, e:'🍜', t:'カップ麺', d:'3分'},
                     {m:'timer', w:300, r:0, s:1, e:'🧘', t:'瞑想', d:'5分'},
                     {m:'timer', w:420, r:0, s:1, e:'🥚', t:'ゆで卵', d:'7分'},
                     {m:'timer', w:600, r:0, s:1, e:'🧹', t:'10分集中', d:'掃除・片付け'},
                     {m:'timer', w:900, r:0, s:1, e:'💤', t:'仮眠', d:'15分'},
-                    // Repeat & Interval
                     {m:'repeat', w:60, r:0, s:10, e:'📝', t:'ゼロ秒思考', d:'1分 × 10回'},
                     {m:'interval', w:20, r:10, s:8, e:'🏋️', t:'HIIT', d:'20s/10s × 8'},
                     {m:'interval', w:30, r:5, s:10, e:'🤸', t:'ストレッチ', d:'30s × 10'},
@@ -109,14 +102,14 @@
         <div class="card" id="card-rest"><div class="label-v">Rest</div><div class="picker-group"><div class="picker-col" id="r-m"></div>分<div class="picker-col" id="r-s"></div>秒</div></div>
         <div class="card" id="card-sets"><div class="label-v">Sets</div><div class="picker-group"><div class="picker-col" id="s-v"></div>回</div></div>
         <div style="text-align:center; margin-top:20px;">
-            <div style="font-weight:900; font-size:20px; margin-bottom:15px;">Total: <span id="total-disp">00:00</span></div>
+            <div style="font-weight:900; font-size:24px; margin-bottom:15px; color:var(--primary)">Total: <span id="total-disp">00:00</span></div>
             <button class="start-btn" onclick="startWorkout()" style="width:100%">START</button>
         </div>
     </div>
 
     <div id="page-fav" class="content" style="display:none">
         <h2 style="margin-bottom:20px">Favorites</h2>
-        <button class="btn-mini-start" onclick="savePreset()" style="width:100%; padding:15px; margin-bottom:20px;">+ 保存する</button>
+        <button class="btn-mini-start" onclick="savePreset()" style="width:100%; padding:15px; margin-bottom:20px;">+ 現在の設定を保存</button>
         <div id="preset-list"></div>
     </div>
 
@@ -144,6 +137,7 @@
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
     function beep(freq, dur, startTime = 0) {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
         const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
         osc.connect(gain); gain.connect(audioCtx.destination);
         osc.frequency.value = freq; gain.gain.setValueAtTime(0.1, audioCtx.currentTime + startTime);
@@ -159,15 +153,19 @@
         if(t === 'fav') renderPresets();
     }
 
+    // 修正：クイックアクション時に値を直書きして同期を確実にする
     function quickAction(m, w, r, s, onlyTune) {
         setMode(m);
+        conf.work = w; conf.rest = r; conf.sets = s;
+        
         const mid60 = 60*H, mid100 = 100*H;
         document.getElementById('w-m').scrollTop = mid60 + (Math.floor(w/60)*H);
         document.getElementById('w-s').scrollTop = mid60 + (w%60*H);
         document.getElementById('r-m').scrollTop = mid60 + (Math.floor(r/60)*H);
         document.getElementById('r-s').scrollTop = mid60 + (r%60*H);
         document.getElementById('s-v').scrollTop = mid100 + (s*H);
-        sync();
+        
+        sync(); // 合計表示を更新
         if (onlyTune) switchTab('custom'); else startWorkout();
     }
 
@@ -183,7 +181,7 @@
         });
         el.appendChild(list);
         const mid = (max+1)*H;
-        setTimeout(() => { el.scrollTop = mid; sync(); }, 50);
+        el.scrollTop = mid;
         el.addEventListener('scroll', () => {
             if (el.scrollTop < mid/2) el.scrollTop += mid;
             if (el.scrollTop > mid*1.5) el.scrollTop -= mid;
@@ -193,45 +191,75 @@
     }
 
     function sync() {
-        const getV = (id, max) => Math.round(document.getElementById(id).scrollTop/H) % (max+1);
+        const getV = (id, max) => {
+            const el = document.getElementById(id);
+            if(!el) return 0;
+            return Math.round(el.scrollTop/H) % (max+1);
+        };
+        // スクロール位置から値を読み取る
         conf.work = getV('w-m',59)*60 + getV('w-s',59);
         conf.rest = getV('r-m',59)*60 + getV('r-s',59);
         conf.sets = Math.max(1, getV('s-v',99));
+        
         let total = (conf.mode === 'timer') ? conf.work : (conf.work + conf.rest) * conf.sets;
         document.getElementById('total-disp').textContent = `${String(Math.floor(total/60)).padStart(2,'0')}:${String(total%60).padStart(2,'0')}`;
     }
 
     function setMode(m) {
-        conf.mode = m; document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === m));
+        conf.mode = m; 
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === m));
         document.getElementById('card-rest').classList.toggle('disabled', m === 'timer');
         document.getElementById('card-sets').classList.toggle('disabled', m === 'timer');
+        sync();
     }
 
     function startWorkout() {
+        if (conf.work <= 0 && conf.rest <= 0) return;
         if (audioCtx.state === 'suspended') audioCtx.resume();
+        
         let s = 1, ph = 'work', rem = conf.work, tot = rem;
+        // もしWorkが0ならRestから開始
+        if(rem === 0 && conf.rest > 0) { ph = 'rest'; rem = conf.rest; tot = rem; }
+
         const dash = document.getElementById('dashboard');
         dash.style.display = 'flex'; dash.classList.remove('flashing');
+        
         const tick = () => {
             document.getElementById('ui-time').textContent = `${String(Math.floor(rem/60)).padStart(2,'0')}:${String(rem%60).padStart(2,'0')}`;
             document.getElementById('ui-sets').textContent = conf.mode === 'timer' ? "" : `SET ${s} / ${conf.sets}`;
+            
             const isW = ph === 'work';
             document.getElementById('ui-phase').textContent = isW ? "WORK" : "REST";
             document.getElementById('progress').style.stroke = isW ? 'var(--active)' : 'var(--rest)';
             document.getElementById('progress').style.strokeDashoffset = 628 - (628 * (rem / tot));
+            
             if (rem <= 3 && rem > 0) beep(880, 0.1);
+            
             if (rem === 0) {
-                if (isW && (conf.mode === 'timer' || (conf.mode === 'repeat' && s >= conf.sets))) return finish();
-                if (isW && conf.mode === 'interval') { ph = 'rest'; rem = conf.rest; tot = conf.rest; beep(1200, 0.3); }
-                else { if (ph === 'rest' && s >= conf.sets) return finish(); if(ph==='rest')s++; ph = 'work'; rem = conf.work; tot = conf.work; beep(1760, 0.3); }
-            } else rem--;
+                if (isW) {
+                    // Work終了時
+                    if (conf.mode === 'timer' || (conf.mode === 'repeat' && s >= conf.sets) || (conf.mode === 'interval' && s >= conf.sets && conf.rest === 0)) return finish();
+                    if (conf.mode === 'interval' && conf.rest > 0) { ph = 'rest'; rem = conf.rest; tot = conf.rest; beep(1200, 0.3); }
+                    else { s++; rem = conf.work; tot = conf.work; beep(1760, 0.3); }
+                } else {
+                    // Rest終了時
+                    if (s >= conf.sets) return finish();
+                    s++; ph = 'work'; rem = conf.work; tot = conf.work; beep(1760, 0.3);
+                }
+            } else {
+                rem--;
+            }
             tId = setTimeout(tick, 1000);
         };
         tick();
     }
 
     function finish() {
-        clearTimeout(tId); for(let i=0; i<3; i++) [0, 0.2, 0.4, 0.6].forEach(t => beep(2500, 0.1, i+t));
+        clearTimeout(tId); 
+        for(let i=0; i<3; i++) {
+            const base = i * 1.0;
+            [0, 0.2, 0.4, 0.6].forEach(t => beep(2500, 0.1, base + t));
+        }
         document.getElementById('dashboard').classList.add('flashing');
         document.getElementById('ui-phase').textContent = "COMPLETE!";
     }
@@ -262,9 +290,12 @@
         localStorage.setItem('timer_presets', JSON.stringify(JSON.parse(localStorage.getItem('timer_presets')).filter(x => x.id !== id))); renderPresets();
     }
 
+    // 初期化
     document.querySelectorAll('.mode-btn').forEach(b => b.onclick = () => setMode(b.dataset.mode));
     mkPicker('w-m', 59); mkPicker('w-s', 59); mkPicker('r-m', 59); mkPicker('r-s', 59); mkPicker('s-v', 99);
-    setMode('timer');
+    
+    // 初回ロード時に1秒待って同期（ブラウザのレンダリング待ち）
+    setTimeout(sync, 200);
 </script>
 </body>
 </html>
