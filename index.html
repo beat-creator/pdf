@@ -141,7 +141,72 @@
             margin: 0;
             white-space: pre-wrap;
         }
-
+/* AI開発ログ（ダイアリー）のスタイル */
+        .ai-log-section {
+            margin: 40px auto;
+            max-width: 580px;
+            width: 90%;
+            background: #1e293b; /* ダークネイビー */
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .console-header {
+            background: #334155;
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
+        .red { background: #ff5f56; }
+        .yellow { background: #ffbd2e; }
+        .green { background: #27c93f; }
+        .console-title {
+            color: #94a3b8;
+            font-size: 11px;
+            margin-left: 10px;
+            letter-spacing: 1px;
+        }
+        .console-body {
+            padding: 20px;
+            color: #e2e8f0;
+        }
+        .diary-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: #00ff41; /* ターミナルグリーン */
+            margin-bottom: 12px;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 8px;
+        }
+        .diary-content p {
+            font-size: 0.85rem;
+            line-height: 1.6;
+            margin: 0;
+            white-space: pre-wrap;
+        }
+        .log-footer {
+            margin-top: 20px;
+            font-size: 0.8rem;
+        }
+        .cta-link {
+            color: #fbbf24; /* オレンジイエロー */
+            text-decoration: none;
+            border-bottom: 1px dashed #fbbf24;
+        }
+        .cta-link:hover {
+            color: #ffffff;
+            border-bottom: 1px solid #ffffff;
+        }
+        .blink {
+            animation: blink 1s infinite;
+            color: #00ff41;
+            font-weight: bold;
+        }
+        @keyframes blink { 50% { opacity: 0; } }
         footer {
             padding: 40px 20px;
             font-size: 0.75rem;
