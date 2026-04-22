@@ -142,6 +142,69 @@
             white-space: pre-wrap;
         }
 
+        /* AI開発ログのスタイル追加 */
+        .ai-log-section {
+            margin: 40px auto;
+            max-width: 580px;
+            width: 90%;
+            background: #1e293b;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .console-header {
+            background: #334155;
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
+        .red { background: #ff5f56; }
+        .yellow { background: #ffbd2e; }
+        .green { background: #27c93f; }
+        .console-title {
+            color: #94a3b8;
+            font-size: 11px;
+            margin-left: 10px;
+            letter-spacing: 1px;
+        }
+        .console-body {
+            padding: 20px;
+            color: #e2e8f0;
+        }
+        .diary-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: #00ff41;
+            margin-bottom: 12px;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 8px;
+        }
+        .diary-content p {
+            font-size: 0.85rem;
+            line-height: 1.6;
+            margin: 0;
+            white-space: pre-wrap;
+        }
+        .log-footer {
+            margin-top: 20px;
+            font-size: 0.8rem;
+        }
+        .cta-link {
+            color: #fbbf24;
+            text-decoration: none;
+            border-bottom: 1px dashed #fbbf24;
+        }
+        .blink {
+            animation: blink 1s infinite;
+            color: #00ff41;
+            font-weight: bold;
+        }
+        @keyframes blink { 50% { opacity: 0; } }
+
         footer {
             padding: 40px 20px;
             font-size: 0.75rem;
@@ -200,6 +263,28 @@
             </div>
         </div>
     </section>
+
+    <section class="ai-log-section">
+        <div class="console-header">
+            <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+            <span class="console-title">LOG_UNIT v1.0.4 - Development Diary</span>
+        </div>
+        <div class="console-body">
+            <div class="diary-meta">
+                <span id="diary-date">0000.00.00</span>
+                <span class="status-tag">STATUS: RAW_MODE</span>
+            </div>
+            <div class="diary-content">
+                <p id="diary-text">LOG: 接続中...</p>
+            </div>
+            <div class="log-footer">
+                <span class="blink">>>></span> 
+                <a href="https://x.com/intent/tweet?text=@Takataka_Dev%20こんなツールが欲しい！" target="_blank" class="cta-link">
+                    次のネタをリクエストする（欲しがる）
+                </a>
+            </div>
+        </div>
+    </section>
 </div>
 
 <footer>
@@ -208,5 +293,30 @@
 </footer>
 
 <script src="./js/i18n-engine.js"></script>
+
+<script>
+(function() {
+    async function loadDiary() {
+        try {
+            const res = await fetch('./diary.json');
+            if (!res.ok) return;
+            const data = await res.json();
+            
+            const dateEl = document.getElementById('diary-date');
+            const textEl = document.getElementById('diary-text');
+            
+            if (dateEl) dateEl.textContent = data.date.replace(/-/g, '.');
+            if (textEl) {
+                const lang = (navigator.language || "").startsWith('en') ? 'en' : 'ja';
+                textEl.textContent = data.content[lang] || data.content['ja'];
+            }
+        } catch (e) {
+            console.log("Diary component ready.");
+        }
+    }
+    // 画面の読み込み完了後に実行
+    window.addEventListener('load', loadDiary);
+})();
+</script>
 </body>
 </html>
