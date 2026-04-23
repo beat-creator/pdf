@@ -290,22 +290,37 @@
 (function() {
     async function loadDiary() {
         try {
-            const res = await fetch('./diary.json');
+            // キャッシュ対策に ?v=日付 を付ける
+            const res = await fetch('./diary.json?v=' + new Date().getTime());
             if (!res.ok) return;
-            const data = (await res.json())[0];
+            
+            const rawData = await res.json();
+            // 配列でも単体データでも読み込めるようにする
+            const data = Array.isArray(rawData) ? rawData[0] : rawData;
+            
             const dateEl = document.getElementById('diary-date');
             const textEl = document.getElementById('diary-text');
-            if (dateEl) dateEl.textContent = data.date.replace(/-/g, '.');
-            if (textEl) {
+            
+            if (dateEl && data.date) {
+                dateEl.textContent = data.date.replace(/-/g, '.');
+            }
+            if (textEl && data.content) {
                 const lang = (navigator.language || "").startsWith('en') ? 'en' : 'ja';
                 textEl.textContent = data.content[lang] || data.content['ja'];
             }
         } catch (e) {
-            console.log("Diary active.");
+            console.log("Diary active but error: ", e);
+            document.getElementById('diary-text').textContent = "LOG: 同期エラー。再試行してください。";
         }
     }
-    window.addEventListener('load', loadDiary);
+    // ページ読み込みが完了したら実行
+    if (document.readyState === 'complete') {
+        loadDiary();
+    } else {
+        window.addEventListener('load', loadDiary);
+    }
 })();
 </script>
+
 </body>
 </html>
