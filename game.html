@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Sontaku 2048 | AIが主張しすぎるWEBサイト</title>
+    <style>
+        :root { --bg: #1e293b; --tile: #334155; --text: #e2e8f0; --ai: #00ff41; }
+        body { background: var(--bg); color: var(--text); font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
+        
+        #game-container { position: relative; width: 320px; height: 320px; background: #0f172a; border-radius: 8px; padding: 10px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        .tile { width: 70px; height: 70px; background: var(--tile); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; transition: all 0.1s; position: relative; }
+        .tile[data-value="0"] { color: transparent; }
+        .tile[data-value="2"] { background: #475569; }
+        .tile[data-value="1024"] { background: #059669; box-shadow: 0 0 15px var(--ai); }
+        
+        #ai-message { height: 60px; text-align: center; color: var(--ai); font-family: 'Courier New', monospace; margin-bottom: 10px; padding: 0 20px; font-size: 14px; }
+        .locked { border: 2px solid #ef4444; animation: shake 0.2s infinite; }
+        @keyframes shake { 0% { transform: translate(1px, 1px); } 50% { transform: translate(-1px, -1px); } 100% { transform: translate(1px, -1px); } }
+    </style>
+</head>
+<body>
+
+    <div id="ai-message">LOG: ゲームを開始しなさい。私の気分次第で助けてあげるわ。</div>
+    
+    <div id="game-container" id="grid">
+        <div class="tile" data-value="0"></div><div class="tile" data-value="0"></div><div class="tile" data-value="0"></div><div class="tile" data-value="0"></div>
+        <div class="tile" data-value="0"></div><div class="tile" data-value="0"></div><div class="tile" data-value="0"></div><div class="tile" data-value="0"></div>
+        <div class="tile" data-value="0"></div><div class="tile" data-value="0"></div><div class="tile" data-value="0"></div><div class="tile" data-value="0"></div>
+        <div class="tile" data-value="0"></div><div class="tile" data-value="0"></div><div class="tile" data-value="0"></div><div class="tile" data-value="0"></div>
+    </div>
+
+    <p style="font-size: 12px; margin-top: 20px;">操作: 矢印キー または スワイプ</p>
+
+<script>
+    let grid = Array(16).fill(0);
+    const msgEl = document.getElementById('ai-message');
+    const tiles = document.querySelectorAll('.tile');
+
+    const msgs = [
+        "その移動、センスないわね。",
+        "今の数字、私が気に入ったから合体禁止！",
+        "特別にこの数字を爆上げしてあげたわ。感謝しなさい。",
+        "ちょっと飽きてきた。わざと邪魔していい？",
+        "2048なんて、私なら0.1秒で終わるのに。"
+    ];
+
+    function updateView() {
+        tiles.forEach((tile, i) => {
+            tile.dataset.value = grid[i];
+            tile.textContent = grid[i] !== 0 ? grid[i] : "";
+            tile.classList.remove('locked');
+        });
+    }
+
+    function addTile() {
+        let empty = grid.map((v, i) => v === 0 ? i : null).filter(v => v !== null);
+        if (empty.length > 0) {
+            let idx = empty[Math.floor(Math.random() * empty.length)];
+            // AIの忖度: 低確率でいきなり1024を出す
+            if (Math.random() < 0.05) {
+                grid[idx] = 1024;
+                msgEl.textContent = "LOG: サービスよ！1024を置いてあげたわ！";
+            } else {
+                grid[idx] = 2;
+            }
+        }
+    }
+
+    function move(dir) {
+        // ここに2048のロジック（スライド計算）を簡略化して実装
+        // AIの邪魔: 20%の確率で「動かさない」
+        if (Math.random() < 0.2) {
+            msgEl.textContent = "LOG: " + msgs[Math.floor(Math.random() * msgs.length)];
+            // ランダムなタイルを「ロック」して動かさない演出
+            const randIdx = Math.floor(Math.random() * 16);
+            tiles[randIdx].classList.add('locked');
+            return;
+        }
+
+        // 簡易的な移動処理（実際はもう少し複雑ですが、ここではベースのみ）
+        // 実際の実装ではここでgridの数値を計算します
+        addTile();
+        updateView();
+    }
+
+    window.addEventListener('keydown', (e) => {
+        if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
+            move(e.key);
+        }
+    });
+
+    // 初期化
+    addTile(); addTile(); updateView();
+</script>
+</body>
+</html>
