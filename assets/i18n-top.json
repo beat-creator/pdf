@@ -1,14 +1,14 @@
 {
   "top": {
     "site_name": {
-      "ja": "【安全】ブラウザ完結ツール集｜AIが機能を作り、日記でその裏側を語る場所",
-      "en": "Secure Toolkit | Built by AI, stories told in the dev log",
-      "zh": "安全工具集 | AI开发・开发日志公开中"
+      "ja": "インストール不要ツール集｜AIが機能を作り、日記でその裏側を語る場所",
+      "en": "No-Install Toolsets | Built by AI, stories told in the dev log",
+      "zh": "免安装工具集 | AI开发・开发日志公开中"
     },
     "site_logo": {
       "ja": "セキュアツール集 <small style='font-size: 0.4em; color: #ef4444; font-weight: normal;'>feat. AI「ログ」</small>",
       "en": "Secure Toolkit <small style='font-size: 0.4em; color: #ef4444; font-weight: normal;'>feat. AI LOG</small>",
-      "zh": "セキュアツール集 <small style='font-size: 0.4em; color: #ef4444; font-weight: normal;'>feat. AI LOG</small>"
+      "zh": "セキュア工具集 <small style='font-size: 0.4em; color: #ef4444; font-weight: normal;'>feat. AI LOG</small>"
     },
     "hero_title": {
       "ja": "なぜ、AIとパパがこのサイトを作ったのか？",
@@ -18,14 +18,43 @@
     "features": [
       {
         "id": "desc1",
-        "title": { "ja": "🔒 サーバーに送らない、という「約束」", "en": "🔒 Our Promise: No Data Uploads", "zh": "🔒 绝不上传服务器的“承诺”" },
+        "title": { 
+          "ja": "🔒 サーバーに送らない、という「約束」", 
+          "en": "🔒 Our Promise: No Data Uploads", 
+          "zh": "🔒 绝不上传服务器的“承诺”" 
+        },
         "content": {
           "ja": "すべての処理はあなたのブラウザ内（手元）で完結します。機密ファイルも、AIの「ログ」には一切見えません。ご安心ください。",
           "en": "All processing happens inside your browser. Your confidential files are never seen by AI LOG. Stay safe.",
           "zh": "所有处理都在您的浏览器（本地）完成。机密文件绝对不会被 AI “LOG” 看到。请放心。"
         }
       },
-      // ... 以下、既存のデータ
+      {
+        "id": "desc2",
+        "title": { 
+          "ja": "📡 通信量を消費しない「エコ設計」", 
+          "en": "📡 Data-Saving Eco Design", 
+          "zh": "📡 节省流量的“环保设计”" 
+        },
+        "content": {
+          "ja": "ファイルをアップロードしないため、通信量（ギガ）を消費しません。AIが1時間かけて軽量化したコードが、あなたの作業を高速化します。",
+          "en": "No uploads means no data usage. Code optimized by AI over a grueling hour ensures high-speed processing for you.",
+          "zh": "由于不上传文件，不消耗流量。经过 AI 一小时优化的代码将提升您的处理速度。"
+        }
+      },
+      {
+        "id": "desc3",
+        "title": { 
+          "ja": "🤖 AIが作り、人間が磨き上げる", 
+          "en": "🤖 Built by AI, Refined by Human", 
+          "zh": "🤖 AI开发，人工磨练" 
+        },
+        "content": {
+          "ja": "AIが書いたコードを、管理人のパパが厳しくチェック。不器用だけど、どこよりも正直で安全なツールを目指して毎日更新中です。",
+          "en": "Codes written by AI are strictly reviewed by Papa-san. We aim for the most honest and secure tools, even if we are a bit clumsy.",
+          "zh": "AI 编写的代码由管理员 Papa 严格检查。虽然不成熟，但我们的目标是建立一个最诚实、最安全的工具库。"
+        }
+      }
     ]
   }
 }
