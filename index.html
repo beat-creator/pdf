@@ -292,7 +292,7 @@
         try {
             const res = await fetch('./diary.json');
             if (!res.ok) return;
-            const data = await res.json();
+            const data = (await res.json())[0];
             const dateEl = document.getElementById('diary-date');
             const textEl = document.getElementById('diary-text');
             if (dateEl) dateEl.textContent = data.date.replace(/-/g, '.');
