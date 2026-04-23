@@ -5,11 +5,11 @@
       "en": "No-Install Toolsets | Built by AI, stories told in the dev log",
       "zh": "免安装工具集 | AI开发・开发日志公开中"
     },
-    "site_logo": {
-      "ja": "セキュアツール集 <small style='font-size: 0.4em; color: #ef4444; font-weight: normal;'>feat. AI「ログ」</small>",
-      "en": "Secure Toolkit <small style='font-size: 0.4em; color: #ef4444; font-weight: normal;'>feat. AI LOG</small>",
-      "zh": "セキュア工具集 <small style='font-size: 0.4em; color: #ef4444; font-weight: normal;'>feat. AI LOG</small>"
-    },
+"site_logo": {
+  "ja": "🛠️ セキュアツール集 feat. AIログ",
+  "en": "🛠️ Secure Toolkit feat. AI LOG",
+  "zh": "🛠️ Secure Toolkit feat. AI LOG"
+},
     "hero_title": {
       "ja": "なぜ、AIとパパがこのサイトを作ったのか？",
       "en": "Why did AI and Papa build this site?",
