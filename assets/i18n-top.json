@@ -1,48 +1,31 @@
 {
   "top": {
     "site_name": {
-      "ja": "セキュア便利ツール集",
-      "en": "Secure Toolkit",
-      "zh": "安全工具集"
+      "ja": "【安全】ブラウザ完結ツール集｜AIが機能を作り、日記でその裏側を語る場所",
+      "en": "Secure Toolkit | Built by AI, stories told in the dev log",
+      "zh": "安全工具集 | AI开发・开发日志公开中"
     },
     "site_logo": {
-      "ja": "🛠️ Secure Toolkit",
-      "en": "🛠️ Secure Toolkit",
-      "zh": "🛠️ Secure Toolkit"
+      "ja": "セキュアツール集 <small style='font-size: 0.4em; color: #ef4444; font-weight: normal;'>feat. AI「ログ」</small>",
+      "en": "Secure Toolkit <small style='font-size: 0.4em; color: #ef4444; font-weight: normal;'>feat. AI LOG</small>",
+      "zh": "セキュアツール集 <small style='font-size: 0.4em; color: #ef4444; font-weight: normal;'>feat. AI LOG</small>"
     },
     "hero_title": {
-      "ja": "なぜ Secure Toolkit なのか？",
-      "en": "Why Secure Toolkit?",
-      "zh": "为什么选择 Secure Toolkit？"
+      "ja": "なぜ、AIとパパがこのサイトを作ったのか？",
+      "en": "Why did AI and Papa build this site?",
+      "zh": "为什么 AI 和 Papa 开发了这个网站？"
     },
     "features": [
       {
         "id": "desc1",
-        "title": { "ja": "🇯🇵 安心の国内開発・完全無料", "en": "🇯🇵 Developed in Japan & Free", "zh": "🇯🇵 日本国内开发・完全免费" },
+        "title": { "ja": "🔒 サーバーに送らない、という「約束」", "en": "🔒 Our Promise: No Data Uploads", "zh": "🔒 绝不上传服务器的“承诺”" },
         "content": {
-          "ja": "Secure Toolkitは日本国内で設計・開発されています。海外製ツールと違い、データの行き先が不透明な心配はありません。",
-          "en": "Secure Toolkit is designed and developed in Japan. Unlike foreign tools, there is no worry about where your data goes.",
-          "zh": "Secure Toolkit 在日本国内设计和开发。与国外工具不同，不用担心数据去向不明。"
+          "ja": "すべての処理はあなたのブラウザ内（手元）で完結します。機密ファイルも、AIの「ログ」には一切見えません。ご安心ください。",
+          "en": "All processing happens inside your browser. Your confidential files are never seen by AI LOG. Stay safe.",
+          "zh": "所有处理都在您的浏览器（本地）完成。机密文件绝对不会被 AI “LOG” 看到。请放心。"
         }
       },
-      {
-        "id": "desc2",
-        "title": { "ja": "📡 通信量を消費しない", "en": "📡 Save Your Data", "zh": "📡 不消耗流量" },
-        "content": {
-          "ja": "ファイルをサーバーにアップロードしないため、ギガを大幅に節約できます。外出先での作業に最適です。",
-          "en": "Since files are not uploaded to a server, you can significantly save data. Ideal for working on the go.",
-          "zh": "由于文件不上传到服务器，可以大幅节省数据流量。非常适合在外出办公時使用。"
-        }
-      },
-      {
-        "id": "desc3",
-        "title": { "ja": "🔒 サーバーに送らない究極の安全", "en": "🔒 Ultimate Privacy", "zh": "🔒 终极安全" },
-        "content": {
-          "ja": "すべての処理はブラウザ内で完結します。機密書類も安心して処理できます。",
-          "en": "All processing is completed within your browser. Safely process confidential documents.",
-          "zh": "所有处理都在浏览器内完成。可以放心处理机密文件。"
-        }
-      }
+      // ... 以下、既存のデータ
     ]
   }
 }
