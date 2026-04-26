@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>禅・瞑想タイマー | Time Toolkit</title>
+    <style>
+        :root {
+            --zen-deep: #6366f1;
+            --zen-light: #f5f3ff;
+            --text-main: #1e293b;
+        }
+
+        body {
+            margin: 0; padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--zen-light);
+            color: var(--text-main);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            height: 100dvh; overflow: hidden;
+        }
+
+        /* 呼吸ビジュアル */
+        .breathe-container {
+            position: relative;
+            width: 300px; height: 300px;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .breathe-circle {
+            position: absolute;
+            width: 100%; height: 100%;
+            background: var(--zen-deep);
+            border-radius: 50%;
+            opacity: 0.2;
+            transform: scale(0.6);
+            transition: transform 1s ease-in-out, opacity 1s ease-in-out;
+        }
+
+        .timer-display {
+            font-size: 3.5rem; font-weight: 200; z-index: 10;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .guide-text {
+            position: absolute; bottom: -50px;
+            font-size: 1.2rem; font-weight: 500;
+            color: var(--zen-deep); letter-spacing: 0.1em;
+            text-align: center; width: 100%;
+        }
+
+        /* コントロール UI */
+        .controls {
+            margin-top: 100px; display: flex; flex-direction: column; align-items: center; gap: 20px;
+            transition: opacity 1s;
+        }
+
+        .rhythm-selector {
+            display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
+        }
+
+        button {
+            background: white; border: 1px solid #e2e8f0;
+            padding: 10px 18px; border-radius: 99px;
+            cursor: pointer; font-size: 0.85rem; transition: all 0.2s;
+        }
+
+        button.active {
+            background: var(--zen-deep); color: white; border-color: var(--zen-deep);
+        }
+
+        .start-btn {
+            background: var(--zen-deep); color: white; border: none;
+            padding: 15px 60px; font-size: 1.1rem; font-weight: bold;
+            border-radius: 99px; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
+
+        /* 瞑想中モード */
+        body.meditating .controls { opacity: 0.1; pointer-events: none; }
+    </style>
+</head>
+<body>
+
+<div class="breathe-container">
+    <div class="breathe-circle" id="circle"></div>
+    <div class="timer-display" id="display">05:00</div>
+    <div class="guide-text" id="guide">READY</div>
+</div>
+
+<div class="controls">
+    <div class="rhythm-selector" id="rhythmSelector">
+        <button onclick="setRhythm('zen')" id="btn-zen" class="active">禅 (5-5)</button>
+        <button onclick="setRhythm('box')" id="btn-box">集中 (4-4-4)</button>
+        <button onclick="setRhythm('relax')" id="btn-relax">休息 (4-7-8)</button>
+    </div>
+    <div class="time-presets">
+        <button onclick="setDuration(180)">3分</button>
+        <button onclick="setDuration(300)">5分</button>
+        <button onclick="setDuration(600)">10分</button>
+    </div>
+    <button class="start-btn" id="startBtn" onclick="toggleMeditation()">瞑想を開始</button>
+</div>
+
+<script>
+    const rhythms = {
+        zen: { inhale: 5, hold1: 0, exhale: 5, hold2: 0, label: "禅 (5-5)" },
+        box: { inhale: 4, hold1: 4, exhale: 4, hold2: 4, label: "集中 (4-4-4)" },
+        relax: { inhale: 4, hold1: 7, exhale: 8, hold2: 0, label: "リラックス (4-7-8)" }
+    };
+
+    let currentRhythm = 'zen';
+    let timeLeft = 300;
+    let timerId = null;
+    let cycleId = null;
+    let isMeditating = false;
+
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const circle = document.getElementById('circle');
+    const guide = document.getElementById('guide');
+    const display = document.getElementById('display');
+
+    function setRhythm(key) {
+        if (isMeditating) return;
+        currentRhythm = key;
+        document.querySelectorAll('.rhythm-selector button').forEach(b => b.classList.remove('active'));
+        document.getElementById(`btn-${key}`).classList.add('active');
+    }
+
+    function setDuration(sec) {
+        if (isMeditating) return;
+        timeLeft = sec;
+        updateDisplay();
+    }
+
+    function updateDisplay() {
+        const m = Math.floor(timeLeft / 60);
+        const s = timeLeft % 60;
+        display.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+
+    function playBell() {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 3);
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 3);
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.start(); osc.stop(audioCtx.currentTime + 3);
+    }
+
+    async function runBreatheCycle() {
+        const r = rhythms[currentRhythm];
+        while (isMeditating) {
+            // 吸う
+            guide.textContent = "吸う";
+            circle.style.transform = "scale(1.1)";
+            circle.style.opacity = "0.4";
+            circle.style.transition = `all ${r.inhale}s ease-in-out`;
+            await new Promise(r_ => cycleId = setTimeout(r_, r.inhale * 1000));
+            if (!isMeditating) break;
+
+            // 止める1
+            if (r.hold1 > 0) {
+                guide.textContent = "止める";
+                await new Promise(r_ => cycleId = setTimeout(r_, r.hold1 * 1000));
+            }
+            if (!isMeditating) break;
+
+            // 吐く
+            guide.textContent = "吐く";
+            circle.style.transform = "scale(0.6)";
+            circle.style.opacity = "0.1";
+            circle.style.transition = `all ${r.exhale}s ease-in-out`;
+            await new Promise(r_ => cycleId = setTimeout(r_, r.exhale * 1000));
+            if (!isMeditating) break;
+
+            // 止める2
+            if (r.hold2 > 0) {
+                guide.textContent = "止める";
+                await new Promise(r_ => cycleId = setTimeout(r_, r.hold2 * 1000));
+            }
+        }
+    }
+
+    function toggleMeditation() {
+        if (isMeditating) {
+            stop();
+        } else {
+            start();
+        }
+    }
+
+    function start() {
+        isMeditating = true;
+        document.body.classList.add('meditating');
+        document.getElementById('startBtn').textContent = "中断";
+        playBell();
+        runBreatheCycle();
+        timerId = setInterval(() => {
+            timeLeft--;
+            updateDisplay();
+            if (timeLeft <= 0) stop(true);
+        }, 1000);
+    }
+
+    function stop(isFinished = false) {
+        isMeditating = false;
+        clearInterval(timerId);
+        clearTimeout(cycleId);
+        document.body.classList.remove('meditating');
+        document.getElementById('startBtn').textContent = "瞑想を開始";
+        guide.textContent = "READY";
+        circle.style.transform = "scale(0.6)";
+        if (isFinished) {
+            playBell();
+            setTimeout(() => alert("心が整いました。"), 300);
+        }
+    }
+</script>
+</body>
+</html>
