@@ -1,149 +1,121 @@
 {
-  "ja": {
-    "top": {
-      "site_name": "タイムツールキット｜時空と暦の道具箱",
-      "site_logo": "⏳ Time Toolkit",
-      "hero_title": "なぜ Time Toolkit なのか？",
-      "features": [
-        {
-          "title": "⌛ 「今」を数字で実感する",
-          "content": "令和・平成・昭和の並記や、1日の経過率をリアルタイムに計算。曖昧な時間の感覚を正確なデータに変換します。"
-        },
-        {
-          "title": "📅 暦と科学の融合",
-          "content": "六曜や和名月といった日本の伝統から、Unix Timeや地球の自転距離まで、多角的な視点で時を刻みます。"
-        },
-        {
-          "title": "⏱️ 思考を妨げないシンプルさ",
-          "content": "すべての計算はブラウザ内で完結。広告や余計な通信を排除し、あなたの集中力を維持するための「道具」に徹します。"
-        }
-      ],
-      "privacy": "プライバシーポリシー"
+  "dashboard": {
+    "name": {
+      "ja": "タイムダッシュボード",
+      "en": "Time Dashboard",
+      "zh": "时间仪表盘"
     },
-    "tools": {
-      "dashboard": {
-        "name": "タイムダッシュボード",
-        "top_name": "進捗ボード",
-        "footer_desc": "🧭 今日の残り時間は？今は令和何年？ ――時間の「現在地」をグラフと数字でリアルタイムに可視化します。"
-      },
-      "besttimer": {
-        "name": "万能タイマー",
-        "top_name": "タイマー",
-        "footer_desc": "🍅 集中と休息のサイクルを安全に管理。ブラウザ内で完結するため、作業内容や履歴が外部に送信される心配はありません。"
-      },
-      "zen": {
-        "name": "瞑想タイマー",
-        "top_name": "瞑想",
-        "footer_desc": "🧘 心を整える静寂の時間。座禅のシルエットと呼吸ガイド、シンギングボウルの音色で深いリラックスへ。"
-      },
-      "zip": {
-        "name": "セキュア圧縮ツール",
-        "top_name": "圧縮ツール",
-        "footer_desc": "🔒 通信量を大幅カット、爆速圧縮。複数のファイルを一括でZIP形式にまとめます。サーバー送信がないため、機密書類も安心・安全です。"
-      },
-      "pdf": {
-        "name": "セキュア画像PDF変換",
-        "top_name": "画像PDF変換",
-        "footer_desc": "📄 写真やスキャン画像を一つのPDFに。ブラウザ内で処理するため、プライベートな写真も安心して変換できます。"
-      },
-      "resize": {
-        "name": "セキュア画像リサイズ",
-        "top_name": "画像リサイズ",
-        "footer_desc": "🔒 通信量を大幅カット、爆速リサイズ。サーバー送信がないため、スマホのギガを消費せず、プライバシーも守られます。"
-      },
-      "merge-pdf": {
-        "name": "セキュアPDF結合",
-        "top_name": "PDF結合",
-        "footer_desc": "🔒 機密書類の結合も安全に。ブラウザ内で完結するため、中身を見られる心配がなく、テレワークでも安心して使えます。"
-      }
+    "top_name": {
+      "ja": "進捗ボード",
+      "en": "Progress",
+      "zh": "进度"
+    },
+    "footer_desc": {
+      "ja": "🧭 今日の残り時間は？今は令和何年？ ――時間の「現在地」をグラフと数字でリアルタイムに可視化します。",
+      "en": "🧭 A dashboard for visualizing the current moment from multiple perspectives, including eras and progress.",
+      "zh": "🧭 多维度呈现“当下”的时间仪表盘。包含年号、进度、月相，可视化您的“位置”。"
     }
   },
-  "en": {
-    "top": {
-      "site_name": "Time Toolkit | Space-Time & Calendar Box",
-      "site_logo": "⏳ Time Toolkit",
-      "hero_title": "Why Time Toolkit?",
-      "features": [
-        {
-          "title": "⌛ Visualize \"Now\"",
-          "content": "Calculates era years (Reiwa, Heisei, Showa) and daily progress in real-time. Turns vague time perception into precise data."
-        },
-        {
-          "title": "📅 Tradition & Science",
-          "content": "From Japanese traditions like Rokuyo to Unix Time and Earth's rotation, track time through diverse perspectives."
-        },
-        {
-          "title": "⏱️ Pure Simplicity",
-          "content": "All calculations are done in-browser. No ads or unnecessary traffic—just a pure tool to help you maintain focus."
-        }
-      ],
-      "privacy": "Privacy Policy"
+  "besttimer": {
+    "name": {
+      "ja": "万能タイマー",
+      "en": "Universal Timer",
+      "zh": "万用计时器"
     },
-    "tools": {
-      "dashboard": {
-        "name": "Time Dashboard",
-        "top_name": "Progress",
-        "footer_desc": "🧭 A dashboard for visualizing the current moment from multiple perspectives, including eras and progress."
-      },
-      "besttimer": {
-        "name": "Universal Timer",
-        "top_name": "Timer",
-        "footer_desc": "🍅 Manage focus and rest cycles safely. Since it works entirely in-browser, your history is never sent externally."
-      },
-      "zen": {
-        "name": "Meditation Timer",
-        "top_name": "Meditation",
-        "footer_desc": "🧘 A moment of silence. Align your mind with the singing bowl and guided breath in a peaceful interface."
-      },
-      "zip": {
-        "name": "Secure Zip Tool",
-        "top_name": "Zip Tool",
-        "footer_desc": "🔒 Cut Data Usage & Fast Compression. Batch compress files into ZIP securely without server-side processing."
-      }
+    "top_name": {
+      "ja": "タイマー",
+      "en": "Timer",
+      "zh": "计时器"
+    },
+    "footer_desc": {
+      "ja": "🍅 集中と休息のサイクルを安全に管理。ブラウザ内で完結するため、作業内容や履歴が外部に送信される心配はありません。",
+      "en": "🍅 Manage focus and rest cycles safely. Since it works entirely in-browser, your history is never sent externally.",
+      "zh": "🍅 安全管理专注与休息周期。由于在浏览器内运行，您的工作内容和歴史记录绝不会被发送到外部。"
     }
   },
-  "zh": {
-    "top": {
-      "site_name": "时间工具集",
-      "site_logo": "⏳ Time Toolkit",
-      "hero_title": "为什么选择 Time Toolkit？",
-      "features": [
-        {
-          "title": "⌛ 数字化感悟“当下”",
-          "content": "实时计算令和、平成、昭和的年号并记以及一天的进度。将模糊的时间感转化为精确的数据。"
-        },
-        {
-          "title": "📅 传统与科学的融合",
-          "content": "从六曜、和名月等日本传统，到 Unix Time 和地球自转距离，多角度记录时光。"
-        },
-        {
-          "title": "⏱️ 不干扰思考的简约",
-          "content": "所有计算都在浏览器内完成。排除广告和多余通信，专注于维持您的注意力的“工具”。"
-        }
-      ],
-      "privacy": "隐私政策"
+  "zen": {
+    "name": {
+      "ja": "瞑想タイマー",
+      "en": "Meditation Timer",
+      "zh": "冥想计时器"
     },
-    "tools": {
-      "dashboard": {
-        "name": "时间仪表盘",
-        "top_name": "进度",
-        "footer_desc": "🧭 多维度呈现“当下”的时间仪表盘。包含年号、进度、月相，可视化您的“位置”。"
-      },
-      "besttimer": {
-        "name": "万用计时器",
-        "top_name": "计时器",
-        "footer_desc": "🍅 安全管理专注与休息周期。由于在浏览器内运行，您的工作内容和歴史记录绝不会被发送到外部。"
-      },
-      "zen": {
-        "name": "冥想计时器",
-        "top_name": "冥想",
-        "footer_desc": "🧘 整理思绪的静谧时光。伴随着坐禅的剪影和颂钵的声音，进入深层放松状态。"
-      },
-      "zip": {
-        "name": "安全压缩工具",
-        "top_name": "压缩工具",
-        "footer_desc": "🔒 大幅节省流量，极速压缩。将多个文件批量压缩为ZIP格式。由于不经过服务器处理，您可以安心地处理机密文件。"
-      }
+    "top_name": {
+      "ja": "瞑想",
+      "en": "Meditation",
+      "zh": "冥想"
+    },
+    "footer_desc": {
+      "ja": "🧘 心を整える静寂の時間。座禅のシルエットと呼吸ガイド、シンギングボウルの音色で深いリラックスへ。",
+      "en": "🧘 A moment of silence. Align your mind with the singing bowl and guided breath in a peaceful interface.",
+      "zh": "🧘 整理思绪的静谧时光。伴随着坐禅的剪影和颂钵的声音，进入深层放松状态。"
+    }
+  },
+  "zip": {
+    "name": {
+      "ja": "セキュア圧縮ツール",
+      "en": "Secure Zip Tool",
+      "zh": "安全压缩工具"
+    },
+    "top_name": {
+      "ja": "圧縮ツール",
+      "en": "Zip Tool",
+      "zh": "压缩工具"
+    },
+    "footer_desc": {
+      "ja": "🔒 通信量を大幅カット、爆速圧縮。複数のファイルを一括でZIP形式にまとめます。サーバー送信がないため、機密書類も安心・安全です。",
+      "en": "🔒 Cut Data Usage & Fast Compression. Batch compress files into ZIP securely without server-side processing.",
+      "zh": "🔒 大幅节省流量，极速压缩。将多个文件批量压缩为ZIP格式。由于不经过服务器处理，您可以安心地处理机密文件。"
+    }
+  },
+  "pdf": {
+    "name": {
+      "ja": "セキュア画像PDF変換",
+      "en": "Secure Image to PDF",
+      "zh": "安全图像转PDF"
+    },
+    "top_name": {
+      "ja": "画像PDF変換",
+      "en": "Image to PDF",
+      "zh": "图像转PDF"
+    },
+    "footer_desc": {
+      "ja": "📄 写真やスキャン画像を一つのPDFに。ブラウザ内で処理するため、プライベートな写真も安心して変換できます。",
+      "en": "📄 Convert images to PDF in-browser. Your private photos are safe.",
+      "zh": "📄 在浏览器内将图像转换为PDF。保护隐私安全。"
+    }
+  },
+  "resize": {
+    "name": {
+      "ja": "セキュア画像リサイズ",
+      "en": "Secure Image Resize",
+      "zh": "安全图像缩放"
+    },
+    "top_name": {
+      "ja": "画像リサイズ",
+      "en": "Resize",
+      "zh": "图像缩放"
+    },
+    "footer_desc": {
+      "ja": "🔒 通信量を大幅カット、爆速リサイズ。サーバー送信がないため、スマホのギガを消費せず、プライバシーも守られます。",
+      "en": "🔒 Fast resize without server uploads. Save data and protect privacy.",
+      "zh": "🔒 快速缩放且无需上传。节省流量并保护隐私。"
+    }
+  },
+  "merge-pdf": {
+    "name": {
+      "ja": "セキュアPDF結合",
+      "en": "Secure PDF Merge",
+      "zh": "安全PDF合并"
+    },
+    "top_name": {
+      "ja": "PDF結合",
+      "en": "Merge PDF",
+      "zh": "PDF合并"
+    },
+    "footer_desc": {
+      "ja": "🔒 機密書類の結合も安全に。ブラウザ内で完結するため、中身を見られる心配がなく、テレワークでも安心して使えます。",
+      "en": "🔒 Merge PDFs securely in-browser. Perfect for confidential documents.",
+      "zh": "🔒 在浏览器内安全合并PDF。处理机密文件的理想选择。"
     }
   }
 }
