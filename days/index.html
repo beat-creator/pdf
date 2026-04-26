@@ -3,156 +3,151 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Time & Tradition Dashboard</title>
+    <title>Time & Wisdom Dashboard</title>
     <style>
         :root {
-            --bg-grad: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-            --card-bg: rgba(255, 255, 255, 0.9);
+            --bg-grad: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            --card-bg: rgba(255, 255, 255, 0.85);
             --text-color: #334155;
-            --accent: #0ea5e9;
+            --accent: #0284c7;
         }
 
         body {
             background: var(--bg-grad);
             color: var(--text-color);
             font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", sans-serif;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
+            margin: 0; padding: 20px;
+            display: flex; justify-content: center;
         }
 
-        .container {
-            width: 100%;
-            max-width: 1000px;
+        .container { width: 100%; max-width: 1100px; }
+
+        header { text-align: center; margin-bottom: 30px; }
+
+        .main-clock-container {
+            display: flex; align-items: baseline; justify-content: center; gap: 10px;
         }
 
-        header {
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .main-clock {
-            font-size: 3rem;
-            font-weight: bold;
-            margin: 10px 0;
-            letter-spacing: 2px;
-        }
+        .main-clock { font-size: 3.5rem; font-weight: 800; letter-spacing: 2px; }
+        .ampm { font-size: 1.5rem; font-weight: 400; color: #64748b; }
+        .main-date { font-size: 1.2rem; color: #64748b; margin-top: 5px; }
 
         .grid-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 12px;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
         }
 
         .card {
             background: var(--card-bg);
-            padding: 12px;
-            border-radius: 10px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            border-bottom: 3px solid #cbd5e1;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+            border-left: 4px solid var(--accent);
         }
 
-        .card-label {
-            font-size: 0.7rem;
-            color: #64748b;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-
-        .card-value {
-            font-size: 1rem;
-            font-weight: 600;
-        }
-
-        .highlight {
-            color: var(--accent);
-            font-size: 1.1rem;
-        }
-
-        /* 曜日や月名など少し長いテキスト用 */
-        .text-small { font-size: 0.85rem; }
+        .card-label { font-size: 0.75rem; color: #64748b; font-weight: bold; margin-bottom: 8px; }
+        .card-value { font-size: 1.1rem; font-weight: 600; word-break: break-all; }
+        .unit { font-size: 0.8rem; font-weight: normal; color: #94a3b8; margin-left: 3px; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <header>
-        <div id="main-clock" class="main-clock">00:00:00</div>
-        <div id="main-date">----年--月--日</div>
+        <div class="main-clock-container">
+            <div id="main-clock" class="main-clock">00:00:00</div>
+            <div id="ampm" class="ampm">AM</div>
+        </div>
+        <div id="main-date" class="main-date">----年--月--日 (曜)</div>
     </header>
 
     <div class="grid-container">
-        <div class="card"><div class="card-label">和暦</div><div class="card-value" id="wareki">--</div></div>
-        <div class="card"><div class="card-label">干支</div><div class="card-value" id="eto">--</div></div>
-        <div class="card"><div class="card-label">英語曜日</div><div class="card-value" id="day-en">--</div></div>
+        <div class="card"><div class="card-label">和暦 / 干支</div><div class="card-value"><span id="wareki">--</span> <span id="eto">--</span></div></div>
+        <div class="card"><div class="card-label">英語曜日 / 月</div><div class="card-value"><span id="day-en">--</span><br><span id="month-en" style="font-size:0.9rem; color:#94a3b8;">--</span></div></div>
         <div class="card"><div class="card-label">和名月</div><div class="card-value" id="month-jp">--</div></div>
-        <div class="card"><div class="card-label">英語月</div><div class="card-value" id="month-en">--</div></div>
-        
-        <div class="card"><div class="card-label">戦後何日</div><div class="card-value" id="post-war">--</div></div>
+        <div class="card"><div class="card-label">六曜</div><div class="card-value" id="rokuyo">--</div></div>
+        <div class="card"><div class="card-label">誕生石</div><div class="card-value" id="birthstone">--</div></div>
+
+        <div class="card"><div class="card-label">1日の経過率</div><div class="card-value" id="day-pct">--</div></div>
+        <div class="card"><div class="card-label">今年の残り</div><div class="card-value" id="year-rem">--</div></div>
         <div class="card"><div class="card-label">22世紀まで</div><div class="card-value" id="to-22c">--</div></div>
-        <div class="card"><div class="card-label">1日の経過</div><div class="card-value highlight" id="day-pct">--</div></div>
-        <div class="card"><div class="card-label">今年の経過</div><div class="card-value highlight" id="year-pct">--</div></div>
+        <div class="card"><div class="card-label">戦後日数</div><div class="card-value" id="post-war">--</div></div>
 
         <div class="card"><div class="card-label">月齢 / 状態</div><div class="card-value"><span id="moon-icon"></span> <span id="moon-age">--</span></div></div>
-        <div class="card"><div class="card-label">誕生石</div><div class="card-value text-small" id="birthstone">--</div></div>
-        <div class="card"><div class="card-label">六曜</div><div class="card-value" id="rokuyo">--</div></div>
-        <div class="card"><div class="card-label">二十四節気</div><div class="card-value text-small" id="sekki">穀雨</div></div>
+        <div class="card"><div class="card-label">次の新月まで</div><div class="card-value" id="next-new-moon">--</div></div>
+        <div class="card"><div class="card-label">地球の自転移動</div><div class="card-value" id="rotation-dist">0<span class="unit">km</span></div></div>
+
+        <div class="card"><div class="card-label">Unix Time</div><div class="card-value" id="unix-time" style="font-size:0.9rem;">--</div></div>
     </div>
 </div>
 
 <script>
+    const startTime = Date.now();
+
     function update() {
         const now = new Date();
         const y = now.getFullYear();
         const m = now.getMonth();
         const d = now.getDate();
+        const weekIdx = now.getDay();
 
-        // メイン時計
-        document.getElementById('main-clock').textContent = now.toLocaleTimeString('ja-JP');
-        document.getElementById('main-date').textContent = `${y}年${m+1}月${d}日`;
+        // 1. メイン時計 & AMPM
+        let hours = now.getHours();
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        const displayHours = String(hours % 12 || 12).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+        
+        document.getElementById('main-clock').textContent = `${displayHours}:${minutes}:${seconds}`;
+        document.getElementById('ampm').textContent = ampm;
 
-        // 英語
+        // 2. 曜日・日付の復活
+        const daysJp = ["日", "月", "火", "水", "木", "金", "土"];
         const daysEn = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        document.getElementById('main-date').textContent = `${y}年${m+1}月${d}日 (${daysJp[weekIdx]})`;
+        document.getElementById('day-en').textContent = daysEn[weekIdx];
+
+        // 3. 基本情報
         const monthsEn = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-        document.getElementById('day-en').textContent = daysEn[now.getDay()];
-        document.getElementById('month-en').textContent = monthsEn[m];
-
-        // 和名
         const monthsJp = ["睦月", "如月", "弥生", "卯月", "皐月", "水無月", "文月", "葉月", "長月", "神無月", "霜月", "師走"];
-        document.getElementById('month-jp').textContent = monthsJp[m];
-
-        // 和暦・干支 (簡易)
-        document.getElementById('wareki').textContent = `令和${y - 2018}年`;
+        const stones = ["ガーネット", "アメシスト", "アクアマリン", "ダイヤモンド", "エメラルド", "ムーンストーン", "ルビー", "ペリドット", "サファイア", "オパール", "トパーズ", "ターコイズ"];
         const etos = ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"];
+        
+        document.getElementById('month-en').textContent = monthsEn[m];
+        document.getElementById('month-jp').textContent = monthsJp[m];
+        document.getElementById('birthstone').textContent = stones[m];
+        document.getElementById('wareki').textContent = `令和${y - 2018}年`;
         document.getElementById('eto').textContent = etos[(y - 4) % 12];
 
-        // 戦後何日 (1945年8月15日)
-        const warEnd = new Date(1945, 7, 15);
-        document.getElementById('post-war').textContent = Math.floor((now - warEnd) / 86400000).toLocaleString() + "日";
-
-        // 22世紀まで (2101年1月1日)
-        const nextCentury = new Date(2101, 0, 1);
-        document.getElementById('to-22c').textContent = Math.floor((nextCentury - now) / 86400000).toLocaleString() + "日";
-
-        // 進捗
+        // 4. 計算指標
+        // 1日の経過
         const startOfDay = new Date(y, m, d);
-        document.getElementById('day-pct').textContent = (((now - startOfDay) / 86400000) * 100).toFixed(2) + "%";
-        const startOfYear = new Date(y, 0, 1);
-        const totalYearDays = (y % 4 === 0) ? 366 : 365;
-        document.getElementById('year-pct').textContent = (((now - startOfYear) / (totalYearDays * 86400000)) * 100).toFixed(2) + "%";
+        document.getElementById('day-pct').innerHTML = (((now - startOfDay) / 86400000) * 100).toFixed(2) + '<span class="unit">%</span>';
+        
+        // 今年の残り
+        const endOfYear = new Date(y + 1, 0, 1);
+        document.getElementById('year-rem').innerHTML = Math.ceil((endOfYear - now) / 86400000) + '<span class="unit">日</span>';
 
-        // 誕生石 (月別)
-        const stones = ["ガーネット", "アメシスト", "アクアマリン", "ダイヤモンド", "エメラルド", "ムーンストーン", "ルビー", "ペリドット", "サファイア", "オパール", "トパーズ", "ターコイズ"];
-        document.getElementById('birthstone').textContent = stones[m];
+        // 戦後日数 & 22世紀
+        document.getElementById('post-war').innerHTML = Math.floor((now - new Date(1945, 7, 15)) / 86400000).toLocaleString() + '<span class="unit">日</span>';
+        document.getElementById('to-22c').innerHTML = Math.floor((new Date(2101, 0, 1) - now) / 86400000).toLocaleString() + '<span class="unit">日</span>';
 
-        // 月齢 (簡易)
+        // 月齢・新月
         const age = (((y - 2009) % 19) * 11 + (m + 1) + d) % 30;
         const icons = ["🌑","🌒","🌓","🌔","🌕","🌖","🌗","🌘"];
         document.getElementById('moon-icon').textContent = icons[Math.floor(age / 3.75) % 8];
         document.getElementById('moon-age').textContent = age.toFixed(1);
+        document.getElementById('next-new-moon').innerHTML = Math.ceil(29.5 - age) + '<span class="unit">日後</span>';
 
-        // 六曜 (簡易)
+        // 地球の自転移動 (秒速約0.38kmで計算)
+        const elapsedSec = (Date.now() - startTime) / 1000;
+        document.getElementById('rotation-dist').innerHTML = (elapsedSec * 0.38).toFixed(2) + '<span class="unit">km</span>';
+
+        // Unix Time
+        document.getElementById('unix-time').textContent = Math.floor(now.getTime() / 1000);
+
+        // 六曜 (4/26は大安)
         const rokuyos = ["大安", "赤口", "先勝", "友引", "先負", "仏滅"];
         document.getElementById('rokuyo').textContent = (m === 3 && d === 26) ? "大安" : rokuyos[(m+d)%6];
     }
