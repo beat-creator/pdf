@@ -1,120 +1,134 @@
 {
-  "zip": {
-    "id": 1,
-    "emoji": "📦",
-    "color": { "primary": "#059669", "bg": "#ecfdf5" },
-    "name": { "ja": "セキュア圧縮ツール", "en": "Secure Zip Tool", "zh": "安全压缩工具" },
-    "top_name": { "ja": "圧縮ツール", "en": "Zip Tool", "zh": "压缩工具" },
-    "seo_title": {
-      "ja": "セキュア一括ZIP圧縮｜Secure Toolkit - サーバー送信なしで安全",
-      "en": "Secure Batch ZIP｜Secure Toolkit - No Server Upload",
-      "zh": "安全批量ZIP压缩｜Secure Toolkit - 无需上传服务器"
+  "ja": {
+    "top": {
+      "site_name": "タイムツールキット｜時空と暦の道具箱",
+      "site_logo": "⏳ Time Toolkit",
+      "hero_title": "なぜ Time Toolkit なのか？",
+      "features": [
+        {
+          "title": "⌛ 「今」を数字で実感する",
+          "content": "令和・平成・昭和の並記や、1日の経過率をリアルタイムに計算。曖昧な時間の感覚を正確なデータに変換します。"
+        },
+        {
+          "title": "📅 暦と科学の融合",
+          "content": "六曜や和名月といった日本の伝統から、Unix Timeや地球の自転距離まで、多角的な視点で時を刻みます。"
+        },
+        {
+          "title": "⏱️ 思考を妨げないシンプルさ",
+          "content": "すべての計算はブラウザ内で完結。広告や余計な通信を排除し、あなたの集中力を維持するための「道具」に徹します。"
+        }
+      ],
+      "privacy": "プライバシーポリシー"
     },
-    "meta_description": {
-      "ja": "複数のファイルをサーバーへ送らずブラウザ内で一括ZIP圧縮。機密書類も通信量を節約して安全に処理できます。",
-      "en": "Compress multiple files into ZIP within your browser. Safe for confidential documents with zero server-side processing.",
-      "zh": "在浏览器内完成多个文件的ZIP压缩。无需上传服务器，确保机密文件的绝对安全。"
-    },
-    "footer_desc": {
-      "ja": "🔒 通信量を大幅カット、爆速圧縮\n複数のファイルを一括でZIP形式にまとめます。サーバー送信がないため、機密書類の受け渡し準備も安心・安全に行えます。",
-      "en": "🔒 Cut Data Usage & Fast Compression\nBatch compress files into ZIP. Since no files are sent to a server, you can prepare confidential documents safely and securely.",
-      "zh": "🔒 大幅节省流量，极速压缩\n将多个文件批量压缩为ZIP格式。由于不经过服务器处理，您可以安心地准备和传输机密文件。"
+    "tools": {
+      "dashboard": {
+        "name": "刻の羅針盤",
+        "top_name": "羅針盤",
+        "footer_desc": "🧭 今という時間を多角的に捉えるためのダッシュボード。和暦、進捗、月齢など、あなたの「現在地」を可視化します。"
+      },
+      "besttimer": {
+        "name": "セキュア万能タイマー",
+        "top_name": "万能タイマー",
+        "footer_desc": "🍅 集中と休息のサイクルを安全に管理。ブラウザ内で完結するため、作業内容や履歴が外部に送信される心配はありません。"
+      },
+      "zip": {
+        "name": "セキュア圧縮ツール",
+        "top_name": "圧縮ツール",
+        "footer_desc": "🔒 通信量を大幅カット、爆速圧縮。複数のファイルを一括でZIP形式にまとめます。サーバー送信がないため、機密書類の受け渡し準備も安心・安全に行えます。"
+      },
+      "pdf": {
+        "name": "セキュア画像PDF変換",
+        "top_name": "画像PDF変換",
+        "footer_desc": "📄 写真やスキャン画像を一つのPDFに。ブラウザ内で結合するため、プライベートな写真も安心して処理できます。"
+      },
+      "resize": {
+        "name": "セキュア画像リサイズ",
+        "top_name": "画像リサイズ",
+        "footer_desc": "🔒 通信量を大幅カット、爆速リサイズ。サーバー送信がないため、スマホのギガを消費せず、プライバシーも完全に守られます。"
+      },
+      "merge-pdf": {
+        "name": "セキュアPDF結合",
+        "top_name": "PDF結合",
+        "footer_desc": "🔒 機密書類の合体も安全に。ブラウザ内で完結するため、中身を見られる心配がなく、テレワークや機密案件でも安心して使えます。"
+      }
     }
   },
-  "pdf": {
-    "id": 2,
-    "emoji": "🖼️",
-    "color": { "primary": "#2563eb", "bg": "#eff6ff" },
-    "name": { "ja": "セキュア画像PDF変換", "en": "Secure Image to PDF", "zh": "安全图片转PDF" },
-    "top_name": { "ja": "画像PDF変換", "en": "Image to PDF", "zh": "图片转PDF" },
-    "seo_title": {
-      "ja": "セキュア画像PDF変換｜Secure Toolkit - 複数画像をまとめてPDF化",
-      "en": "Secure Image to PDF｜Secure Toolkit - Combine Images",
-      "zh": "安全图片转PDF｜Secure Toolkit - 多图合并PDF"
+  "en": {
+    "top": {
+      "site_name": "Time Toolkit | Space-Time & Calendar Box",
+      "site_logo": "⏳ Time Toolkit",
+      "hero_title": "Why Time Toolkit?",
+      "features": [
+        {
+          "title": "⌛ Visualize \"Now\"",
+          "content": "Calculates era years (Reiwa, Heisei, Showa) and daily progress in real-time. Turns vague time perception into precise data."
+        },
+        {
+          "title": "📅 Tradition & Science",
+          "content": "From Japanese traditions like Rokuyo to Unix Time and Earth's rotation, track time through diverse perspectives."
+        },
+        {
+          "title": "⏱️ Pure Simplicity",
+          "content": "All calculations are done in-browser. No ads or unnecessary traffic—just a pure tool to help you maintain focus."
+        }
+      ],
+      "privacy": "Privacy Policy"
     },
-    "meta_description": {
-      "ja": "JPG/PNG画像をブラウザ内でPDFに変換。サーバーにアップロードしないため、プライベートな写真も安全に結合できます。",
-      "en": "Convert JPG/PNG to PDF in your browser. Since no files are uploaded, your private photos stay safe and secure.",
-      "zh": "在浏览器内将JPG/PNG图片转换为PDF。无需上传，即使是私密照片也能安全合并。"
-    },
-    "footer_desc": {
-      "ja": "📄 写真やスキャン画像を一つのPDFに\nJPGやPNGなどの画像ファイルをドラッグ＆ドロップするだけでPDF化。ブラウザ内で結合するため、プライベートな写真も安心して処理できます。",
-      "en": "📄 Convert Photos/Scans to a Single PDF\nSimply drag & drop JPG, PNG, or other image files to create a PDF. Processed locally, so your private photos stay safe.",
-      "zh": "📄 将照片或扫描图像转换为单个PDF\n只需拖放JPG、PNG等图像文件即可转换为PDF。在浏览器内完成合并，即使是私密照片也能放心处理。"
+    "tools": {
+      "dashboard": {
+        "name": "Time Compass",
+        "top_name": "Compass",
+        "footer_desc": "🧭 A dashboard for visualizing the current moment from multiple perspectives, including eras, progress, and moon phases."
+      },
+      "besttimer": {
+        "name": "Secure Universal Timer",
+        "top_name": "Timer",
+        "footer_desc": "🍅 Manage Focus & Rest Cycles Safely. Since it works entirely in-browser, your tasks and history are never sent externally."
+      },
+      "zip": {
+        "name": "Secure Zip Tool",
+        "top_name": "Zip Tool",
+        "footer_desc": "🔒 Cut Data Usage & Fast Compression. Batch compress files into ZIP securely without server-side processing."
+      }
     }
   },
-  "resize": {
-    "id": 2,
-    "emoji": "↔️",
-    "color": { "primary": "#0ea5e9", "bg": "#f0f9ff" },
-    "top_name": { "ja": "画像リサイズ", "en": "Image Resizer", "zh": "图像缩放" },
-    "name": { "ja": "セキュア画像リサイズ", "en": "Secure Image Resizer", "zh": "安全图像缩放" },
-    "seo_title": { "ja": "セキュア画像リサイズ｜Secure Toolkit", "en": "Secure Image Resizer | Secure Toolkit", "zh": "安全图像缩放 | Secure Toolkit" },
-    "meta_description": { "ja": "大きな写真をブラウザ内で一括リサイズ。サーバーに送信しないため安全です。", "en": "Resize images in your browser securely without server upload.", "zh": "在浏览器内安全地批量缩放图像。" },
-    "footer_desc": { 
-      "ja": "🔒 通信量を大幅カット、爆速リサイズ\n大きな写真をSNSやブログ用に一括リサイズ。サーバー送信がないため、スマホのギガを消費せず、プライバシーも完全に守られます。",
-      "en": "🔒 Cut Data Usage & Fast Resizing\nBatch resize large photos. No server upload means you save data and keep privacy.",
-      "zh": "🔒 大幅节省流量，极速缩放\n批量缩放照片。由于不经过服务器，您可以节省流量并保护隐私。"
-    }
-  },
-  "merge-pdf": {
-    "id": 4,
-    "emoji": "🔗",
-    "color": { "primary": "#4f46e5", "bg": "#eef2ff" },
-    "name": { 
-      "ja": "セキュアPDF結合", 
-      "en": "Secure PDF Merge", 
-      "zh": "安全PDF合并" 
+  "zh": {
+    "top": {
+      "site_name": "时间工具集",
+      "site_logo": "⏳ Time Toolkit",
+      "hero_title": "为什么选择 Time Toolkit？",
+      "features": [
+        {
+          "title": "⌛ 数字化感悟“当下”",
+          "content": "实时计算令和、平成、昭和的年号并记以及一天的进度。将模糊的时间感转化为精确的数据。"
+        },
+        {
+          "title": "📅 传统与科学的融合",
+          "content": "从六曜、和名月等日本传统，到 Unix Time 和地球自转距离，多角度记录时光。"
+        },
+        {
+          "title": "⏱️ 不干扰思考的简约",
+          "content": "所有计算都在浏览器内完成。排除广告和多余通信，专注于维持您的注意力的“工具”。"
+        }
+      ],
+      "privacy": "隐私政策"
     },
-    "top_name": { 
-      "ja": "PDF結合", 
-      "en": "PDF Merge", 
-      "zh": "PDF合并" 
-    },
-    "seo_title": {
-      "ja": "セキュアPDF結合｜Secure Toolkit - 複数のPDFをサーバーに送らず結合",
-      "en": "Secure PDF Merge｜Secure Toolkit - Combine PDFs Without Server Upload",
-      "zh": "安全PDF合并｜Secure Toolkit - 无需上传即可合并多个PDF"
-    },
-    "meta_description": {
-      "ja": "複数のPDFファイルをブラウザ上で安全に結合。データをサーバーにアップロードしないため、機密書類の整理も安心です。",
-      "en": "Merge multiple PDF files safely in your browser. No server-side processing ensures your confidential documents stay private.",
-      "zh": "在浏览器中安全地合并多个PDF文件。无需将数据上传到服务器，整理机密文档更放心。"
-    },
-    "footer_desc": {
-      "ja": "🔒 機密書類の合体も安全に\n複数のPDFを1つのファイルにまとめます。ブラウザ内で完結するため、中身を見られる心配がなく、テレワークや機密案件でも安心して使えます。",
-      "en": "🔒 Secure Document Consolidation\nCombine multiple PDFs into one. Since it runs entirely in the browser, there's no risk of data leaks, making it ideal for remote work and sensitive projects.",
-      "zh": "🔒 机密文件合并更安全\n将多个PDF文件整合为一个。由于完全在浏览器内运行，无需担心内容泄露，非常适合远程办公或处理机密案件。"
-    }
-  },
- "besttimer": {
-    "id": 5,
-    "emoji": "🍅",
-    "color": { "primary": "#ef4444", "bg": "#fef2f2" },
-    "name": {
-      "ja": "セキュア万能タイマー",
-      "en": "Secure Universal Timer",
-      "zh": "安全万用计时器"
-    },
-    "top_name": {
-      "ja": "万能タイマー",
-      "en": "Timer",
-      "zh": "万用计时器"
-    },
-    "seo_title": {
-      "ja": "セキュア万能タイマー｜Secure Toolkit - 集中力を高めるポモドーロ対応",
-      "en": "Secure Universal Timer | Secure Toolkit - Focus with Pomodoro",
-      "zh": "安全万用计时器｜Secure Toolkit - 提高专注力的番茄钟"
-    },
-    "meta_description": {
-      "ja": "ブラウザ上で動作する高機能タイマー。設定データはローカルにのみ保存され、外部への通信は一切発生しません。",
-      "en": "High-performance timer running in your browser. Data is saved locally; no external communication occurs.",
-      "zh": "在浏览器上运行的高機能计时器。设置数据仅保存在本地，绝不产生外部通信。"
-    },
-    "footer_desc": {
-      "ja": "🍅 集中と休息のサイクルを安全に管理\nポモドーロ・テクニックにも対応した万能タイマー。ブラウザ内で完結するため、作業内容や履歴が外部に送信される心配はありません。",
-      "en": "🍅 Manage Focus & Rest Cycles Safely\nA universal timer compatible with the Pomodoro technique. Since it works entirely in-browser, your tasks and history are never sent externally.",
-      "zh": "🍅 安全管理专注与休息周期\n支持番茄工作法的万用计时器。由于在浏览器内运行，您的工作内容和历史记录绝不会被发送到外部。"
+    "tools": {
+      "dashboard": {
+        "name": "时光指南针",
+        "top_name": "指南针",
+        "footer_desc": "🧭 多维度呈现“当下”的时间仪表盘。包含年号、进度、月相，可视化您的“位置”。"
+      },
+      "besttimer": {
+        "name": "安全万用计时器",
+        "top_name": "计时器",
+        "footer_desc": "🍅 安全管理专注与休息周期。由于在浏览器内运行，您的工作内容和历史记录绝不会被发送到外部。"
+      },
+      "zip": {
+        "name": "安全压缩工具",
+        "top_name": "压缩工具",
+        "footer_desc": "🔒 大幅节省流量，极速压缩。将多个文件批量压缩为ZIP格式。由于不经过服务器处理，您可以安心地处理机密文件。"
+      }
     }
   }
 }
