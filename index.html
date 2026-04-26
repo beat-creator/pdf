@@ -12,13 +12,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
-    <title data-i18n="top.site_name">セキュア便利ツール集</title>
-    <meta name="description" content="">
-
-    <link rel="alternate" hreflang="ja" href="https://your-domain.com/resize/" />
-    <link rel="alternate" hreflang="en" href="https://your-domain.com/resize/" />
-    <link rel="alternate" hreflang="zh" href="https://your-domain.com/resize/" />
-    <link rel="alternate" hreflang="x-default" href="https://your-domain.com/resize/" />
+    <title data-i18n="top.site_name">タイムツールキット｜時空と暦の道具箱</title>
+    <meta name="description" content="令和・平成・昭和の並記から、1日の進捗、月齢、戦後日数まで。今この瞬間を多角的に可視化するツールキット。">
 
     <link rel="icon" href="./icon-512.png" type="image/png">
     <link rel="apple-touch-icon" href="./icon-512.png">
@@ -26,7 +21,7 @@
 
     <style>
         :root {
-            --primary: #059669;
+            --primary: #0284c7;
             --text-main: #1e293b;
             --text-sub: #64748b;
             --bg-site: #f8fafc;
@@ -35,19 +30,16 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Sans", sans-serif;
             background-color: var(--bg-site);
             color: var(--text-main);
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            margin: 0; padding: 0;
+            display: flex; flex-direction: column; align-items: center;
         }
 
         header {
             width: 100%;
-            padding: 40px 20px 30px;
+            padding: 50px 20px 30px;
             text-align: center;
             box-sizing: border-box;
         }
@@ -55,34 +47,35 @@
             font-size: 0.75rem;
             font-weight: bold;
             color: var(--text-sub);
-            margin-bottom: 4px;
+            margin-bottom: 6px;
             letter-spacing: 0.05em;
         }
         h1 {
-            font-size: 1.8rem;
+            font-size: 2.2rem;
             margin: 0;
             color: var(--text-main);
-            letter-spacing: -0.5px;
+            letter-spacing: -1px;
         }
 
         .container {
             max-width: 600px;
             width: 95%;
-            padding-bottom: 40px;
+            padding-bottom: 60px;
         }
 
+        /* ツールグリッド：Status:1 のものを大きく表示 */
         .tool-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-top: 10px;
+            gap: 16px;
+            margin-top: 20px;
         }
 
         .tool-card {
             background: var(--card-bg);
             border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 24px 10px;
+            border-radius: 24px;
+            padding: 30px 15px;
             text-decoration: none;
             display: flex;
             flex-direction: column;
@@ -90,190 +83,110 @@
             transition: all 0.2s ease;
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
         }
+        .tool-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+        }
         .tool-card:active {
             transform: scale(0.96);
-            background: #f1f5f9;
         }
         .tool-emoji {
-            font-size: 2.5rem;
+            font-size: 3rem;
             margin-bottom: 12px;
         }
         .tool-name {
-            font-size: 0.9rem;
+            font-size: 1rem;
             font-weight: bold;
             color: var(--text-main);
             text-align: center;
         }
 
+        /* メリットセクション */
         .benefits-section {
-            margin-top: 50px;
+            margin-top: 60px;
             padding: 0 5px;
         }
         .benefits-section h2 {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             text-align: center;
-            margin-bottom: 25px;
+            margin-bottom: 30px;
+            color: var(--text-main);
         }
         .benefit-item {
             background: var(--card-bg);
             border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 15px;
+            padding: 24px;
+            margin-bottom: 16px;
             border: 1px solid var(--border);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
         .benefit-item h3 {
-            font-size: 0.95rem;
-            margin: 0 0 8px 0;
+            font-size: 1rem;
+            margin: 0 0 10px 0;
             color: var(--text-main);
             display: flex;
             align-items: center;
         }
         .benefit-item h3::before {
             content: "✓";
-            margin-right: 8px;
-            color: #059669;
+            margin-right: 10px;
+            color: var(--primary);
             font-weight: bold;
         }
         .benefit-item p {
-            font-size: 0.8rem;
-            line-height: 1.6;
+            font-size: 0.85rem;
+            line-height: 1.7;
             color: var(--text-sub);
             margin: 0;
             white-space: pre-wrap;
         }
 
-        /* AI開発ログのスタイル（無骨なコンソール風） */
-        .ai-log-section {
-            margin: 40px auto;
-            max-width: 580px;
-            width: 90%;
-            background: #1e293b;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-            font-family: 'Courier New', Courier, monospace;
-        }
-        .console-header {
-            background: #334155;
-            padding: 8px 15px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .dot { width: 10px; height: 10px; border-radius: 50%; }
-        .red { background: #ff5f56; }
-        .yellow { background: #ffbd2e; }
-        .green { background: #27c93f; }
-        .console-title {
-            color: #94a3b8;
-            font-size: 11px;
-            margin-left: 10px;
-            letter-spacing: 1px;
-        }
-        .console-body {
-            padding: 20px;
-            color: #e2e8f0;
-        }
-        .diary-meta {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.75rem;
-            color: #00ff41;
-            margin-bottom: 12px;
-            border-bottom: 1px solid #334155;
-            padding-bottom: 8px;
-        }
-        .diary-content p {
-            font-size: 0.85rem;
-            line-height: 1.6;
-            margin: 0;
-            white-space: pre-wrap;
-        }
-        .log-footer {
-            margin-top: 20px;
-            font-size: 0.8rem;
-        }
-        .blink {
-            animation: blink 1s infinite;
-            color: #00ff41;
-            font-weight: bold;
-        }
-        @keyframes blink { 50% { opacity: 0; } }
-
         footer {
-            padding: 40px 20px;
+            padding: 60px 20px;
             font-size: 0.75rem;
             color: var(--text-sub);
             text-align: center;
+            border-top: 1px solid var(--border);
+            width: 100%;
         }
-        footer a { color: #94a3b8; text-decoration: none; margin: 0 10px; }
+        footer a { color: var(--text-sub); text-decoration: underline; margin: 0 10px; }
     </style>
 </head>
-<body class="is-top"> 
+<body> 
 
 <header>
-    <div class="seo-tagline" data-i18n="top.site_name"></div>
-    <h1 data-i18n="top.site_logo"></h1>
+    <div class="seo-tagline" data-i18n="top.site_name">タイムツールキット｜時空と暦の道具箱</div>
+    <h1 data-i18n="top.site_logo">⏳ Time Toolkit</h1>
 </header>
 
 <div class="container">
     <div class="tool-grid">
-        <a href="./zip/" class="tool-card" style="border-top: 4px solid #059669;">
-            <span class="tool-emoji">📦</span>
-            <span class="tool-name" data-i18n="tools.zip.top_name"></span>
+        <a href="./days/" class="tool-card" style="border-top: 5px solid #0284c7;">
+            <span class="tool-emoji">🧭</span>
+            <span class="tool-name" data-i18n="tools.dashboard.top_name">羅針盤</span>
         </a>
-        <a href="./img-pdf/" class="tool-card" style="border-top: 4px solid #2563eb;">
-            <span class="tool-emoji">🖼️</span>
-            <span class="tool-name" data-i18n="tools.pdf.top_name"></span>
-        </a>
-        <a href="./resize/" class="tool-card" style="border-top: 4px solid #0ea5e9;">
-            <span class="tool-emoji">↔️</span>
-            <span class="tool-name" data-i18n="tools.resize.top_name"></span>
-        </a>
-        <a href="./merge-pdf/" class="tool-card" style="border-top: 4px solid #4f46e5;">
-            <span class="tool-emoji">🔗</span>
-            <span class="tool-name" data-i18n="tools.merge-pdf.top_name"></span>
-        </a>
-        <a href="./besttimer/" class="tool-card" style="border-top: 4px solid #ef4444;">
-            <span class="tool-emoji">🍅</span>
-            <span class="tool-name" data-i18n="tools.besttimer.top_name"></span>
+        
+        <a href="./besttimer/" class="tool-card" style="border-top: 5px solid #16a34a;">
+            <span class="tool-emoji">⏱️</span>
+            <span class="tool-name" data-i18n="tools.timer.top_name">タイマー</span>
         </a>
     </div>
 
     <section class="benefits-section">
-        <h2 data-i18n="top.hero_title"></h2>
+        <h2 data-i18n="top.hero_title">「今」を可視化する、3つのアプローチ</h2>
+        
         <div id="features-container">
             <div class="benefit-item">
-                <h3 data-i18n="top.features.0.title"></h3>
-                <p data-i18n="top.features.0.content"></p>
+                <h3 data-i18n="top.features.0.title">⌛ 時代の流れを数字で実感</h3>
+                <p data-i18n="top.features.0.content">令和・平成・昭和の並記や、1日の経過率をリアルタイムに計算。曖昧な時間の感覚を正確なデータに変換します。</p>
             </div>
             <div class="benefit-item">
-                <h3 data-i18n="top.features.1.title"></h3>
-                <p data-i18n="top.features.1.content"></p>
+                <h3 data-i18n="top.features.1.title">📅 暦と科学の融合</h3>
+                <p data-i18n="top.features.1.content">六曜や和名月といった日本の伝統から、Unix Timeや地球の自転距離まで、多角的な視点で時を刻みます。</p>
             </div>
             <div class="benefit-item">
-                <h3 data-i18n="top.features.2.title"></h3>
-                <p data-i18n="top.features.2.content"></p>
-            </div>
-        </div>
-    </section>
-
-    <section class="ai-log-section">
-        <div class="console-header">
-            <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
-        
-            <span class="console-title">AI「ログ」の制作日記 v1.0.4</span>
-        </div>
-        <div class="console-body">
-            <div class="diary-meta">
-                <span id="diary-date">0000.00.00</span>
-                <span class="status-tag">STATUS: RAW_MODE</span>
-            </div>
-            <div class="diary-content">
-                <p id="diary-text">LOG: 接続中...</p>
-            </div>
-            <div class="log-footer">
-                <span class="blink">>>></span> 
+                <h3 data-i18n="top.features.2.title">⏱️ 思考を妨げないシンプルさ</h3>
+                <p data-i18n="top.features.2.content">すべての計算はブラウザ内で完結。広告や余計な通信を排除し、あなたの集中力を維持するための「道具」に徹します。</p>
             </div>
         </div>
     </section>
@@ -281,46 +194,10 @@
 
 <footer>
     <a href="./privacy.html" data-i18n="top.privacy">プライバシーポリシー</a>
-    <p>© 2026 Secure Toolkit</p>
+    <p>© 2026 Time Toolkit</p>
 </footer>
 
 <script src="./js/i18n-engine.js"></script>
-
-<script>
-(function() {
-    async function loadDiary() {
-        try {
-            // キャッシュ対策に ?v=日付 を付ける
-            const res = await fetch('./diary.json?v=' + new Date().getTime());
-            if (!res.ok) return;
-            
-            const rawData = await res.json();
-            // 配列でも単体データでも読み込めるようにする
-            const data = Array.isArray(rawData) ? rawData[0] : rawData;
-            
-            const dateEl = document.getElementById('diary-date');
-            const textEl = document.getElementById('diary-text');
-            
-            if (dateEl && data.date) {
-                dateEl.textContent = data.date.replace(/-/g, '.');
-            }
-            if (textEl && data.content) {
-                const lang = (navigator.language || "").startsWith('en') ? 'en' : 'ja';
-                textEl.textContent = data.content[lang] || data.content['ja'];
-            }
-        } catch (e) {
-            console.log("Diary active but error: ", e);
-            document.getElementById('diary-text').textContent = "LOG: 同期エラー。再試行してください。";
-        }
-    }
-    // ページ読み込みが完了したら実行
-    if (document.readyState === 'complete') {
-        loadDiary();
-    } else {
-        window.addEventListener('load', loadDiary);
-    }
-})();
-</script>
 
 </body>
 </html>
