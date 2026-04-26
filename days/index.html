@@ -3,191 +3,156 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Today's Compass</title>
+    <title>Time & Tradition Dashboard</title>
     <style>
         :root {
-            --bg-grad: linear-gradient(135deg, #e0f2fe 0%, #fef3c7 100%);
-            --card-bg: rgba(255, 255, 255, 0.8);
+            --bg-grad: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            --card-bg: rgba(255, 255, 255, 0.9);
             --text-color: #334155;
-            --accent-blue: #3b82f6;
-            --accent-orange: #f59e0b;
+            --accent: #0ea5e9;
         }
 
         body {
             background: var(--bg-grad);
             color: var(--text-color);
-            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", sans-serif;
             margin: 0;
+            padding: 20px;
             display: flex;
             justify-content: center;
-            padding: 20px;
-            min-height: 100vh;
         }
 
-        .dashboard {
+        .container {
             width: 100%;
-            max-width: 900px;
+            max-width: 1000px;
         }
 
         header {
             margin-bottom: 20px;
-            border-left: 5px solid var(--accent-blue);
-            padding-left: 15px;
+            text-align: center;
         }
 
-        h1 { font-size: 1.2rem; margin: 0; color: #64748b; font-weight: normal; }
-        .current-time-large { font-size: 2.5rem; font-weight: bold; margin: 5px 0; color: var(--text-color); }
+        .main-clock {
+            font-size: 3rem;
+            font-weight: bold;
+            margin: 10px 0;
+            letter-spacing: 2px;
+        }
 
-        /* グリッドレイアウト：小さく並べる */
         .grid-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 12px;
         }
 
-        /* 各カードのスタイル */
         .card {
             background: var(--card-bg);
-            border-radius: 12px;
-            padding: 15px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255,255,255,0.5);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
+            padding: 12px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border-bottom: 3px solid #cbd5e1;
         }
 
         .card-label {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: #64748b;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
+            margin-bottom: 5px;
+            font-weight: bold;
         }
 
         .card-value {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: var(--text-color);
+            font-size: 1rem;
+            font-weight: 600;
         }
 
-        .card-value small {
-            font-size: 0.8rem;
-            font-weight: normal;
-            color: #94a3b8;
-            margin-left: 4px;
+        .highlight {
+            color: var(--accent);
+            font-size: 1.1rem;
         }
 
-        /* 人生進捗バーだけは少し横長に */
-        .card.wide {
-            grid-column: span 2;
-        }
-
-        .progress-mini {
-            height: 6px;
-            background: #e2e8f0;
-            border-radius: 3px;
-            margin-top: 8px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--accent-blue), var(--accent-orange));
-            width: 0%;
-            transition: width 1s;
-        }
-
-        @media (max-width: 480px) {
-            .card.wide { grid-column: span 1; }
-            .grid-container { grid-template-columns: 1fr 1fr; }
-        }
+        /* 曜日や月名など少し長いテキスト用 */
+        .text-small { font-size: 0.85rem; }
     </style>
 </head>
 <body>
 
-<div class="dashboard">
+<div class="container">
     <header>
-        <h1 id="date-text">2026年4月26日(日)</h1>
-        <div class="current-time-large" id="clock">00:00:00</div>
+        <div id="main-clock" class="main-clock">00:00:00</div>
+        <div id="main-date">----年--月--日</div>
     </header>
 
     <div class="grid-container">
-        <div class="card wide">
-            <div class="card-label">⏳ 人生の進捗 (目安)</div>
-            <div class="card-value" id="life-pct">0.0000%</div>
-            <div class="progress-mini"><div class="progress-fill" id="life-bar"></div></div>
-        </div>
+        <div class="card"><div class="card-label">和暦</div><div class="card-value" id="wareki">--</div></div>
+        <div class="card"><div class="card-label">干支</div><div class="card-value" id="eto">--</div></div>
+        <div class="card"><div class="card-label">英語曜日</div><div class="card-value" id="day-en">--</div></div>
+        <div class="card"><div class="card-label">和名月</div><div class="card-value" id="month-jp">--</div></div>
+        <div class="card"><div class="card-label">英語月</div><div class="card-value" id="month-en">--</div></div>
+        
+        <div class="card"><div class="card-label">戦後何日</div><div class="card-value" id="post-war">--</div></div>
+        <div class="card"><div class="card-label">22世紀まで</div><div class="card-value" id="to-22c">--</div></div>
+        <div class="card"><div class="card-label">1日の経過</div><div class="card-value highlight" id="day-pct">--</div></div>
+        <div class="card"><div class="card-label">今年の経過</div><div class="card-value highlight" id="year-pct">--</div></div>
 
-        <div class="card">
-            <div class="card-label">☀️ 今日の経過</div>
-            <div class="card-value" id="day-pct">0.0%<small>消化</small></div>
-            <div class="progress-mini"><div class="progress-fill" id="day-bar"></div></div>
-        </div>
-
-        <div class="card">
-            <div class="card-label">📅 今年の経過</div>
-            <div class="card-value" id="year-pct">0.0%<small>終了</small></div>
-            <div class="progress-mini"><div class="progress-fill" id="year-bar"></div></div>
-        </div>
-
-        <div class="card">
-            <div class="card-label">🌙 月の状態</div>
-            <div class="card-value"><span id="moon-icon"></span> <span id="moon-age">--.-</span></div>
-        </div>
-
-        <div class="card">
-            <div class="card-label">🎌 今日の六曜</div>
-            <div class="card-value" id="rokuyo">---</div>
-        </div>
+        <div class="card"><div class="card-label">月齢 / 状態</div><div class="card-value"><span id="moon-icon"></span> <span id="moon-age">--</span></div></div>
+        <div class="card"><div class="card-label">誕生石</div><div class="card-value text-small" id="birthstone">--</div></div>
+        <div class="card"><div class="card-label">六曜</div><div class="card-value" id="rokuyo">--</div></div>
+        <div class="card"><div class="card-label">二十四節気</div><div class="card-value text-small" id="sekki">穀雨</div></div>
     </div>
 </div>
 
 <script>
-    // 誕生日の設定（パパさんの世代を想定）
-    const BIRTHDAY = new Date(1978, 0, 1); // 48歳前後
-    const LIFE_EXPECTANCY = 82 * 365.25; // 82歳を日数換算
-
     function update() {
         const now = new Date();
-
-        // 時計
         const y = now.getFullYear();
         const m = now.getMonth();
         const d = now.getDate();
-        const week = ["日","月","火","水","木","金","土"][now.getDay()];
-        document.getElementById('date-text').textContent = `${y}年${m+1}月${d}日(${week})`;
-        document.getElementById('clock').textContent = now.toLocaleTimeString('ja-JP');
 
-        // 1. 人生進捗
-        const lifeDays = (now - BIRTHDAY) / (1000*60*60*24);
-        const lifePct = (lifeDays / LIFE_EXPECTANCY) * 100;
-        document.getElementById('life-pct').textContent = lifePct.toFixed(5) + '%';
-        document.getElementById('life-bar').style.width = Math.min(lifePct, 100) + '%';
+        // メイン時計
+        document.getElementById('main-clock').textContent = now.toLocaleTimeString('ja-JP');
+        document.getElementById('main-date').textContent = `${y}年${m+1}月${d}日`;
 
-        // 2. 1日の経過
+        // 英語
+        const daysEn = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        const monthsEn = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        document.getElementById('day-en').textContent = daysEn[now.getDay()];
+        document.getElementById('month-en').textContent = monthsEn[m];
+
+        // 和名
+        const monthsJp = ["睦月", "如月", "弥生", "卯月", "皐月", "水無月", "文月", "葉月", "長月", "神無月", "霜月", "師走"];
+        document.getElementById('month-jp').textContent = monthsJp[m];
+
+        // 和暦・干支 (簡易)
+        document.getElementById('wareki').textContent = `令和${y - 2018}年`;
+        const etos = ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"];
+        document.getElementById('eto').textContent = etos[(y - 4) % 12];
+
+        // 戦後何日 (1945年8月15日)
+        const warEnd = new Date(1945, 7, 15);
+        document.getElementById('post-war').textContent = Math.floor((now - warEnd) / 86400000).toLocaleString() + "日";
+
+        // 22世紀まで (2101年1月1日)
+        const nextCentury = new Date(2101, 0, 1);
+        document.getElementById('to-22c').textContent = Math.floor((nextCentury - now) / 86400000).toLocaleString() + "日";
+
+        // 進捗
         const startOfDay = new Date(y, m, d);
-        const dayPct = ((now - startOfDay) / 86400000) * 100;
-        document.getElementById('day-pct').innerHTML = `${dayPct.toFixed(1)}%<small>消化</small>`;
-        document.getElementById('day-bar').style.width = dayPct + '%';
-
-        // 3. 1年の経過
+        document.getElementById('day-pct').textContent = (((now - startOfDay) / 86400000) * 100).toFixed(2) + "%";
         const startOfYear = new Date(y, 0, 1);
         const totalYearDays = (y % 4 === 0) ? 366 : 365;
-        const yearPct = ((now - startOfYear) / (totalYearDays * 86400000)) * 100;
-        document.getElementById('year-pct').innerHTML = `${yearPct.toFixed(1)}%<small>終了</small>`;
-        document.getElementById('year-bar').style.width = yearPct + '%';
+        document.getElementById('year-pct').textContent = (((now - startOfYear) / (totalYearDays * 86400000)) * 100).toFixed(2) + "%";
 
-        // 4. 簡易月齢
+        // 誕生石 (月別)
+        const stones = ["ガーネット", "アメシスト", "アクアマリン", "ダイヤモンド", "エメラルド", "ムーンストーン", "ルビー", "ペリドット", "サファイア", "オパール", "トパーズ", "ターコイズ"];
+        document.getElementById('birthstone').textContent = stones[m];
+
+        // 月齢 (簡易)
         const age = (((y - 2009) % 19) * 11 + (m + 1) + d) % 30;
         const icons = ["🌑","🌒","🌓","🌔","🌕","🌖","🌗","🌘"];
         document.getElementById('moon-icon').textContent = icons[Math.floor(age / 3.75) % 8];
         document.getElementById('moon-age').textContent = age.toFixed(1);
 
-        // 5. 簡易六曜 (4/26は大安)
-        // ※本来は旧暦計算が必要ですが、一旦パパさんの今日に合わせて固定ロジック風に
+        // 六曜 (簡易)
         const rokuyos = ["大安", "赤口", "先勝", "友引", "先負", "仏滅"];
         document.getElementById('rokuyo').textContent = (m === 3 && d === 26) ? "大安" : rokuyos[(m+d)%6];
     }
@@ -195,6 +160,5 @@
     setInterval(update, 1000);
     update();
 </script>
-
 </body>
 </html>
