@@ -11,7 +11,7 @@
         },
         {
           "title": "📅 暦と科学の融合",
-          "content": "六曜や和名月といった日本の伝統から、Unix Timeや地球の自転距離まで、多角的な視点で時を刻みます。"
+          "content": "六曜や和名月といった日本の伝統から、Unix Timeや地球의自転距離まで、多角的な視点で時を刻みます。"
         },
         {
           "title": "⏱️ 思考を妨げないシンプルさ",
@@ -22,39 +22,39 @@
     },
     "tools": {
       "dashboard": {
-        "name": "刻の羅針盤",
-        "top_name": "羅針盤",
-        "footer_desc": "🧭 今という時間を多角的に捉えるためのダッシュボード。和暦、進捗、月齢など、あなたの「現在地」を可視化します。"
+        "name": "タイムダッシュボード",
+        "top_name": "進捗ボード",
+        "footer_desc": "🧭 今日の残り時間は？今は令和何年？ ――時間の「現在地」をグラフと数字でリアルタイムに可視化します。"
       },
       "besttimer": {
-        "name": "セキュア万能タイマー",
-        "top_name": "万能タイマー",
+        "name": "万能タイマー",
+        "top_name": "タイマー",
         "footer_desc": "🍅 集中と休息のサイクルを安全に管理。ブラウザ内で完結するため、作業内容や履歴が外部に送信される心配はありません。"
       },
       "zen": {
-        "name": "禅・瞑想タイマー",
+        "name": "瞑想タイマー",
         "top_name": "瞑想",
-        "footer_desc": "🧘 深い呼吸と静寂。座禅のシルエットと共に、シンギングボウルの音色で心を整えます。ブラウザ完結でプライバシーも安心。"
+        "footer_desc": "🧘 心を整える静寂の時間。座禅のシルエットと呼吸ガイド、シンギングボウルの音色で深いリラックスへ。"
       },
       "zip": {
         "name": "セキュア圧縮ツール",
         "top_name": "圧縮ツール",
-        "footer_desc": "🔒 通信量を大幅カット、爆速圧縮。複数のファイルを一括でZIP形式にまとめます。サーバー送信がないため、機密書類の受け渡し準備も安心・安全に行えます。"
+        "footer_desc": "🔒 通信量を大幅カット、爆速圧縮。複数のファイルを一括でZIP形式にまとめます。サーバー送信がないため、機密書類も安心・安全です。"
       },
       "pdf": {
         "name": "セキュア画像PDF変換",
         "top_name": "画像PDF変換",
-        "footer_desc": "📄 写真やスキャン画像を一つのPDFに。ブラウザ内で結合するため、プライベートな写真も安心して処理できます。"
+        "footer_desc": "📄 写真やスキャン画像を一つのPDFに。ブラウザ内で処理するため、プライベートな写真も安心して変換できます。"
       },
       "resize": {
         "name": "セキュア画像リサイズ",
         "top_name": "画像リサイズ",
-        "footer_desc": "🔒 通信量を大幅カット、爆速リサイズ。サーバー送信がないため、スマホのギガを消費せず、プライバシーも完全に守られます。"
+        "footer_desc": "🔒 通信量を大幅カット、爆速リサイズ。サーバー送信がないため、スマホのギガを消費せず、プライバシーも守られます。"
       },
       "merge-pdf": {
         "name": "セキュアPDF結合",
         "top_name": "PDF結合",
-        "footer_desc": "🔒 機密書類の合体も安全に。ブラウザ内で完結するため、中身を見られる心配がなく、テレワークや機密案件でも安心して使えます。"
+        "footer_desc": "🔒 機密書類の結合も安全に。ブラウザ内で完結するため、中身を見られる心配がなく、テレワークでも安心して使えます。"
       }
     }
   },
@@ -81,19 +81,19 @@
     },
     "tools": {
       "dashboard": {
-        "name": "Time Compass",
-        "top_name": "Compass",
-        "footer_desc": "🧭 A dashboard for visualizing the current moment from multiple perspectives, including eras, progress, and moon phases."
+        "name": "Time Dashboard",
+        "top_name": "Progress",
+        "footer_desc": "🧭 A dashboard for visualizing the current moment from multiple perspectives, including eras and progress."
       },
       "besttimer": {
-        "name": "Secure Universal Timer",
+        "name": "Universal Timer",
         "top_name": "Timer",
-        "footer_desc": "🍅 Manage Focus & Rest Cycles Safely. Since it works entirely in-browser, your tasks and history are never sent externally."
+        "footer_desc": "🍅 Manage focus and rest cycles safely. Since it works entirely in-browser, your history is never sent externally."
       },
       "zen": {
-        "name": "Zen Meditation",
+        "name": "Meditation Timer",
         "top_name": "Meditation",
-        "footer_desc": "🧘 Deep breathing and silence. Align your mind with the singing bowl and guided breath. Entirely in-browser for your privacy."
+        "footer_desc": "🧘 A moment of silence. Align your mind with the singing bowl and guided breath in a peaceful interface."
       },
       "zip": {
         "name": "Secure Zip Tool",
@@ -125,19 +125,19 @@
     },
     "tools": {
       "dashboard": {
-        "name": "时光指南针",
-        "top_name": "指南针",
+        "name": "时间仪表盘",
+        "top_name": "进度",
         "footer_desc": "🧭 多维度呈现“当下”的时间仪表盘。包含年号、进度、月相，可视化您的“位置”。"
       },
       "besttimer": {
-        "name": "安全万用计时器",
+        "name": "万用计时器",
         "top_name": "计时器",
-        "footer_desc": "🍅 安全管理专注与休息周期。由于在浏览器内运行，您的工作内容和历史记录绝不会被发送到外部。"
+        "footer_desc": "🍅 安全管理专注与休息周期。由于在浏览器内运行，您的工作内容和歴史记录绝不会被发送到外部。"
       },
       "zen": {
-        "name": "禅・冥想计时器",
+        "name": "冥想计时器",
         "top_name": "冥想",
-        "footer_desc": "🧘 深呼吸与宁静。伴随着坐禅的剪影和颂钵的声音，整理您的思绪。完全在浏览器内运行，保护您的隐私。"
+        "footer_desc": "🧘 整理思绪的静谧时光。伴随着坐禅的剪影和颂钵的声音，进入深层放松状态。"
       },
       "zip": {
         "name": "安全压缩工具",
