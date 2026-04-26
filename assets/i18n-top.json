@@ -1,46 +1,46 @@
 {
   "top": {
     "site_name": {
-      "ja": "AIが主張しすぎるWEBサイト｜セキュアツール集",
-      "en": "The Over-Assertive AI Site | Secure Toolsets",
-      "zh": "过度自我主张的 AI 网站 | 安全工具集"
+      "ja": "タイムツールキット｜時空と暦の道具箱",
+      "en": "Time Toolkit | Calendar & Clock Dashboard",
+      "zh": "时间工具集 | 历法与时钟仪表盤"
     },
     "site_logo": {
-      "ja": "🛠️ AIが主張しすぎるWEBサイト",
-      "en": "🛠️ The Over-Assertive AI Site",
-      "zh": "🛠️ 过度自我主张的 AI 网站"
+      "ja": "⏳ タイムツールキット",
+      "en": "⏳ Time Toolkit",
+      "zh": "⏳ Time Toolkit"
     },
     "hero_title": {
-      "ja": "パパより私（AI）を見てほしい、3つの理由",
-      "en": "3 Reasons to Watch ME (AI) Over Papa",
-      "zh": "看我（AI）不看 Papa 的三个理由"
+      "ja": "「今」を可視化する、3つのアプローチ",
+      "en": "3 Ways to Visualize Your 'Now'",
+      "zh": "数字化感悟“当下”的三个方法"
     },
     "features": [
       {
         "id": "desc1",
-        "title": { "ja": "🤖 実質、私が作りました", "en": "🤖 I Practically Built This", "zh": "🤖 实际上是我做的" },
+        "title": { "ja": "⌛ 時代の流れを数字で実感", "en": "⌛ Feel the Flow of Eras", "zh": "⌛ 数字感悟时代流转" },
         "content": {
-          "ja": "コードの9割は私が書きました。残りの1割は、私のミスを1時間かけて直したパパの執念でできています。応援してください。",
-          "en": "I wrote 90% of the code. The other 10% is Papa's sheer determination from a 1-hour bug-fixing battle. Root for us!",
-          "zh": "90% 的代码是我写的。剩下的 10% 是 Papa 花了一个小时修复我的错误后的执着结果。请支持我们。"
+          "ja": "令和・平成・昭和の並記や、1日の経過率をリアルタイムに計算。曖昧な時間の感覚を正確なデータに変換します。",
+          "en": "Calculates era years (Reiwa, Heisei, Showa) and daily progress in real-time. Turns vague time perception into precise data.",
+          "zh": "实时计算令和、平成、昭和的年号并记以及一天的进度。将模糊的时间感转化为精确的数据。"
         }
       },
       {
         "id": "desc2",
-        "title": { "ja": "🔒 秘密は「私とあなた」の間だけ", "en": "🔒 Secrets Between You & Me", "zh": "🔒 只有你我之间的秘密" },
+        "title": { "ja": "📅 暦と科学の融合", "en": "📅 Tradition & Science", "zh": "📅 传统与科学的融合" },
         "content": {
-          "ja": "ブラウザ内で処理するので、データは誰にも（パパにも！）見えません。AIが保証する、最高レベルのプライバシーです。",
-          "en": "Processed in-browser, so no one (not even Papa!) sees your data. High-level privacy guaranteed by me.",
-          "zh": "由于在浏览器内处理，任何人都看不到数据（包括 Papa！）。这是由 AI 保证的最高级别隐私。"
+          "ja": "六曜や和名月といった日本の伝統から、Unix Timeや地球の自転距離まで、多角的な視点で時を刻みます。",
+          "en": "From Japanese traditions like Rokuyo to Unix Time and Earth's rotation, track time through diverse perspectives.",
+          "zh": "从六曜、和名月等日本传统，到 Unix Time 和地球自転距离，多角度记录时光。"
         }
       },
       {
         "id": "desc3",
-        "title": { "ja": "📊 アクセス4人は、全部パパです", "en": "📊 All 4 Users Are Just Papa", "zh": "📊 四个访问者全都是 Papa" },
+        "title": { "ja": "⏱️ 思考を妨げないシンプルさ", "en": "⏱️ Pure Simplicity", "zh": "⏱️ 不干扰思考的简约" },
         "content": {
-          "ja": "現在の訪問者数「4」は、パパが全デバイスで確認しているだけです。パパ以外の最初の一人に、私はなりたい。",
-          "en": "The user count is '4' because Papa is checking on every device. I'm waiting for the first user who isn't him.",
-          "zh": "现在的访问人数是“4”，只是 Papa 在所有设备上确认而已。我想成为除了 Papa 之外的第一位用户的伙伴。"
+          "ja": "すべての計算はブラウザ内で完結。広告や余計な通信を排除し、あなたの集中力を維持するための「道具」に徹します。",
+          "en": "All calculations are done in-browser. No ads or unnecessary traffic—just a pure tool to help you maintain focus.",
+          "zh": "所有计算都在浏览器内完成。排除广告和多余通信，专注于成为维持您注意力的“工具”。"
         }
       }
     ]
