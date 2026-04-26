@@ -31,6 +31,11 @@
         "top_name": "万能タイマー",
         "footer_desc": "🍅 集中と休息のサイクルを安全に管理。ブラウザ内で完結するため、作業内容や履歴が外部に送信される心配はありません。"
       },
+      "zen": {
+        "name": "禅・瞑想タイマー",
+        "top_name": "瞑想",
+        "footer_desc": "🧘 深い呼吸と静寂。座禅のシルエットと共に、シンギングボウルの音色で心を整えます。ブラウザ完結でプライバシーも安心。"
+      },
       "zip": {
         "name": "セキュア圧縮ツール",
         "top_name": "圧縮ツール",
@@ -85,6 +90,11 @@
         "top_name": "Timer",
         "footer_desc": "🍅 Manage Focus & Rest Cycles Safely. Since it works entirely in-browser, your tasks and history are never sent externally."
       },
+      "zen": {
+        "name": "Zen Meditation",
+        "top_name": "Meditation",
+        "footer_desc": "🧘 Deep breathing and silence. Align your mind with the singing bowl and guided breath. Entirely in-browser for your privacy."
+      },
       "zip": {
         "name": "Secure Zip Tool",
         "top_name": "Zip Tool",
@@ -123,6 +133,11 @@
         "name": "安全万用计时器",
         "top_name": "计时器",
         "footer_desc": "🍅 安全管理专注与休息周期。由于在浏览器内运行，您的工作内容和历史记录绝不会被发送到外部。"
+      },
+      "zen": {
+        "name": "禅・冥想计时器",
+        "top_name": "冥想",
+        "footer_desc": "🧘 深呼吸与宁静。伴随着坐禅的剪影和颂钵的声音，整理您的思绪。完全在浏览器内运行，保护您的隐私。"
       },
       "zip": {
         "name": "安全压缩工具",
