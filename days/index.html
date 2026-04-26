@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Time Dashboard</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #e0e0e0;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        /* 画面上部のプログレスバー */
+        #top-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #4f4f4f, #ffffff);
+            transition: width 1s linear;
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        /* 年月日 */
+        #date-display {
+            font-size: 1.5rem;
+            letter-spacing: 0.5rem;
+            margin-bottom: 1rem;
+            color: #888;
+        }
+
+        /* 時刻（メイン） */
+        #time-display {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 8rem;
+            font-weight: bold;
+            line-height: 1;
+            margin-bottom: 2rem;
+        }
+
+        /* 補足情報 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin-top: 2rem;
+            border-top: 1px solid #333;
+            padding-top: 2rem;
+        }
+
+        .stat-item {
+            text-align: left;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #666;
+            text-transform: uppercase;
+        }
+
+        .stat-value {
+            font-size: 1.2rem;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="top-bar"></div>
+
+    <div class="container">
+        <div id="date-display">----.--.--</div>
+        <div id="time-display">00:00:00</div>
+
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-label">Day Progress</div>
+                <div id="day-pct" class="stat-value">0.00%</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Year Progress</div>
+                <div id="year-pct" class="stat-value">0.00%</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateTime() {
+            const now = new Date();
+            
+            // 年月日の整形
+            const y = now.getFullYear();
+            const m = String(now.getMonth() + 1).padStart(2, '0');
+            const d = String(now.getDate()).padStart(2, '0');
+            document.getElementById('date-display').textContent = `${y}.${m}.${d}`;
+
+            // 時刻の整形
+            const hh = String(now.getHours()).padStart(2, '0');
+            const mm = String(now.getMinutes()).padStart(2, '0');
+            const ss = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('time-display').textContent = `${hh}:${mm}:${ss}`;
+
+            // 1日の進捗計算
+            const startOfDay = new Date(y, now.getMonth(), now.getDate());
+            const daySeconds = (now - startOfDay) / 1000;
+            const dayPct = (daySeconds / 86400) * 100;
+            document.getElementById('day-pct').textContent = dayPct.toFixed(4) + '%';
+            document.getElementById('top-bar').style.width = dayPct + '%';
+
+            // 1年の進捗計算
+            const startOfYear = new Date(y, 0, 1);
+            const isLeap = (y % 4 === 0);
+            const totalYearSeconds = (isLeap ? 366 : 365) * 86400;
+            const yearSeconds = (now - startOfYear) / 1000;
+            const yearPct = (yearSeconds / totalYearSeconds) * 100;
+            document.getElementById('year-pct').textContent = yearPct.toFixed(6) + '%';
+        }
+
+        setInterval(updateTime, 1000);
+        updateTime();
+    </script>
+</body>
+</html>
