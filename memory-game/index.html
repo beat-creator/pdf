@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>4x4 Memory Trainer</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --tile-color: #1e293b;
+            --active-color: #10b981; /* 鮮やかな緑 */
+            --error-color: #ef4444;  /* 失敗時の赤 */
+            --text-color: #f8fafc;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        h1 { margin-bottom: 10px; font-size: 1.5rem; }
+        .stats { margin-bottom: 20px; font-size: 1.2rem; color: #94a3b8; }
+
+        /* 4x4 グリッドの設定 */
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            gap: 12px;
+            width: 90vw;
+            max-width: 400px;
+            aspect-ratio: 1 / 1;
+        }
+
+        .tile {
+            background-color: var(--tile-color);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: transform 0.1s, background-color 0.2s;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        }
+
+        .tile:active {
+            transform: scale(0.95);
+        }
+
+        /* 光った状態 */
+        .tile.active {
+            background-color: var(--active-color);
+            box-shadow: 0 0 20px var(--active-color);
+        }
+
+        /* エラー状態 */
+        .tile.error {
+            background-color: var(--error-color);
+            box-shadow: 0 0 20px var(--error-color);
+        }
+
+        .btn-start {
+            margin-top: 30px;
+            padding: 12px 40px;
+            font-size: 1.1rem;
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-start:hover { background-color: #2563eb; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+    <h1>4x4 Memory Trainer</h1>
+    <div class="stats">Level: <span id="level-val">0</span></div>
+
+    <div class="game-board" id="board">
+        </div>
+
+    <button class="btn-start" id="start-btn" onclick="startGame()">Start Training</button>
+
+    <script>
+        const board = document.getElementById('board');
+        const levelDisplay = document.getElementById('level-val');
+        const startBtn = document.getElementById('start-btn');
+        
+        let sequence = [];
+        let playerIndex = 0;
+        let isWaiting = true;
+
+        // 1. 16個のタイルを生成
+        for (let i = 0; i < 16; i++) {
+            const tile = document.createElement('button');
+            tile.classList.add('tile');
+            tile.id = `tile-${i}`;
+            tile.addEventListener('click', () => handleTileClick(i));
+            board.appendChild(tile);
+        }
+
+        const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+        // ゲーム開始・リセット
+        async function startGame() {
+            startBtn.classList.add('hidden');
+            sequence = [];
+            nextLevel();
+        }
+
+        // 次のレベルへ
+        async function nextLevel() {
+            isWaiting = true;
+            playerIndex = 0;
+            sequence.push(Math.floor(Math.random() * 16));
+            levelDisplay.innerText = sequence.length;
+
+            await sleep(800); // 開始前に少し待機
+
+            // お手本を見せる
+            for (const id of sequence) {
+                await flashTile(id, 500);
+                await sleep(250);
+            }
+            isWaiting = false;
+        }
+
+        // タイルを光らせる演出
+        async function flashTile(id, duration, type = 'active') {
+            const tile = document.getElementById(`tile-${id}`);
+            tile.classList.add(type);
+            await sleep(duration);
+            tile.classList.remove(type);
+        }
+
+        // タイルがクリックされた時の判定
+        async function handleTileClick(id) {
+            if (isWaiting) return;
+
+            if (id === sequence[playerIndex]) {
+                // 正解
+                flashTile(id, 200, 'active');
+                playerIndex++;
+
+                // そのレベルの全入力をクリアした場合
+                if (playerIndex === sequence.length) {
+                    isWaiting = true;
+                    setTimeout(nextLevel, 1000);
+                }
+            } else {
+                // 不正解
+                isWaiting = true;
+                await flashTile(id, 500, 'error');
+                alert(`Game Over! 到達レベル: ${sequence.length}`);
+                startBtn.classList.remove('hidden');
+                levelDisplay.innerText = "0";
+            }
+        }
+    </script>
+</body>
+</html>
