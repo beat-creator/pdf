@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>N-Back Calculator | Secure Toolkit</title>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --text: #f8fafc;
+            --accent: #3b82f6;
+            --card: #1e293b;
+        }
+        body {
+            background: var(--bg); color: var(--text);
+            font-family: sans-serif; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; height: 100vh; margin: 0;
+            overflow: hidden; touch-action: manipulation;
+        }
+        .display {
+            font-size: 5rem; font-weight: 900; margin: 20px 0;
+            height: 1.2em; display: flex; align-items: center; color: var(--accent);
+        }
+        .n-info { font-size: 1.2rem; color: #94a3b8; margin-bottom: 10px; }
+        .n-info span { color: #f59e0b; font-weight: bold; }
+        
+        .num-pad {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+            width: 90vw; max-width: 320px;
+        }
+        .btn {
+            background: var(--card); border: none; border-radius: 12px;
+            color: var(--text); font-size: 1.5rem; padding: 20px 0;
+            cursor: pointer; transition: 0.1s;
+        }
+        .btn:active { background: var(--accent); transform: scale(0.95); }
+        
+        .start-btn {
+            padding: 15px 40px; font-size: 1.2rem; background: var(--accent);
+            color: white; border: none; border-radius: 50px; cursor: pointer;
+        }
+        .hidden { display: none; }
+        .correct { color: #10b981; }
+        .wrong { color: #ef4444; }
+    </style>
+</head>
+<body>
+
+    <div class="n-info">Target: <span id="n-val">2</span>-Back</div>
+    <div class="display" id="display">?</div>
+
+    <div class="num-pad" id="pad">
+        <button class="btn" onclick="input(1)">1</button>
+        <button class="btn" onclick="input(2)">2</button>
+        <button class="btn" onclick="input(3)">3</button>
+        <button class="btn" onclick="input(4)">4</button>
+        <button class="btn" onclick="input(5)">5</button>
+        <button class="btn" onclick="input(6)">6</button>
+        <button class="btn" onclick="input(7)">7</button>
+        <button class="btn" onclick="input(8)">8</button>
+        <button class="btn" onclick="input(9)">9</button>
+        <div style="grid-column: span 1;"></div>
+        <button class="btn" onclick="input(0)">0</button>
+    </div>
+
+    <div id="menu">
+        <button class="start-btn" onclick="start(1)">1-Back Start</button>
+        <button class="start-btn" onclick="start(2)">2-Back Start</button>
+    </div>
+
+    <script>
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function beep(f, d) {
+            const o = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            o.frequency.value = f;
+            g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + d);
+            o.connect(g); g.connect(audioCtx.destination);
+            o.start(); o.stop(audioCtx.currentTime + d);
+        }
+
+        let n = 2;
+        let questions = []; // 出題された計算式の「答え」を保存
+        let currentIdx = 0;
+        let isWaiting = false;
+
+        async function start(selectedN) {
+            n = selectedN;
+            document.getElementById('n-val').innerText = n;
+            document.getElementById('menu').classList.add('hidden');
+            questions = [];
+            currentIdx = 0;
+            nextQuestion();
+        }
+
+        async function nextQuestion() {
+            isWaiting = true;
+            const display = document.getElementById('display');
+            display.classList.remove('correct', 'wrong');
+
+            // 1桁の足し算を生成 (例: 2 + 3)
+            const a = Math.floor(Math.random() * 5) + 1;
+            const b = Math.floor(Math.random() * 4) + 1;
+            const ans = a + b;
+            
+            questions.push(ans);
+            display.innerText = `${a}+${b}`;
+            beep(440, 0.1);
+
+            // 最初の n 回は答える必要なし（覚えるだけ）
+            if (questions.length <= n) {
+                setTimeout(() => {
+                    display.innerText = "Next...";
+                    setTimeout(nextQuestion, 1000);
+                }, 1500);
+            } else {
+                isWaiting = false; // 入力待ち
+            }
+        }
+
+        function input(val) {
+            if (isWaiting) return;
+            isWaiting = true;
+            
+            const display = document.getElementById('display');
+            const targetAns = questions[currentIdx]; // n個前の答え
+
+            if (val === targetAns) {
+                display.innerText = "OK!";
+                display.classList.add('correct');
+                beep(880, 0.1);
+                currentIdx++;
+                setTimeout(nextQuestion, 800);
+            } else {
+                display.innerText = "NG!";
+                display.classList.add('wrong');
+                beep(220, 0.5);
+                setTimeout(() => {
+                    alert(`Game Over! Score: ${currentIdx}`);
+                    location.reload();
+                }, 500);
+            }
+        }
+    </script>
+</body>
+</html>
