@@ -28,7 +28,12 @@
         .lower-box { 
             text-align: center; padding: 25px; background: rgba(30, 41, 59, 0.5); 
             border-radius: 16px; width: 85%; max-width: 320px; border: 1px solid #334155;
+            transition: 0.3s;
         }
+        /* 入力待機中のハイライト */
+        .waiting-input { border-color: var(--accent); box-shadow: 0 0 15px rgba(59, 130, 246, 0.3); animation: blink 1.5s infinite; }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
+
         .formula-sub { font-size: 2rem; font-weight: bold; color: #94a3b8; }
         .ans-target { font-size: 2.5rem; color: #f59e0b; margin-left: 10px; }
 
@@ -42,7 +47,6 @@
         }
         .btn:active { background: var(--accent); }
 
-        /* スクリーン */
         .screen { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--bg); z-index: 200; text-align: center; }
         .start-btn { padding: 16px 50px; font-size: 1.2rem; background: var(--accent); color: white; border: none; border-radius: 50px; cursor: pointer; font-weight: bold; margin-bottom: 15px; }
         .reset-btn { background: none; border: 1px solid #475569; color: #64748b; padding: 8px 20px; border-radius: 20px; cursor: pointer; font-size: 0.8rem; }
@@ -63,12 +67,12 @@
 
     <div class="problem-container">
         <div class="upper-box">
-            <div class="label-sm" id="progress-text">QUESTION 1 / 20</div>
+            <div class="label-sm" id="progress-text">MEMORIZING...</div>
             <div class="formula-main" id="formula-mem">?+?=</div>
         </div>
 
-        <div class="lower-box">
-            <div class="label-sm">ANSWER N-BACK</div>
+        <div id="ans-box-ui" class="lower-box">
+            <div class="label-sm" id="lower-q-label">WAITING</div>
             <div class="formula-sub">
                 <span id="formula-ans">???=</span>
                 <span id="ans-result" class="ans-target">?</span>
@@ -99,6 +103,8 @@
             formulaAns: document.getElementById('formula-ans'),
             ansResult: document.getElementById('ans-result'),
             progress: document.getElementById('progress-text'),
+            ansBox: document.getElementById('ans-box-ui'),
+            lowerQLabel: document.getElementById('lower-q-label'),
             bar: document.getElementById('timer-bar'),
             startScreen: document.getElementById('start-screen'),
             levelStatus: document.getElementById('level-status'),
@@ -106,7 +112,6 @@
         };
 
         function resetAll() { n = 2; isHighSpeed = false; updateMenu(); }
-
         function updateMenu() {
             el.levelStatus.innerText = `LEVEL ${isHighSpeed ? (n-1)*2 : (n-1)*2-1}`;
             el.levelDesc.innerText = `${n}-Back ${isHighSpeed?'(High Speed)':'(Normal Speed)'}`;
@@ -116,7 +121,9 @@
 
         async function nextStep() {
             if (qIndex >= 20) { endGame(); return; }
-            isWaiting = true; el.bar.style.width = "100%";
+            isWaiting = true; 
+            el.bar.style.width = "100%";
+            el.ansBox.classList.remove('waiting-input');
             el.ansResult.innerText = "?"; el.ansResult.style.color = "#f59e0b";
             el.formulaAns.innerText = "???=";
 
@@ -127,14 +134,19 @@
 
             questions.push({ formula, ans });
             el.formulaMem.innerText = formula;
-            el.progress.innerText = `QUESTION ${questions.length} / ${20 + n}`;
-            beep(440, 0.1);
-
+            
             const interval = isHighSpeed ? 2500 : 4000;
+
             if (questions.length <= n) {
+                el.progress.innerText = `MEMORIZING... (${questions.length}/${n})`;
+                el.lowerQLabel.innerText = "WAITING";
                 setTimeout(nextStep, interval);
             } else {
-                isWaiting = false; startTimer(interval - 300);
+                el.progress.innerText = `LATEST QUESTION`;
+                el.lowerQLabel.innerText = `ANSWER: 問${qIndex + 1} / 20`;
+                el.ansBox.classList.add('waiting-input'); // 入力開始の合図（明滅）
+                isWaiting = false; 
+                startTimer(interval - 300);
             }
         }
 
@@ -149,12 +161,12 @@
 
         function handleInput(val) {
             if (isWaiting) return; isWaiting = true; clearInterval(timerInterval);
+            el.ansBox.classList.remove('waiting-input');
             const target = questions[qIndex].ans;
             const isCorrect = (val === target);
             
-            // 入力後にマスク解除
             el.formulaAns.innerText = questions[qIndex].formula;
-            el.ansResult.innerText = target;
+            el.ansResult.innerText = (val === -1) ? "!!" : target;
             el.ansResult.style.color = isCorrect ? 'var(--success)' : 'var(--danger)';
             
             if (isCorrect) { hitCount++; beep(880, 0.1); } else { beep(220, 0.3, 'sawtooth'); }
@@ -168,7 +180,6 @@
                 if (!isHighSpeed) isHighSpeed = true; else { n++; isHighSpeed = false; }
                 beep(1000, 0.5);
             } else if (score < 60) {
-                // 降格ルール
                 if (isHighSpeed) isHighSpeed = false;
                 else if (n > 2) { n--; isHighSpeed = true; }
                 beep(150, 0.5, 'sawtooth');
