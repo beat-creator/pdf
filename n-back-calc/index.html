@@ -19,20 +19,18 @@
 
         .problem-container { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; gap: 30px; }
         
-        /* 上段：最新題 */
         .upper-box { text-align: center; }
         .label-sm { font-size: 0.75rem; color: #64748b; letter-spacing: 0.1em; margin-bottom: 5px; }
         .formula-main { font-size: 3.8rem; font-weight: 900; color: var(--accent); }
 
-        /* 下段：回答題（マスキング） */
         .lower-box { 
             text-align: center; padding: 25px; background: rgba(30, 41, 59, 0.5); 
             border-radius: 16px; width: 85%; max-width: 320px; border: 1px solid #334155;
             transition: 0.3s;
         }
-        /* 入力待機中のハイライト */
-        .waiting-input { border-color: var(--accent); box-shadow: 0 0 15px rgba(59, 130, 246, 0.3); animation: blink 1.5s infinite; }
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
+        /* 入力待機中のハイライト（青く明滅） */
+        .waiting-input { border-color: var(--accent); box-shadow: 0 0 15px rgba(59, 130, 246, 0.4); animation: blink 1.2s infinite; }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
 
         .formula-sub { font-size: 2rem; font-weight: bold; color: #94a3b8; }
         .ans-target { font-size: 2.5rem; color: #f59e0b; margin-left: 10px; }
@@ -67,7 +65,7 @@
 
     <div class="problem-container">
         <div class="upper-box">
-            <div class="label-sm" id="progress-text">MEMORIZING...</div>
+            <div class="label-sm" id="progress-text">READY</div>
             <div class="formula-main" id="formula-mem">?+?=</div>
         </div>
 
@@ -127,7 +125,8 @@
             el.ansResult.innerText = "?"; el.ansResult.style.color = "#f59e0b";
             el.formulaAns.innerText = "???=";
 
-            let a = Math.floor(Math.random() * 5) + 1; let b = Math.floor(Math.random() * 4) + 1;
+            const a = Math.floor(Math.random() * 5) + 1;
+            const b = Math.floor(Math.random() * 4) + 1;
             let formula, ans;
             if (Math.random() > 0.5) { formula = `${a}+${b}=`; ans = a+b; }
             else { formula = `${a+b}-${a}=`; ans = b; }
@@ -137,14 +136,15 @@
             
             const interval = isHighSpeed ? 2500 : 4000;
 
+            // 上段のカウント（新しく出た問題の番号）
+            el.progress.innerText = `LATEST: 問${questions.length} / 20`;
+
             if (questions.length <= n) {
-                el.progress.innerText = `MEMORIZING... (${questions.length}/${n})`;
-                el.lowerQLabel.innerText = "WAITING";
+                el.lowerQLabel.innerText = "MEMORIZING...";
                 setTimeout(nextStep, interval);
             } else {
-                el.progress.innerText = `LATEST QUESTION`;
                 el.lowerQLabel.innerText = `ANSWER: 問${qIndex + 1} / 20`;
-                el.ansBox.classList.add('waiting-input'); // 入力開始の合図（明滅）
+                el.ansBox.classList.add('waiting-input'); 
                 isWaiting = false; 
                 startTimer(interval - 300);
             }
@@ -162,16 +162,19 @@
         function handleInput(val) {
             if (isWaiting) return; isWaiting = true; clearInterval(timerInterval);
             el.ansBox.classList.remove('waiting-input');
+            
             const target = questions[qIndex].ans;
             const isCorrect = (val === target);
             
+            // マスク解除して正答を表示
             el.formulaAns.innerText = questions[qIndex].formula;
-            el.ansResult.innerText = (val === -1) ? "!!" : target;
+            el.ansResult.innerText = target; 
             el.ansResult.style.color = isCorrect ? 'var(--success)' : 'var(--danger)';
             
-            if (isCorrect) { hitCount++; beep(880, 0.1); } else { beep(220, 0.3, 'sawtooth'); }
+            if (isCorrect) { hitCount++; beep(880, 0.1); } 
+            else { beep(220, 0.3, 'sawtooth'); }
 
-            setTimeout(() => { qIndex++; nextStep(); }, 800);
+            setTimeout(() => { qIndex++; nextStep(); }, 1000); // 1秒間だけ正解を確認
         }
 
         function endGame() {
