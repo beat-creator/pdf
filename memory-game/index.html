@@ -2,8 +2,31 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>4x4 Memory Pro - Master Edition</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <title>Memory Master Pro | 4x4 記憶力・ワーキングメモリ訓練ゲーム</title>
+    <meta name="description" content="4x4のパネルを使ってワーキングメモリを鍛える、シンプルかつ強力な脳トレゲーム。3回ごとに難易度が上がり、スピードも変化。ハイスコアを記録して自己ベストに挑戦しよう。">
+    <meta name="keywords" content="脳トレ,記憶力,ワーキングメモリ,4x4,シグナルゲーム,JavaScriptゲーム,無料">
+    
+    <meta property="og:title" content="Memory Master Pro | 4x4 記憶力トレーニング">
+    <meta property="og:description" content="あなたの記憶力の限界に挑戦！4x4パネルの光る順序を当てる本格脳トレ。">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Time Toolkit Games">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Memory Master Pro",
+      "operatingSystem": "Web Browser",
+      "applicationCategory": "GameApplication",
+      "offers": {
+        "@type": "Offer",
+        "price": "0"
+      }
+    }
+    </script>
+
     <style>
         :root {
             --bg-color: #0f172a;
@@ -17,87 +40,109 @@
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
-            font-family: 'Inter', sans-serif;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
             overflow: hidden;
             user-select: none;
             touch-action: manipulation;
         }
 
-        /* レベル表示を巨大化 */
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
         .big-level {
-            font-size: 4rem;
+            font-size: clamp(3rem, 15vw, 5rem);
             font-weight: 900;
             margin: 0;
             color: var(--accent-color);
-            line-height: 1;
+            text-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
         }
         
         .sub-stats {
             font-size: 1rem;
             color: #94a3b8;
             margin-bottom: 20px;
+            text-align: center;
         }
 
         .high-score {
             font-size: 0.9rem;
             color: #f59e0b;
-            margin-top: 5px;
+            margin-top: 8px;
+            font-weight: bold;
         }
 
         .game-board {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             grid-template-rows: repeat(4, 1fr);
-            gap: 12px;
-            width: 90vw;
-            max-width: 380px;
+            gap: clamp(8px, 2vw, 15px);
+            width: 92vw;
+            max-width: 400px;
             aspect-ratio: 1 / 1;
         }
 
         .tile {
             background-color: var(--tile-color);
             border: none;
-            border-radius: 12px;
+            border-radius: clamp(8px, 2vw, 15px);
             cursor: pointer;
-            transition: background-color 0.1s, transform 0.05s;
+            transition: background-color 0.1s, transform 0.05s, box-shadow 0.1s;
         }
 
-        .tile.active { background-color: var(--active-color); box-shadow: 0 0 20px var(--active-color); }
-        .tile.error { background-color: var(--error-color); box-shadow: 0 0 20px var(--error-color); }
+        .tile.active { background-color: var(--active-color); box-shadow: 0 0 25px var(--active-color); }
+        .tile.error { background-color: var(--error-color); box-shadow: 0 0 25px var(--error-color); }
 
         .btn-start {
-            margin-top: 30px;
-            padding: 15px 60px;
-            font-size: 1.3rem;
+            margin-top: 35px;
+            padding: 16px 60px;
+            font-size: 1.2rem;
             background-color: var(--accent-color);
             color: white;
             border: none;
             border-radius: 50px;
             cursor: pointer;
             font-weight: bold;
+            transition: all 0.2s;
             box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
         }
 
-        .hidden { visibility: hidden; }
+        .btn-start:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5); }
+        .hidden { display: none; }
+
+        footer {
+            margin-top: 20px;
+            font-size: 0.8rem;
+            color: #475569;
+        }
     </style>
 </head>
 <body>
 
-    <div class="big-level" id="level-val">1</div>
-    <div class="sub-stats">
-        Next: <span id="count-val">2</span> tiles | Speed: <span id="speed-val">Normal</span>
-        <div class="high-score">BEST LEVEL: <span id="best-val">0</span></div>
-    </div>
+    <main>
+        <h1 style="display:none;">Memory Master Pro</h1>
+        <div class="big-level" id="level-val" aria-label="Current Level">1</div>
+        
+        <div class="sub-stats">
+            Next: <span id="count-val">2</span> tiles | Speed: <span id="speed-val">Normal</span>
+            <div class="high-score">BEST LEVEL: <span id="best-val">0</span></div>
+        </div>
 
-    <div class="game-board" id="board"></div>
+        <div class="game-board" id="board" role="grid"></div>
 
-    <button class="btn-start" id="start-btn" onclick="startGame()">START TRAINING</button>
+        <button class="btn-start" id="start-btn" onclick="startGame()">START TRAINING</button>
+    </main>
+
+    <footer>&copy; 2026 Time Toolkit Games</footer>
 
     <script>
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -129,7 +174,6 @@
         let isWaiting = true;
         let totalAttempts = 0;
 
-        // ハイスコアの読み込み
         let highScore = localStorage.getItem('memoryGameBest') || 0;
         bestDisplay.innerText = highScore;
 
@@ -137,6 +181,7 @@
             const tile = document.createElement('button');
             tile.classList.add('tile');
             tile.id = `tile-${i}`;
+            tile.setAttribute('aria-label', `Tile ${i+1}`);
             tile.addEventListener('pointerdown', (e) => {
                 e.preventDefault();
                 handleTileClick(i);
@@ -158,7 +203,6 @@
             playerIndex = 0;
             totalAttempts++;
 
-            // 個数：レベル1から2個スタート（3回ごとに1増える）
             const memoryCount = Math.floor((totalAttempts - 1) / 3) + 2;
             const isFast = (totalAttempts % 3 === 0);
             const displaySpeed = isFast ? 180 : 450;
@@ -203,7 +247,6 @@
                 playerIndex++;
                 if (playerIndex === sequence.length) {
                     isWaiting = true;
-                    // ハイスコア更新チェック
                     if (totalAttempts > highScore) {
                         highScore = totalAttempts;
                         localStorage.setItem('memoryGameBest', highScore);
