@@ -9,149 +9,157 @@
             --bg: #020617;
             --text: #f8fafc;
             --accent: #3b82f6;
+            --card: #1e293b;
             --success: #10b981;
             --danger: #ef4444;
-            --card: #1e293b;
         }
         body {
             background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             height: 100vh; margin: 0; overflow: hidden; touch-action: manipulation;
         }
+
+        /* 進行状況バー */
         .timer-bar-container { width: 100%; height: 4px; background: #1e293b; position: absolute; top: 0; }
         #timer-bar { width: 100%; height: 100%; background: var(--accent); transition: width 0.1s linear; }
 
-        .display { font-size: 5rem; font-weight: 900; margin: 10px 0; min-height: 1.2em; color: var(--accent); }
-        .stats { font-size: 0.9rem; color: #64748b; margin-bottom: 5px; letter-spacing: 0.1em; }
-        .current-n { font-size: 1.2rem; font-weight: bold; color: #f59e0b; margin-bottom: 20px; }
+        /* メイン表示エリア */
+        .problem-container {
+            flex: 1; display: flex; flex-direction: column; justify-content: center;
+            align-items: center; width: 100%; gap: 40px;
+        }
 
+        /* 上段：最新の問題（記憶用） */
+        .upper-box { text-align: center; }
+        .label-sm { font-size: 0.8rem; color: #64748b; letter-spacing: 0.1em; margin-bottom: 5px; }
+        .formula-main { font-size: 4rem; font-weight: 900; color: var(--accent); }
+
+        /* 下段：回答する問題（N個前） */
+        .lower-box { 
+            text-align: center; padding: 20px; background: rgba(30, 41, 59, 0.5); 
+            border-radius: 16px; width: 80%; max-width: 300px;
+            border: 1px solid #334155;
+        }
+        .formula-sub { font-size: 1.5rem; color: #94a3b8; }
+        .ans-target { font-size: 2.5rem; font-weight: 900; color: #f59e0b; margin-left: 10px; }
+
+        /* 正解・不正解の演出用 */
+        .feedback-pop {
+            position: absolute; font-size: 5rem; font-weight: 900; 
+            z-index: 100; pointer-events: none; display: none;
+        }
+
+        /* テンキー（これまでの洗練されたスタイル） */
         .num-pad {
             display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
-            width: 90vw; max-width: 340px;
+            width: 90vw; max-width: 340px; margin-bottom: 30px;
         }
         .btn {
             background: var(--card); border: 1px solid #334155; border-radius: 12px;
-            color: var(--text); font-size: 1.8rem; padding: 20px 0; cursor: pointer; transition: 0.1s;
+            color: var(--text); font-size: 1.8rem; padding: 18px 0; cursor: pointer; transition: 0.1s;
         }
         .btn:active { background: var(--accent); transform: scale(0.95); }
 
-        .screen { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--bg); z-index: 10; }
-        .result-title { font-size: 2rem; margin-bottom: 10px; }
-        .start-btn {
-            padding: 18px 60px; font-size: 1.2rem; background: var(--accent);
-            color: white; border: none; border-radius: 50px; cursor: pointer; font-weight: bold;
-            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
-        }
+        /* オーバーレイ */
+        .screen { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--bg); z-index: 200; }
+        .start-btn { padding: 18px 60px; font-size: 1.2rem; background: var(--accent); color: white; border: none; border-radius: 50px; cursor: pointer; font-weight: bold; }
         .hidden { display: none; }
-        .correct-text { color: var(--success); }
-        .wrong-text { color: var(--danger); }
     </style>
 </head>
 <body>
 
     <div class="timer-bar-container"><div id="timer-bar"></div></div>
+    <div id="feedback" class="feedback-pop"></div>
 
-    <div id="game-ui">
-        <div class="stats" id="stats-line">PREPARING...</div>
-        <div class="current-n" id="n-status">LEVEL 1: 2-Back Normal</div>
-        <div class="display" id="display">READY</div>
-        <div class="num-pad" id="pad">
-            <button class="btn" onclick="input(1)">1</button><button class="btn" onclick="input(2)">2</button><button class="btn" onclick="input(3)">3</button>
-            <button class="btn" onclick="input(4)">4</button><button class="btn" onclick="input(5)">5</button><button class="btn" onclick="input(6)">6</button>
-            <button class="btn" onclick="input(7)">7</button><button class="btn" onclick="input(8)">8</button><button class="btn" onclick="input(9)">9</button>
-            <div></div><button class="btn" onclick="input(0)">0</button>
+    <div id="start-screen" class="screen">
+        <h1 style="margin-bottom: 10px;">N-Back Calculation</h1>
+        <p id="level-desc" style="color: #64748b; margin-bottom: 30px;">Level 1: 2-Back Normal</p>
+        <button class="start-btn" onclick="initGame()">START</button>
+    </div>
+
+    <div class="problem-container">
+        <div class="upper-box">
+            <div class="label-sm" id="upper-label">MEMORY</div>
+            <div class="formula-main" id="formula-mem">? + ? =</div>
+        </div>
+
+        <div class="lower-box" id="ans-box-ui">
+            <div class="label-sm" id="lower-label">ANSWER</div>
+            <div class="formula-sub">
+                <span id="formula-ans">? + ? =</span>
+                <span class="ans-target">?</span>
+            </div>
         </div>
     </div>
 
-    <div id="overlay" class="screen">
-        <div id="result-area" class="hidden">
-            <div id="result-title" class="result-title"></div>
-            <div id="result-detail" style="margin-bottom: 30px; text-align: center; color: #94a3b8;"></div>
-        </div>
-        <button class="start-btn" id="main-btn" onclick="initGame()">START TRAINING</button>
-        <p style="color: #475569; font-size: 0.8rem; margin-top: 30px; text-align: center;">
-            20問中16問(80%)以上正解で次へ進む<br>
-            2-Back(通常) → 2-Back(高速) → 3-Back(通常)...
-        </p>
+    <div class="num-pad">
+        <button class="btn" onclick="handleInput(1)">1</button><button class="btn" onclick="handleInput(2)">2</button><button class="btn" onclick="handleInput(3)">3</button>
+        <button class="btn" onclick="handleInput(4)">4</button><button class="btn" onclick="handleInput(5)">5</button><button class="btn" onclick="handleInput(6)">6</button>
+        <button class="btn" onclick="handleInput(7)">7</button><button class="btn" onclick="handleInput(8)">8</button><button class="btn" onclick="handleInput(9)">9</button>
+        <div></div><button class="btn" onclick="handleInput(0)">0</button>
     </div>
 
     <script>
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        function playTone(f, d, type='sine') {
+        function beep(f, d, type='sine') {
             const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
-            o.type = type; o.frequency.value = f;
-            g.gain.setValueAtTime(0.2, audioCtx.currentTime);
+            o.type = type; o.frequency.value = f; g.gain.setValueAtTime(0.2, audioCtx.currentTime);
             g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + d);
             o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime + d);
         }
 
-        // ゲーム状態変数
-        let n = 2; 
+        let n = 2;
         let isHighSpeed = false;
         let questions = [];
         let hitCount = 0;
-        let qIndex = 0;
+        let qIndex = 0; 
         let isWaiting = false;
         let timerInterval;
 
         const el = {
-            display: document.getElementById('display'),
-            nStatus: document.getElementById('n-status'),
-            statsLine: document.getElementById('stats-line'),
+            formulaMem: document.getElementById('formula-mem'),
+            formulaAns: document.getElementById('formula-ans'),
+            upperLabel: document.getElementById('upper-label'),
             bar: document.getElementById('timer-bar'),
-            overlay: document.getElementById('overlay'),
-            resArea: document.getElementById('result-area'),
-            resTitle: document.getElementById('result-title'),
-            resDetail: document.getElementById('result-detail'),
-            mainBtn: document.getElementById('main-btn')
+            startScreen: document.getElementById('start-screen'),
+            feedback: document.getElementById('feedback'),
+            levelDesc: document.getElementById('level-desc')
         };
 
         function initGame() {
-            el.overlay.classList.add('hidden');
-            questions = [];
-            hitCount = 0;
-            qIndex = 0;
-            updateStatusText();
+            el.startScreen.classList.add('hidden');
+            questions = []; hitCount = 0; qIndex = 0;
             nextStep();
         }
 
-        function updateStatusText() {
-            const speedText = isHighSpeed ? "HIGH SPEED" : "NORMAL SPEED";
-            el.nStatus.innerText = `${n}-Back (${speedText})`;
-        }
-
         async function nextStep() {
-            // 全問終了判定 (n個の記憶 + 20個の解答)
-            if (qIndex >= 20) {
-                endGame();
-                return;
-            }
+            if (qIndex >= 20) { endGame(); return; }
 
             isWaiting = true;
-            el.display.classList.remove('correct-text', 'wrong-text');
             el.bar.style.width = "100%";
 
-            // 出題生成 (答えが1桁になる足し算)
-            const a = Math.floor(Math.random() * 5) + 1;
-            const b = Math.floor(Math.random() * 4) + 1;
-            const currentAns = a + b;
-            questions.push(currentAns);
+            // 問題生成
+            let a = Math.floor(Math.random() * 5) + 1;
+            let b = Math.floor(Math.random() * 4) + 1;
+            let formula, ans;
+            if (Math.random() > 0.5) { formula = `${a}+${b}=`; ans = a + b; }
+            else { formula = `${a+b}-${a}=`; ans = b; }
 
-            el.display.innerText = `${a}+${b}`;
-            playTone(440, 0.1);
+            questions.push({ formula, ans });
+            el.formulaMem.innerText = formula;
+            beep(440, 0.1);
 
-            // 設問の間隔
-            const intervalTime = isHighSpeed ? 1500 : 2500;
-            
+            const interval = isHighSpeed ? 2500 : 4000;
+
             if (questions.length <= n) {
-                // 記憶フェーズ
-                el.statsLine.innerText = `MEMORIZING... (${questions.length}/${n})`;
-                setTimeout(nextStep, intervalTime);
+                el.upperLabel.innerText = `MEMORIZING (${questions.length}/${n})`;
+                el.formulaAns.innerText = "Waiting...";
+                setTimeout(nextStep, interval);
             } else {
-                // 解答フェーズ
-                el.statsLine.innerText = `QUESTION ${qIndex + 1} / 20`;
+                el.upperLabel.innerText = "NEXT PROBLEM";
+                el.formulaAns.innerText = questions[qIndex].formula;
                 isWaiting = false;
-                startTimer(intervalTime - 200); 
+                startTimer(interval - 300);
             }
         }
 
@@ -159,64 +167,41 @@
             let start = Date.now();
             clearInterval(timerInterval);
             timerInterval = setInterval(() => {
-                let diff = Date.now() - start;
-                let pct = 100 - (diff / ms * 100);
+                let pct = 100 - ((Date.now() - start) / ms * 100);
                 el.bar.style.width = pct + "%";
-                if (pct <= 0) {
-                    clearInterval(timerInterval);
-                    input(-1); // タイムアップ
-                }
+                if (pct <= 0) { clearInterval(timerInterval); handleInput(-1); }
             }, 50);
         }
 
-        function input(val) {
+        function handleInput(val) {
             if (isWaiting) return;
             isWaiting = true;
             clearInterval(timerInterval);
 
-            const target = questions[qIndex]; // n個前の答え (questions[0]から順に判定)
+            const target = questions[qIndex].ans;
+            const isCorrect = (val === target);
             
-            if (val === target) {
-                hitCount++;
-                el.display.innerText = "OK";
-                el.display.classList.add('correct-text');
-                playTone(880, 0.1);
-            } else {
-                el.display.innerText = val === -1 ? "TIME UP" : "MISS";
-                el.display.classList.add('wrong-text');
-                playTone(220, 0.3, 'sawtooth');
-            }
+            // 演出
+            el.feedback.innerText = target;
+            el.feedback.style.color = isCorrect ? 'var(--success)' : 'var(--danger)';
+            el.feedback.style.display = 'block';
+            if (isCorrect) { hitCount++; beep(880, 0.1); } else { beep(220, 0.3, 'sawtooth'); }
 
-            qIndex++;
-            setTimeout(nextStep, 600);
+            setTimeout(() => {
+                el.feedback.style.display = 'none';
+                qIndex++;
+                nextStep();
+            }, 600);
         }
 
         function endGame() {
-            el.overlay.classList.remove('hidden');
-            el.resArea.classList.remove('hidden');
-            
-            const scorePct = Math.floor((hitCount / 20) * 100);
-            const isPassed = scorePct >= 80;
-
-            if (isPassed) {
-                el.resTitle.innerText = "PASSED!";
-                el.resTitle.className = "result-title correct-text";
-                
-                // レベルアップロジック (スピードとNを交互に)
-                if (!isHighSpeed) {
-                    isHighSpeed = true;
-                } else {
-                    n++;
-                    isHighSpeed = false;
-                }
-                el.resDetail.innerHTML = `Score: ${scorePct}% (${hitCount}/20)<br>Level Up to Next Stage!`;
-                el.mainBtn.innerText = "NEXT LEVEL";
-            } else {
-                el.resTitle.innerText = "FAILED";
-                el.resTitle.className = "result-title wrong-text";
-                el.resDetail.innerHTML = `Score: ${scorePct}% (${hitCount}/20)<br>Try Level ${n} Again.`;
-                el.mainBtn.innerText = "RETRY";
+            const score = Math.floor((hitCount / 20) * 100);
+            const passed = score >= 80;
+            if (passed) {
+                if (!isHighSpeed) isHighSpeed = true; else { n++; isHighSpeed = false; }
             }
+            el.levelDesc.innerText = `Last Score: ${score}% | Next: ${n}-Back ${isHighSpeed?'(High)':'(Normal)'}`;
+            el.startScreen.classList.remove('hidden');
         }
     </script>
 </body>
