@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Self-Mgmt Picross</title>
+    <style>
+        body { background: #f1f5f9; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; }
+        .grid { display: grid; grid-template-columns: 40px repeat(5, 40px); gap: 2px; background: #cbd5e1; padding: 2px; }
+        .cell { width: 40px; height: 40px; background: white; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: bold; user-select: none; }
+        .hint-v { background: #e2e8f0; font-size: 12px; flex-direction: column; }
+        .hint-h { background: #e2e8f0; font-size: 12px; }
+        .filled { background: #334155 ! from; }
+        .mark-x::after { content: "×"; color: #ef4444; font-size: 24px; }
+        .clear-msg { margin-top: 20px; color: #10b981; font-weight: bold; display: none; }
+    </style>
+</head>
+<body>
+    <h2>🧠 Logical Thinking (5x5)</h2>
+    <div id="game-grid" class="grid"></div>
+    <div id="clear-msg" class="clear-msg">MISSION COMPLETE!</div>
+
+    <script>
+        // 正解データ（1が塗りつぶし）
+        const answer = [
+            [0, 1, 1, 1, 0],
+            [1, 1, 0, 1, 1],
+            [1, 0, 0, 0, 1],
+            [1, 1, 0, 1, 1],
+            [0, 1, 1, 1, 0]
+        ];
+
+        function getHints(arr) {
+            let hints = [], count = 0;
+            arr.forEach(v => {
+                if (v === 1) count++;
+                else if (count > 0) { hints.push(count); count = 0; }
+            });
+            if (count > 0) hints.push(count);
+            return hints.length ? hints.join("\n") : "0";
+        }
+
+        const container = document.getElementById('game-grid');
+        // 左上の空枠
+        container.appendChild(document.createElement('div'));
+        // 上のヒント
+        for(let c=0; c<5; c++) {
+            const h = document.createElement('div'); h.className = 'cell hint-v';
+            h.innerText = getHints([answer[0][c], answer[1][c], answer[2][c], answer[3][c], answer[4][c]]);
+            container.appendChild(h);
+        }
+
+        // 行の生成
+        for(let r=0; r<5; r++) {
+            const h = document.createElement('div'); h.className = 'cell hint-h';
+            h.innerText = getHints(answer[r]).replace(/\n/g, " ");
+            container.appendChild(h);
+
+            for(let c=0; c<5; c++) {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.onmousedown = (e) => {
+                    if (e.button === 0) cell.classList.toggle('filled');
+                    if (e.button === 2) cell.classList.toggle('mark-x');
+                    checkClear();
+                };
+                container.appendChild(cell);
+            }
+        }
+
+        function checkClear() {
+            const cells = document.querySelectorAll('.cell:not(.hint-h):not(.hint-v)');
+            let isCorrect = true;
+            cells.forEach((cell, i) => {
+                const r = Math.floor(i / 5), c = i % 5;
+                if (answer[r][c] === 1 && !cell.classList.contains('filled')) isCorrect = false;
+                if (answer[r][c] === 0 && cell.classList.contains('filled')) isCorrect = false;
+            });
+            if (isCorrect) document.getElementById('clear-msg').style.display = 'block';
+        }
+        window.oncontextmenu = (e) => e.preventDefault(); // 右クリックメニュー禁止
+    </script>
+</body>
+</html>
