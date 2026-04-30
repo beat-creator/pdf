@@ -3,54 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Logical Reset 15 | Self-Mgmt</title>
+    <title>Logical Reset | Self-Mgmt</title>
     <style>
         :root { --bg: #0f172a; --text: #f1f5f9; --border: #475569; --filled: #3b82f6; --hint: #94a3b8; }
         body { background: var(--bg); color: var(--text); font-family: sans-serif; margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; }
         
-        /* スクロール用 */
-        .scroll-wrapper {
-            width: 100%;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            padding: 20px 0;
-            display: flex;
-        }
+        header { padding: 10px; background: #1e293b; width: 100%; text-align: center; border-bottom: 1px solid var(--border); }
+        .difficulty-selector { display: flex; gap: 10px; margin: 15px 0; }
+        .diff-btn { padding: 6px 15px; border-radius: 15px; border: 1px solid var(--border); background: #1e293b; color: white; cursor: pointer; font-size: 14px; }
+        .active-diff { background: var(--filled); border-color: var(--filled); }
 
-        /* 盤面：gapを0にしてborderで線を表現 */
-        .grid { 
-            display: grid; 
-            grid-template-columns: 60px repeat(15, 26px); 
-            gap: 0; 
-            margin: 0 auto;
-            border: 1px solid var(--border); /* 外枠 */
-        }
+        .scroll-wrapper { width: 100%; overflow-x: auto; padding-bottom: 20px; display: flex; }
+        .grid { display: grid; gap: 0; margin: 0 auto; border: 1px solid var(--border); }
 
-        .cell { 
-            width: 26px; height: 26px; 
-            background: #1e293b; 
-            border: 0.5px solid var(--border); /* 均一な細線 */
-            box-sizing: border-box; /* サイズ計算を安定させる */
-            display: flex; align-items: center; justify-content: center; 
-            cursor: pointer; user-select: none;
-        }
-
-        /* ヒント領域のスタイル */
-        .hint-v { 
-            height: 80px; background: #161e2e; border: 0.5px solid var(--border); 
-            font-size: 10px; color: var(--hint); display: flex; flex-direction: column; 
-            justify-content: flex-end; align-items: center; padding-bottom: 4px; box-sizing: border-box;
-        }
-        .hint-h { 
-            width: 60px; background: #161e2e; border: 0.5px solid var(--border); 
-            font-size: 10px; color: var(--hint); display: flex; 
-            justify-content: flex-end; align-items: center; padding-right: 6px; box-sizing: border-box;
-        }
+        .cell { background: #1e293b; border: 0.5px solid var(--border); box-sizing: border-box; display: flex; align-items: center; justify-content: center; cursor: pointer; user-select: none; }
+        .hint-v { background: #161e2e; border: 0.5px solid var(--border); font-size: 10px; color: var(--hint); display: flex; flex-direction: column; justify-content: flex-end; align-items: center; padding-bottom: 4px; }
+        .hint-h { background: #161e2e; border: 0.5px solid var(--border); font-size: 10px; color: var(--hint); display: flex; justify-content: flex-end; align-items: center; padding-right: 6px; }
         
-        /* 5マスごとのガイドライン（少し色を明るくして太く見せる） */
         .v-line { border-right: 2px solid #64748b; }
         .h-line { border-bottom: 2px solid #64748b; }
-
         .filled { background: var(--filled) !important; }
         .mark-x::after { content: "×"; color: #ef4444; font-size: 20px; }
         
@@ -61,8 +32,13 @@
 </head>
 <body>
 
-<header style="padding:10px; background:#1e293b; width:100%; text-align:center;">
-    <div style="font-size: 0.9rem;">🧠 Logical Reset (15x15)</div>
+<header>
+    <div style="font-weight: bold;">🧠 Logical Reset</div>
+    <div class="difficulty-selector">
+        <button class="diff-btn" onclick="initGame(5)">5x5</button>
+        <button class="diff-btn" onclick="initGame(10)">10x10</button>
+        <button class="diff-btn active-diff" id="default-btn" onclick="initGame(15)">15x15</button>
+    </div>
 </header>
 
 <div class="scroll-wrapper">
@@ -76,17 +52,85 @@
 
 <script>
     let currentMode = 'fill';
-    const size = 15;
-
-    // サンプルデータ
-    const levelData = Array(size).fill().map((_, r) => 
-        Array(size).fill().map((_, c) => (r+c)%2===0 && Math.abs(7-r)+Math.abs(7-c)<8 ? 1 : 0)
-    );
+    let currentSize = 15;
+    let levelData = [];
 
     function setMode(mode) {
         currentMode = mode;
         document.getElementById('btn-fill').classList.toggle('active-mode', mode === 'fill');
         document.getElementById('btn-x').classList.toggle('active-mode', mode === 'x');
+    }
+
+    // サイズに応じたダミー問題生成（本来はAIやプリセットデータを入れる場所）
+    function generateLevel(size) {
+        return Array(size).fill().map((_, r) => 
+            Array(size).fill().map((_, c) => Math.random() > 0.6 ? 1 : 0)
+        );
+    }
+
+    function initGame(size) {
+        currentSize = size;
+        levelData = generateLevel(size);
+        const container = document.getElementById('game-grid');
+        container.innerHTML = ''; // クリア
+
+        // アクティブボタンの見た目更新
+        document.querySelectorAll('.diff-btn').forEach(btn => {
+            btn.classList.toggle('active-diff', btn.innerText.includes(size));
+        });
+
+        // レイアウト設定：サイズに応じてマスの大きさを調整
+        const cellSize = size === 15 ? 26 : (size === 10 ? 32 : 45);
+        const hintSize = 60;
+        container.style.gridTemplateColumns = `${hintSize}px repeat(${size}, ${cellSize}px)`;
+
+        // 左上
+        const corner = document.createElement('div');
+        corner.style.height = '80px';
+        corner.style.background = "#161e2e";
+        corner.style.border = "0.5px solid var(--border)";
+        container.appendChild(corner);
+
+        // 上ヒント
+        for(let c=0; c<size; c++) {
+            const h = document.createElement('div'); h.className = 'hint-v';
+            h.style.width = cellSize + 'px';
+            if ((c + 1) % 5 === 0 && c !== size-1) h.classList.add('v-line');
+            let col = []; for(let r=0; r<size; r++) col.push(levelData[r][c]);
+            h.innerHTML = getHints(col);
+            container.appendChild(h);
+        }
+
+        // 盤面
+        for(let r=0; r<size; r++) {
+            const h = document.createElement('div'); h.className = 'hint-h';
+            h.style.height = cellSize + 'px';
+            if ((r + 1) % 5 === 0 && r !== size-1) h.classList.add('h-line');
+            h.innerText = getHints(levelData[r]).replace(/<br>/g, " ");
+            container.appendChild(h);
+
+            for(let c=0; c<size; c++) {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.style.width = cellSize + 'px';
+                cell.style.height = cellSize + 'px';
+                if ((c + 1) % 5 === 0 && c !== size-1) cell.classList.add('v-line');
+                if ((r + 1) % 5 === 0 && r !== size-1) cell.classList.add('h-line');
+                
+                cell.addEventListener('pointerdown', (e) => {
+                    e.preventDefault();
+                    if (currentMode === 'fill') {
+                        cell.classList.remove('mark-x');
+                        cell.classList.toggle('filled');
+                    } else {
+                        cell.classList.remove('filled');
+                        cell.classList.toggle('mark-x');
+                    }
+                    checkClear();
+                });
+                container.appendChild(cell);
+            }
+        }
     }
 
     function getHints(arr) {
@@ -99,64 +143,20 @@
         return hints.length ? hints.join("<br>") : "0";
     }
 
-    const container = document.getElementById('game-grid');
-    
-    // 左上
-    const corner = document.createElement('div');
-    corner.style.background = "#161e2e";
-    corner.style.border = "0.5px solid var(--border)";
-    container.appendChild(corner);
-
-    // 上ヒント
-    for(let c=0; c<size; c++) {
-        const h = document.createElement('div'); h.className = 'hint-v';
-        if ((c + 1) % 5 === 0 && c !== size-1) h.classList.add('v-line');
-        let col = []; for(let r=0; r<size; r++) col.push(levelData[r][c]);
-        h.innerHTML = getHints(col);
-        container.appendChild(h);
-    }
-
-    // 盤面生成
-    for(let r=0; r<size; r++) {
-        const h = document.createElement('div'); h.className = 'hint-h';
-        if ((r + 1) % 5 === 0 && r !== size-1) h.classList.add('h-line');
-        h.innerText = getHints(levelData[r]).replace(/<br>/g, " ");
-        container.appendChild(h);
-
-        for(let c=0; c<size; c++) {
-            const cell = document.createElement('div');
-            cell.className = 'cell';
-            // 5マスごとの区切り
-            if ((c + 1) % 5 === 0 && c !== size-1) cell.classList.add('v-line');
-            if ((r + 1) % 5 === 0 && r !== size-1) cell.classList.add('h-line');
-            
-            cell.addEventListener('pointerdown', (e) => {
-                e.preventDefault();
-                if (currentMode === 'fill') {
-                    cell.classList.remove('mark-x');
-                    cell.classList.toggle('filled');
-                } else {
-                    cell.classList.remove('filled');
-                    cell.classList.toggle('mark-x');
-                }
-                checkClear();
-            });
-            container.appendChild(cell);
-        }
-    }
-
     function checkClear() {
         const cells = document.querySelectorAll('.cell');
         let isCorrect = true;
         cells.forEach((cell, i) => {
-            const r = Math.floor(i / size), c = i % size;
+            const r = Math.floor(i / currentSize), c = i % currentSize;
             const isFilled = cell.classList.contains('filled');
             if (levelData[r][c] === 1 && !isFilled) isCorrect = false;
             if (levelData[r][c] === 0 && isFilled) isCorrect = false;
         });
-        if (isCorrect) alert("MISSION COMPLETE!");
+        if (isCorrect) alert("CLEARED!");
     }
+
     window.oncontextmenu = (e) => e.preventDefault();
+    initGame(15); // 初期起動
 </script>
 </body>
 </html>
