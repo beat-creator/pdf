@@ -5,38 +5,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Logical Reset | Pro</title>
     <style>
-        :root { --bg: #0f172a; --text: #f1f5f9; --border: #475569; --filled: #3b82f6; --hint: #94a3b8; }
-        body { background: var(--bg); color: var(--text); font-family: sans-serif; margin: 0; padding: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; transition: 0.5s; }
-        header { padding: 10px; background: #1e293b; width: 100%; text-align: center; border-bottom: 1px solid var(--border); flex-shrink: 0; z-index: 10; }
+        :root { --bg: #0f172a; --text: #f1f5f9; --border: #475569; --filled: #3b82f6; --hint: #94a3b8; --success: #22c55e; }
+        body { background: var(--bg); color: var(--text); font-family: sans-serif; margin: 0; padding: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        header { padding: 10px; background: #1e293b; width: 100%; text-align: center; border-bottom: 1px solid var(--border); flex-shrink: 0; z-index: 100; }
         .difficulty-selector { display: flex; gap: 5px; margin: 8px 0; justify-content: center; }
-        .diff-btn { padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border); background: #1e293b; color: white; font-size: 12px; }
+        .diff-btn { padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border); background: #1e293b; color: white; font-size: 12px; cursor: pointer; }
         .active-diff { background: var(--filled); border-color: var(--filled); }
 
-        .game-container { flex: 1; width: 100%; overflow: auto; display: block; padding: 20px; box-sizing: border-box; -webkit-overflow-scrolling: touch; }
-        .grid { display: grid; gap: 0; border: 1.5px solid #64748b; background: var(--border); margin: 0 auto; width: max-content; transition: 0.5s; }
-        
-        .cell { background: #1e293b; border: 0.5px solid var(--border); box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
-        .hint-v { background: #161e2e; border: 0.5px solid var(--border); font-size: 10px; color: var(--hint); display: flex; flex-direction: column; justify-content: flex-end; align-items: center; line-height: 1.1; padding-bottom: 3px; }
-        .hint-h { background: #161e2e; border: 0.5px solid var(--border); font-size: 10px; color: var(--hint); display: flex; justify-content: flex-end; align-items: center; padding-right: 5px; font-weight: bold; }
+        /* ステージ一覧画面 */
+        #menu-screen { flex: 1; overflow-y: auto; padding: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 15px; }
+        .level-card { background: #1e293b; border: 1px solid var(--border); padding: 15px; border-radius: 12px; text-align: center; cursor: pointer; position: relative; transition: 0.2s; }
+        .level-card:active { transform: scale(0.95); }
+        .level-card.cleared { border-color: var(--success); }
+        .badge { position: absolute; top: -5px; right: -5px; background: var(--success); color: white; font-size: 10px; padding: 2px 6px; border-radius: 10px; font-weight: bold; }
+        .level-title { font-size: 11px; margin-top: 8px; color: var(--hint); display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+        /* ゲーム画面 */
+        #game-screen { flex: 1; display: none; flex-direction: column; overflow: hidden; }
+        .game-container { flex: 1; width: 100%; overflow: auto; padding: 20px; box-sizing: border-box; -webkit-overflow-scrolling: touch; }
+        .grid { display: grid; gap: 0; border: 1.5px solid #64748b; background: var(--border); margin: 0 auto; width: max-content; }
+        .cell { background: #1e293b; border: 0.5px solid var(--border); box-sizing: border-box; }
+        .hint-v { background: #161e2e; border: 0.5px solid var(--border); font-size: 10px; color: var(--hint); display: flex; flex-direction: column; justify-content: flex-end; align-items: center; line-height: 1.1; }
+        .hint-h { background: #161e2e; border: 0.5px solid var(--border); font-size: 10px; color: var(--hint); display: flex; justify-content: flex-end; align-items: center; padding-right: 5px; }
         
         .v-line { border-right: 2px solid #94a3b8 !important; }
         .h-line { border-bottom: 2px solid #94a3b8 !important; }
         .filled { background: var(--filled) !important; }
         .mark-x::after { content: "×"; color: #ef4444; font-size: 18px; font-weight: bold; }
 
-        /* クリア後の演出用スタイル */
-        #msg { position: fixed; bottom: 130px; left: 50%; transform: translateX(-50%); background: rgba(15, 23, 42, 0.9); color: white; padding: 15px; border-radius: 20px; text-align: center; display: none; z-index: 2000; border: 2px solid var(--filled); box-shadow: 0 0 30px rgba(0,0,0,0.8); width: 240px; backdrop-filter: blur(4px); }
-        .reset-btn { margin-top: 10px; padding: 8px 20px; background: var(--filled); border: none; border-radius: 10px; color: white; font-weight: bold; }
-        
-        .cleared-overlay { opacity: 0.3; pointer-events: none; }
-        .controls { display: flex; gap: 30px; padding: 20px; background: #1e293b; width: 100%; justify-content: center; border-top: 1px solid var(--border); flex-shrink: 0; z-index: 10; transition: 0.3s; }
-        .mode-btn { width: 60px; height: 60px; border-radius: 15px; border: 2px solid var(--border); background: #0f172a; font-size: 28px; display: flex; align-items: center; justify-content: center; }
+        /* クリア演出 */
+        #msg { position: fixed; bottom: 130px; left: 50%; transform: translateX(-50%); background: rgba(15, 23, 42, 0.95); color: white; padding: 20px; border-radius: 20px; text-align: center; display: none; z-index: 2000; border: 2px solid var(--success); width: 240px; }
+        .back-btn { margin-top: 10px; padding: 8px 20px; background: var(--success); border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer; }
+
+        .controls { display: flex; gap: 30px; padding: 15px; background: #1e293b; width: 100%; justify-content: center; border-top: 1px solid var(--border); flex-shrink: 0; }
+        .mode-btn { width: 55px; height: 55px; border-radius: 15px; border: 2px solid var(--border); background: #0f172a; font-size: 24px; display: flex; align-items: center; justify-content: center; }
         .active-mode { border-color: var(--filled); background: #334155; }
+        .cleared-overlay { opacity: 0.2; pointer-events: none; }
     </style>
 </head>
 <body>
-<header id="main-header">
-    <div style="font-size: 14px; font-weight: bold; letter-spacing: 1px;">🧠 LOGICAL RESET</div>
+<header>
+    <div id="header-title" style="font-size: 14px; font-weight: bold; letter-spacing: 1px;">🧠 LOGICAL RESET</div>
     <div class="difficulty-selector">
         <button class="diff-btn" onclick="changeDifficulty(5)">5x5</button>
         <button class="diff-btn" onclick="changeDifficulty(10)">10x10</button>
@@ -44,23 +53,27 @@
     </div>
 </header>
 
-<div class="game-container">
-    <div id="game-grid" class="grid"></div>
+<div id="menu-screen"></div>
+
+<div id="game-screen">
+    <div class="game-container">
+        <div id="game-grid" class="grid"></div>
+    </div>
+    <div class="controls" id="game-controls">
+        <div id="btn-fill" class="mode-btn active-mode" onclick="setMode('fill')">🟦</div>
+        <div id="btn-x" class="mode-btn" onclick="setMode('x')">❌</div>
+    </div>
 </div>
 
 <div id="msg">
     <div id="msg-text"></div>
-    <button class="reset-btn" onclick="location.reload()">NEXT STAGE</button>
-</div>
-
-<div class="controls" id="main-controls">
-    <div id="btn-fill" class="mode-btn active-mode" onclick="setMode('fill')">🟦</div>
-    <div id="btn-x" class="mode-btn" onclick="setMode('x')">❌</div>
+    <button class="back-btn" onclick="backToMenu()">STAGE LIST</button>
 </div>
 
 <script>
     let currentMode = 'fill';
     let currentSize = 15;
+    let currentLevelId = null;
     let levelData = [], colorMap = [], levelTitle = "";
     let allLevels = null;
 
@@ -68,31 +81,61 @@
         try {
             const res = await fetch('levels.json');
             allLevels = await res.json();
-            changeDifficulty(15);
+            showMenu(15);
         } catch (e) { alert("JSON Read Error"); }
+    }
+
+    function changeDifficulty(size) {
+        currentSize = size;
+        document.getElementById('msg').style.display = 'none';
+        showMenu(size);
+    }
+
+    // ステージ一覧を表示
+    function showMenu(size) {
+        document.getElementById('game-screen').style.display = 'none';
+        const menu = document.getElementById('menu-screen');
+        menu.style.display = 'grid';
+        menu.innerHTML = '';
+        
+        document.querySelectorAll('.diff-btn').forEach(b => b.classList.toggle('active-diff', b.innerText.includes(size)));
+        
+        const pool = allLevels[`size${size}`];
+        const clearedList = JSON.parse(localStorage.getItem('cleared_levels') || '[]');
+
+        pool.forEach(level => {
+            const isCleared = clearedList.includes(`${size}_${level.id}`);
+            const card = document.createElement('div');
+            card.className = `level-card ${isCleared ? 'cleared' : ''}`;
+            card.innerHTML = `
+                <div style="font-size:20px;">${size}x${size}</div>
+                <span class="level-title">${level.title}</span>
+                ${isCleared ? '<span class="badge">DONE ✅</span>' : ''}
+            `;
+            card.onclick = () => startLevel(level);
+            menu.appendChild(card);
+        });
+    }
+
+    function startLevel(level) {
+        currentLevelId = level.id;
+        levelData = level.data;
+        colorMap = level.colorMap;
+        levelTitle = level.title;
+        
+        document.getElementById('menu-screen').style.display = 'none';
+        document.getElementById('game-screen').style.display = 'flex';
+        render();
+    }
+
+    function backToMenu() {
+        showMenu(currentSize);
     }
 
     function setMode(m) {
         currentMode = m;
         document.getElementById('btn-fill').classList.toggle('active-mode', m === 'fill');
         document.getElementById('btn-x').classList.toggle('active-mode', m === 'x');
-    }
-
-    function changeDifficulty(size) {
-        if (!allLevels) return;
-        currentSize = size;
-        document.getElementById('msg').style.display = 'none';
-        // 演出リセット
-        document.getElementById('main-header').classList.remove('cleared-overlay');
-        document.getElementById('main-controls').classList.remove('cleared-overlay');
-        
-        const pool = allLevels[`size${size}`];
-        const selected = pool[Math.floor(Math.random() * pool.length)];
-        levelData = selected.data;
-        colorMap = selected.colorMap;
-        levelTitle = selected.title;
-        document.querySelectorAll('.diff-btn').forEach(b => b.classList.toggle('active-diff', b.innerText.includes(size)));
-        render();
     }
 
     function render() {
@@ -107,8 +150,7 @@
 
         for(let j=0; j<currentSize; j++) {
             const h = document.createElement('div');
-            h.className = 'hint-v';
-            h.style.width = cellSize + 'px';
+            h.className = 'hint-v'; h.style.width = cellSize + 'px';
             if((j+1)%5===0 && j!==currentSize-1) h.classList.add('v-line');
             let col = []; for(let i=0; i<currentSize; i++) col.push(levelData[i][j]);
             h.innerHTML = getHints(col).join("<br>");
@@ -117,8 +159,7 @@
 
         for(let i=0; i<currentSize; i++) {
             const rh = document.createElement('div');
-            rh.className = 'hint-h';
-            rh.style.height = cellSize + 'px';
+            rh.className = 'hint-h'; rh.style.height = cellSize + 'px';
             if((i+1)%5===0 && i!==currentSize-1) rh.classList.add('h-line');
             rh.innerText = getHints(levelData[i]).join(" ");
             container.appendChild(rh);
@@ -126,8 +167,7 @@
             for(let j=0; j<currentSize; j++) {
                 const cell = document.createElement('div');
                 cell.className = 'cell';
-                cell.style.width = cellSize + 'px';
-                cell.style.height = cellSize + 'px';
+                cell.style.width = cellSize + 'px'; cell.style.height = cellSize + 'px';
                 if((j+1)%5===0 && j!==currentSize-1) cell.classList.add('v-line');
                 if((i+1)%5===0 && i!==currentSize-1) cell.classList.add('h-line');
                 
@@ -159,22 +199,25 @@
         });
 
         if(ok) {
-            // クリア演出：ヘッダーと操作パネルを暗く
-            document.getElementById('main-header').classList.add('cleared-overlay');
-            document.getElementById('main-controls').classList.add('cleared-overlay');
+            // クリア状況をLocalStorageに保存
+            const clearedList = JSON.parse(localStorage.getItem('cleared_levels') || '[]');
+            const key = `${currentSize}_${currentLevelId}`;
+            if(!clearedList.includes(key)) {
+                clearedList.push(key);
+                localStorage.setItem('cleared_levels', JSON.stringify(clearedList));
+            }
 
             cells.forEach((cell, idx) => {
                 const r = Math.floor(idx / currentSize), c = idx % currentSize;
                 const col = colorMap[r][c];
-                if(col !== 0 && col !== null) {
+                if(col !== 0) {
                     cell.style.setProperty('background-color', col, 'important');
                     cell.style.borderColor = "transparent";
                 } else {
                     cell.style.opacity = "0.1";
-                    cell.classList.remove('mark-x');
                 }
             });
-            document.getElementById('msg-text').innerHTML = `MISSION COMPLETE!<br><span style="color:#94a3b8; font-size:0.9em;">「${levelTitle}」</span>`;
+            document.getElementById('msg-text').innerHTML = `GREAT WORK!<br><span style="color:var(--success);">「${levelTitle}」</span>`;
             document.getElementById('msg').style.display = 'block';
         }
     }
