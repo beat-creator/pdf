@@ -16,13 +16,18 @@
         .cell { background: #1e293b; border: 0.5px solid var(--border); box-sizing: border-box; display: flex; align-items: center; justify-content: center; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; transition: background-color 0.1s; }
         .hint-v { background: #161e2e; border: 0.5px solid var(--border); font-size: 10px; color: var(--hint); display: flex; flex-direction: column; justify-content: flex-end; align-items: center; padding-bottom: 4px; box-sizing: border-box; font-weight: bold; line-height: 1.2; }
         .hint-h { background: #161e2e; border: 0.5px solid var(--border); font-size: 10px; color: var(--hint); display: flex; justify-content: flex-end; align-items: center; padding-right: 6px; box-sizing: border-box; font-weight: bold; }
+        
+        /* 5マスごとのガイド線 */
         .v-line { border-right: 2px solid #94a3b8 !important; }
         .h-line { border-bottom: 2px solid #94a3b8 !important; }
+        
         .filled { background: var(--filled) !important; }
         .mark-x::after { content: "×"; color: #ef4444; font-size: 20px; font-weight: bold; }
+        
         .controls { display: flex; gap: 25px; padding: 20px; background: #1e293b; position: sticky; bottom: 0; width: 100%; justify-content: center; border-top: 1px solid var(--border); z-index: 100; box-sizing: border-box; }
         .mode-btn { width: 68px; height: 68px; border-radius: 18px; border: 3px solid var(--border); background: #0f172a; font-size: 30px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
         .active-mode { border-color: var(--filled); background: #1e293b; transform: scale(1.05); }
+        
         #msg { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(15, 23, 42, 0.96); color: white; padding: 30px; border-radius: 24px; text-align: center; font-weight: bold; display: none; z-index: 1000; border: 2px solid var(--filled); box-shadow: 0 20px 50px rgba(0,0,0,0.7); pointer-events: auto; }
         .reset-btn { margin-top: 15px; padding: 8px 20px; background: var(--filled); border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer; }
     </style>
@@ -59,7 +64,7 @@
             allLevels = await res.json();
             changeDifficulty(15);
         } catch (e) {
-            alert("levels.jsonを読み込めませんでした。GitHub Pages等のサーバー環境で実行してください。");
+            alert("levels.jsonを読み込めませんでした。");
         }
     }
 
@@ -89,13 +94,11 @@
         const hW = 55, hH = 75;
         container.style.gridTemplateColumns = `${hW}px repeat(${currentSize}, ${cellSize}px)`;
 
-        // Corner
         const corner = document.createElement('div');
         corner.style.height = hH + 'px';
         corner.style.background = "#0f172a";
         container.appendChild(corner);
 
-        // V-Hints
         for(let j=0; j<currentSize; j++) {
             const h = document.createElement('div');
             h.className = 'hint-v';
@@ -106,7 +109,6 @@
             container.appendChild(h);
         }
 
-        // Rows & Cells
         for(let i=0; i<currentSize; i++) {
             const rh = document.createElement('div');
             rh.className = 'hint-h';
@@ -160,8 +162,9 @@
             cells.forEach((cell, idx) => {
                 const r = Math.floor(idx / currentSize), c = idx % currentSize;
                 const col = colorMap[r][c];
-                if(col !== 0) {
-                    cell.style.backgroundColor = col;
+                if(col !== 0 && col !== null) {
+                    // ここが重要：!importantを指定してスタイルを上書き
+                    cell.style.setProperty('background-color', col, 'important');
                     cell.style.borderColor = "transparent";
                 } else {
                     cell.style.opacity = "0.2";
