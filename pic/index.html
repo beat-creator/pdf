@@ -2,42 +2,43 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Logical Reset | Pro</title>
     <style>
         :root { --bg: #0f172a; --text: #f1f5f9; --border: #475569; --filled: #3b82f6; --hint: #94a3b8; }
-        body { background: var(--bg); color: var(--text); font-family: sans-serif; margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; height: 100vh; overflow: hidden; touch-action: manipulation; }
-        header { padding: 10px; background: #1e293b; width: 100%; text-align: center; border-bottom: 1px solid var(--border); }
+        body { background: var(--bg); color: var(--text); font-family: sans-serif; margin: 0; padding: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        header { padding: 10px; background: #1e293b; width: 100%; text-align: center; border-bottom: 1px solid var(--border); flex-shrink: 0; }
         .difficulty-selector { display: flex; gap: 5px; margin: 8px 0; justify-content: center; }
-        .diff-btn { padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border); background: #1e293b; color: white; cursor: pointer; font-size: 12px; }
+        .diff-btn { padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border); background: #1e293b; color: white; font-size: 12px; }
         .active-diff { background: var(--filled); border-color: var(--filled); }
 
-        /* 盤面エリアの最適化 */
-        .game-container { flex: 1; width: 100%; overflow: auto; display: flex; align-items: flex-start; justify-content: center; padding: 10px; box-sizing: border-box; }
-        .grid { display: grid; gap: 0; border: 1.5px solid #64748b; background: var(--border); }
-        .cell { background: #1e293b; border: 0.5px solid var(--border); box-sizing: border-box; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; }
+        /* スクロールと拡大を可能にするコンテナ */
+        .game-container { flex: 1; width: 100%; overflow: auto; display: block; padding: 20px; box-sizing: border-box; -webkit-overflow-scrolling: touch; }
+        .grid { display: grid; gap: 0; border: 1.5px solid #64748b; background: var(--border); margin: 0 auto; width: max-content; }
         
-        /* ヒント周りの調整 */
-        .hint-v { background: #161e2e; border: 0.5px solid var(--border); font-size: 9px; color: var(--hint); display: flex; flex-direction: column; justify-content: flex-end; align-items: center; line-height: 1; padding-bottom: 2px; }
-        .hint-h { background: #161e2e; border: 0.5px solid var(--border); font-size: 9px; color: var(--hint); display: flex; justify-content: flex-end; align-items: center; padding-right: 3px; font-weight: bold; line-height: 1; }
+        /* マス目サイズをタップしやすい大きさに固定 */
+        .cell { background: #1e293b; border: 0.5px solid var(--border); box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
+        
+        .hint-v { background: #161e2e; border: 0.5px solid var(--border); font-size: 10px; color: var(--hint); display: flex; flex-direction: column; justify-content: flex-end; align-items: center; line-height: 1.1; padding-bottom: 3px; }
+        .hint-h { background: #161e2e; border: 0.5px solid var(--border); font-size: 10px; color: var(--hint); display: flex; justify-content: flex-end; align-items: center; padding-right: 5px; font-weight: bold; }
         
         .v-line { border-right: 2px solid #94a3b8 !important; }
         .h-line { border-bottom: 2px solid #94a3b8 !important; }
         .filled { background: var(--filled) !important; }
-        .mark-x::after { content: "×"; color: #ef4444; font-size: 16px; font-weight: bold; line-height: 1; }
+        .mark-x::after { content: "×"; color: #ef4444; font-size: 18px; font-weight: bold; }
 
-        /* メッセージ表示を下に逃がす */
-        #msg { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: rgba(30, 41, 59, 0.95); color: white; padding: 15px 25px; border-radius: 15px; text-align: center; display: none; z-index: 1000; border: 2px solid var(--filled); box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 80%; max-width: 300px; }
-        .reset-btn { margin-top: 10px; padding: 8px 20px; background: var(--filled); border: none; border-radius: 8px; color: white; font-weight: bold; }
+        /* クリアメッセージ */
+        #msg { position: fixed; bottom: 120px; left: 50%; transform: translateX(-50%); background: rgba(15, 23, 42, 0.98); color: white; padding: 20px; border-radius: 15px; text-align: center; display: none; z-index: 1000; border: 2px solid var(--filled); box-shadow: 0 10px 40px rgba(0,0,0,0.6); width: 260px; }
+        .reset-btn { margin-top: 10px; padding: 10px 25px; background: var(--filled); border: none; border-radius: 8px; color: white; font-weight: bold; }
 
-        .controls { display: flex; gap: 20px; padding: 15px; background: #1e293b; width: 100%; justify-content: center; border-top: 1px solid var(--border); }
-        .mode-btn { width: 55px; height: 55px; border-radius: 12px; border: 2px solid var(--border); background: #0f172a; font-size: 24px; display: flex; align-items: center; justify-content: center; }
-        .active-mode { border-color: var(--filled); background: #1e293b; }
+        .controls { display: flex; gap: 30px; padding: 20px; background: #1e293b; width: 100%; justify-content: center; border-top: 1px solid var(--border); flex-shrink: 0; }
+        .mode-btn { width: 60px; height: 60px; border-radius: 15px; border: 2px solid var(--border); background: #0f172a; font-size: 28px; display: flex; align-items: center; justify-content: center; }
+        .active-mode { border-color: var(--filled); background: #334155; }
     </style>
 </head>
 <body>
 <header>
-    <div style="font-size: 14px; font-weight: bold;">🧠 LOGICAL RESET</div>
+    <div style="font-size: 14px; font-weight: bold; letter-spacing: 1px;">🧠 LOGICAL RESET</div>
     <div class="difficulty-selector">
         <button class="diff-btn" onclick="changeDifficulty(5)">5x5</button>
         <button class="diff-btn" onclick="changeDifficulty(10)">10x10</button>
@@ -70,7 +71,7 @@
             const res = await fetch('levels.json');
             allLevels = await res.json();
             changeDifficulty(15);
-        } catch (e) { alert("levels.json Read Error"); }
+        } catch (e) { alert("JSON Read Error"); }
     }
 
     function setMode(m) {
@@ -96,14 +97,11 @@
         const container = document.getElementById('game-grid');
         container.innerHTML = '';
         
-        // 画面幅に合わせてマスサイズを自動調整（スマホ最適化）
-        const screenWidth = window.innerWidth - 40;
-        const hintSpace = 40; 
-        const cellSize = Math.floor((screenWidth - hintSpace) / currentSize);
-        const limitedSize = Math.min(cellSize, currentSize === 15 ? 20 : 40); // 最大サイズ制限
+        // タップしやすいサイズを維持（15マスでも小さくしすぎない）
+        const cellSize = currentSize === 15 ? 28 : (currentSize === 10 ? 35 : 55);
+        const hW = 50, hH = 70;
         
-        const hW = 40, hH = 60;
-        container.style.gridTemplateColumns = `${hW}px repeat(${currentSize}, ${limitedSize}px)`;
+        container.style.gridTemplateColumns = `${hW}px repeat(${currentSize}, ${cellSize}px)`;
 
         const corner = document.createElement('div');
         corner.style.height = hH + 'px';
@@ -112,7 +110,7 @@
         for(let j=0; j<currentSize; j++) {
             const h = document.createElement('div');
             h.className = 'hint-v';
-            h.style.width = limitedSize + 'px';
+            h.style.width = cellSize + 'px';
             if((j+1)%5===0 && j!==currentSize-1) h.classList.add('v-line');
             let col = []; for(let i=0; i<currentSize; i++) col.push(levelData[i][j]);
             h.innerHTML = getHints(col).join("<br>");
@@ -122,7 +120,7 @@
         for(let i=0; i<currentSize; i++) {
             const rh = document.createElement('div');
             rh.className = 'hint-h';
-            rh.style.height = limitedSize + 'px';
+            rh.style.height = cellSize + 'px';
             if((i+1)%5===0 && i!==currentSize-1) rh.classList.add('h-line');
             rh.innerText = getHints(levelData[i]).join(" ");
             container.appendChild(rh);
@@ -130,14 +128,17 @@
             for(let j=0; j<currentSize; j++) {
                 const cell = document.createElement('div');
                 cell.className = 'cell';
-                cell.style.width = limitedSize + 'px';
-                cell.style.height = limitedSize + 'px';
+                cell.style.width = cellSize + 'px';
+                cell.style.height = cellSize + 'px';
                 if((j+1)%5===0 && j!==currentSize-1) cell.classList.add('v-line');
                 if((i+1)%5===0 && i!==currentSize-1) cell.classList.add('h-line');
                 
                 cell.addEventListener('pointerdown', (e) => {
                     if(document.getElementById('msg').style.display === 'block') return;
-                    e.preventDefault();
+                    // pointerイベントを拾いつつ、スクロールを阻害しないように調整
+                    if (e.pointerType === 'touch') {
+                        // タッチ操作時は少し遊びを持たせる（誤操作防止）
+                    }
                     if(currentMode === 'fill') { cell.classList.remove('mark-x'); cell.classList.toggle('filled'); }
                     else { cell.classList.remove('filled'); cell.classList.toggle('mark-x'); }
                     check();
@@ -171,11 +172,11 @@
                     cell.style.setProperty('background-color', col, 'important');
                     cell.style.borderColor = "transparent";
                 } else {
-                    cell.style.opacity = "0.1";
+                    cell.style.opacity = "0.15";
                     cell.classList.remove('mark-x');
                 }
             });
-            document.getElementById('msg-text').innerHTML = `COMPLETE!<br><small>「${levelTitle}」</small>`;
+            document.getElementById('msg-text').innerHTML = `MISSION COMPLETE!<br><span style="font-size:1.1em; color:var(--filled);">「${levelTitle}」</span>`;
             document.getElementById('msg').style.display = 'block';
         }
     }
