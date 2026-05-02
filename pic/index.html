@@ -2,131 +2,138 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Logical Reset | Self-Mgmt</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Logical Reset | Pro</title>
     <style>
         :root { --bg: #0f172a; --text: #f1f5f9; --border: #475569; --filled: #3b82f6; --hint: #94a3b8; }
-        body { background: var(--bg); color: var(--text); font-family: sans-serif; margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; }
-        
-        header { padding: 10px; background: #1e293b; width: 100%; text-align: center; border-bottom: 1px solid var(--border); }
-        .difficulty-selector { display: flex; gap: 10px; margin: 15px 0; }
-        .diff-btn { padding: 6px 15px; border-radius: 15px; border: 1px solid var(--border); background: #1e293b; color: white; cursor: pointer; font-size: 14px; }
-        .active-diff { background: var(--filled); border-color: var(--filled); }
-
-        .scroll-wrapper { width: 100%; overflow-x: auto; padding-bottom: 20px; display: flex; }
-        .grid { display: grid; gap: 0; margin: 0 auto; border: 1px solid var(--border); }
-
-        .cell { background: #1e293b; border: 0.5px solid var(--border); box-sizing: border-box; display: flex; align-items: center; justify-content: center; cursor: pointer; user-select: none; }
-        .hint-v { background: #161e2e; border: 0.5px solid var(--border); font-size: 10px; color: var(--hint); display: flex; flex-direction: column; justify-content: flex-end; align-items: center; padding-bottom: 4px; }
-        .hint-h { background: #161e2e; border: 0.5px solid var(--border); font-size: 10px; color: var(--hint); display: flex; justify-content: flex-end; align-items: center; padding-right: 6px; }
-        
-        .v-line { border-right: 2px solid #64748b; }
-        .h-line { border-bottom: 2px solid #64748b; }
+        body { background: var(--bg); color: var(--text); font-family: sans-serif; margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; overflow-x: hidden; touch-action: manipulation; }
+        header { padding: 15px; background: #1e293b; width: 100%; text-align: center; border-bottom: 1px solid var(--border); box-sizing: border-box; }
+        .difficulty-selector { display: flex; gap: 8px; margin: 15px 0; justify-content: center; }
+        .diff-btn { padding: 8px 15px; border-radius: 20px; border: 1px solid var(--border); background: #1e293b; color: white; cursor: pointer; font-size: 13px; transition: 0.2s; }
+        .active-diff { background: var(--filled); border-color: var(--filled); box-shadow: 0 0 10px rgba(59, 130, 246, 0.4); }
+        .scroll-wrapper { width: 100%; overflow-x: auto; padding: 10px 0 30px 0; display: flex; -webkit-overflow-scrolling: touch; }
+        .grid { display: grid; gap: 0; margin: 0 auto; border: 1.5px solid #64748b; background: var(--border); }
+        .cell { background: #1e293b; border: 0.5px solid var(--border); box-sizing: border-box; display: flex; align-items: center; justify-content: center; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; transition: background-color 0.1s; }
+        .hint-v { background: #161e2e; border: 0.5px solid var(--border); font-size: 10px; color: var(--hint); display: flex; flex-direction: column; justify-content: flex-end; align-items: center; padding-bottom: 4px; box-sizing: border-box; font-weight: bold; line-height: 1.2; }
+        .hint-h { background: #161e2e; border: 0.5px solid var(--border); font-size: 10px; color: var(--hint); display: flex; justify-content: flex-end; align-items: center; padding-right: 6px; box-sizing: border-box; font-weight: bold; }
+        .v-line { border-right: 2px solid #94a3b8 !important; }
+        .h-line { border-bottom: 2px solid #94a3b8 !important; }
         .filled { background: var(--filled) !important; }
-        .mark-x::after { content: "×"; color: #ef4444; font-size: 20px; }
-        
-        .controls { display: flex; gap: 20px; padding: 20px; background: var(--bg); position: sticky; bottom: 0; width: 100%; justify-content: center; border-top: 1px solid var(--border); }
-        .mode-btn { width: 64px; height: 64px; border-radius: 16px; border: 2px solid var(--border); background: #1e293b; font-size: 28px; display: flex; align-items: center; justify-content: center; }
-        .active-mode { border-color: var(--filled); background: #334155; }
+        .mark-x::after { content: "×"; color: #ef4444; font-size: 20px; font-weight: bold; }
+        .controls { display: flex; gap: 25px; padding: 20px; background: #1e293b; position: sticky; bottom: 0; width: 100%; justify-content: center; border-top: 1px solid var(--border); z-index: 100; box-sizing: border-box; }
+        .mode-btn { width: 68px; height: 68px; border-radius: 18px; border: 3px solid var(--border); background: #0f172a; font-size: 30px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
+        .active-mode { border-color: var(--filled); background: #1e293b; transform: scale(1.05); }
+        #msg { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(15, 23, 42, 0.96); color: white; padding: 30px; border-radius: 24px; text-align: center; font-weight: bold; display: none; z-index: 1000; border: 2px solid var(--filled); box-shadow: 0 20px 50px rgba(0,0,0,0.7); pointer-events: auto; }
+        .reset-btn { margin-top: 15px; padding: 8px 20px; background: var(--filled); border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
-
 <header>
-    <div style="font-weight: bold;">🧠 Logical Reset</div>
+    <div style="font-weight: bold; letter-spacing: 1px;">🧠 LOGICAL RESET</div>
     <div class="difficulty-selector">
-        <button class="diff-btn" onclick="initGame(5)">5x5</button>
-        <button class="diff-btn" onclick="initGame(10)">10x10</button>
-        <button class="diff-btn active-diff" id="default-btn" onclick="initGame(15)">15x15</button>
+        <button class="diff-btn" onclick="changeDifficulty(5)">5x5</button>
+        <button class="diff-btn" onclick="changeDifficulty(10)">10x10</button>
+        <button class="diff-btn" onclick="changeDifficulty(15)">15x15</button>
     </div>
 </header>
-
 <div class="scroll-wrapper">
     <div id="game-grid" class="grid"></div>
 </div>
-
+<div id="msg">
+    <div id="msg-text">COMPLETE!</div>
+    <button class="reset-btn" onclick="location.reload()">NEXT STAGE</button>
+</div>
 <div class="controls">
     <div id="btn-fill" class="mode-btn active-mode" onclick="setMode('fill')">🟦</div>
     <div id="btn-x" class="mode-btn" onclick="setMode('x')">❌</div>
 </div>
-
 <script>
     let currentMode = 'fill';
     let currentSize = 15;
-    let levelData = [];
+    let levelData = [], colorMap = [], levelTitle = "";
+    let allLevels = null;
 
-    function setMode(mode) {
-        currentMode = mode;
-        document.getElementById('btn-fill').classList.toggle('active-mode', mode === 'fill');
-        document.getElementById('btn-x').classList.toggle('active-mode', mode === 'x');
+    async function init() {
+        try {
+            const res = await fetch('levels.json');
+            allLevels = await res.json();
+            changeDifficulty(15);
+        } catch (e) {
+            alert("levels.jsonを読み込めませんでした。GitHub Pages等のサーバー環境で実行してください。");
+        }
     }
 
-    // サイズに応じたダミー問題生成（本来はAIやプリセットデータを入れる場所）
-    function generateLevel(size) {
-        return Array(size).fill().map((_, r) => 
-            Array(size).fill().map((_, c) => Math.random() > 0.6 ? 1 : 0)
-        );
+    function setMode(m) {
+        currentMode = m;
+        document.getElementById('btn-fill').classList.toggle('active-mode', m === 'fill');
+        document.getElementById('btn-x').classList.toggle('active-mode', m === 'x');
     }
 
-    function initGame(size) {
+    function changeDifficulty(size) {
+        if (!allLevels) return;
         currentSize = size;
-        levelData = generateLevel(size);
+        document.getElementById('msg').style.display = 'none';
+        const pool = allLevels[`size${size}`];
+        const selected = pool[Math.floor(Math.random() * pool.length)];
+        levelData = selected.data;
+        colorMap = selected.colorMap;
+        levelTitle = selected.title;
+        document.querySelectorAll('.diff-btn').forEach(b => b.classList.toggle('active-diff', b.innerText.includes(size)));
+        render();
+    }
+
+    function render() {
         const container = document.getElementById('game-grid');
-        container.innerHTML = ''; // クリア
+        container.innerHTML = '';
+        const cellSize = currentSize === 15 ? 24 : (currentSize === 10 ? 32 : 55);
+        const hW = 55, hH = 75;
+        container.style.gridTemplateColumns = `${hW}px repeat(${currentSize}, ${cellSize}px)`;
 
-        // アクティブボタンの見た目更新
-        document.querySelectorAll('.diff-btn').forEach(btn => {
-            btn.classList.toggle('active-diff', btn.innerText.includes(size));
-        });
-
-        // レイアウト設定：サイズに応じてマスの大きさを調整
-        const cellSize = size === 15 ? 26 : (size === 10 ? 32 : 45);
-        const hintSize = 60;
-        container.style.gridTemplateColumns = `${hintSize}px repeat(${size}, ${cellSize}px)`;
-
-        // 左上
+        // Corner
         const corner = document.createElement('div');
-        corner.style.height = '80px';
-        corner.style.background = "#161e2e";
-        corner.style.border = "0.5px solid var(--border)";
+        corner.style.height = hH + 'px';
+        corner.style.background = "#0f172a";
         container.appendChild(corner);
 
-        // 上ヒント
-        for(let c=0; c<size; c++) {
-            const h = document.createElement('div'); h.className = 'hint-v';
+        // V-Hints
+        for(let j=0; j<currentSize; j++) {
+            const h = document.createElement('div');
+            h.className = 'hint-v';
             h.style.width = cellSize + 'px';
-            if ((c + 1) % 5 === 0 && c !== size-1) h.classList.add('v-line');
-            let col = []; for(let r=0; r<size; r++) col.push(levelData[r][c]);
-            h.innerHTML = getHints(col);
+            if((j+1)%5===0 && j!==currentSize-1) h.classList.add('v-line');
+            let col = []; for(let i=0; i<currentSize; i++) col.push(levelData[i][j]);
+            h.innerHTML = getHints(col).join("<br>");
             container.appendChild(h);
         }
 
-        // 盤面
-        for(let r=0; r<size; r++) {
-            const h = document.createElement('div'); h.className = 'hint-h';
-            h.style.height = cellSize + 'px';
-            if ((r + 1) % 5 === 0 && r !== size-1) h.classList.add('h-line');
-            h.innerText = getHints(levelData[r]).replace(/<br>/g, " ");
-            container.appendChild(h);
+        // Rows & Cells
+        for(let i=0; i<currentSize; i++) {
+            const rh = document.createElement('div');
+            rh.className = 'hint-h';
+            rh.style.height = cellSize + 'px';
+            if((i+1)%5===0 && i!==currentSize-1) rh.classList.add('h-line');
+            rh.innerText = getHints(levelData[i]).join(" ");
+            container.appendChild(rh);
 
-            for(let c=0; c<size; c++) {
+            for(let j=0; j<currentSize; j++) {
                 const cell = document.createElement('div');
                 cell.className = 'cell';
                 cell.style.width = cellSize + 'px';
                 cell.style.height = cellSize + 'px';
-                if ((c + 1) % 5 === 0 && c !== size-1) cell.classList.add('v-line');
-                if ((r + 1) % 5 === 0 && r !== size-1) cell.classList.add('h-line');
+                if((j+1)%5===0 && j!==currentSize-1) cell.classList.add('v-line');
+                if((i+1)%5===0 && i!==currentSize-1) cell.classList.add('h-line');
                 
                 cell.addEventListener('pointerdown', (e) => {
+                    if(document.getElementById('msg').style.display === 'block') return;
                     e.preventDefault();
-                    if (currentMode === 'fill') {
+                    if(currentMode === 'fill') {
                         cell.classList.remove('mark-x');
                         cell.classList.toggle('filled');
                     } else {
                         cell.classList.remove('filled');
                         cell.classList.toggle('mark-x');
                     }
-                    checkClear();
+                    check();
                 });
                 container.appendChild(cell);
             }
@@ -134,29 +141,39 @@
     }
 
     function getHints(arr) {
-        let hints = [], count = 0;
-        arr.forEach(v => {
-            if (v === 1) count++;
-            else if (count > 0) { hints.push(count); count = 0; }
-        });
-        if (count > 0) hints.push(count);
-        return hints.length ? hints.join("<br>") : "0";
+        let h = [], c = 0;
+        arr.forEach(v => { if(v===1) c++; else if(c>0){ h.push(c); c=0; } });
+        if(c>0) h.push(c);
+        return h.length ? h : [0];
     }
 
-    function checkClear() {
+    function check() {
         const cells = document.querySelectorAll('.cell');
-        let isCorrect = true;
-        cells.forEach((cell, i) => {
-            const r = Math.floor(i / currentSize), c = i % currentSize;
-            const isFilled = cell.classList.contains('filled');
-            if (levelData[r][c] === 1 && !isFilled) isCorrect = false;
-            if (levelData[r][c] === 0 && isFilled) isCorrect = false;
+        let ok = true;
+        cells.forEach((cell, idx) => {
+            const r = Math.floor(idx / currentSize), c = idx % currentSize;
+            const filled = cell.classList.contains('filled');
+            if((levelData[r][c]===1 && !filled) || (levelData[r][c]===0 && filled)) ok = false;
         });
-        if (isCorrect) alert("CLEARED!");
-    }
 
+        if(ok) {
+            cells.forEach((cell, idx) => {
+                const r = Math.floor(idx / currentSize), c = idx % currentSize;
+                const col = colorMap[r][c];
+                if(col !== 0) {
+                    cell.style.backgroundColor = col;
+                    cell.style.borderColor = "transparent";
+                } else {
+                    cell.style.opacity = "0.2";
+                    cell.classList.remove('mark-x');
+                }
+            });
+            document.getElementById('msg-text').innerHTML = `MISSION COMPLETE!<br><span style="font-size:0.8em; color:#94a3b8; font-weight:normal;">「${levelTitle}」</span>`;
+            document.getElementById('msg').style.display = 'block';
+        }
+    }
     window.oncontextmenu = (e) => e.preventDefault();
-    initGame(15); // 初期起動
+    init();
 </script>
 </body>
 </html>
