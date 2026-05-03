@@ -61,6 +61,7 @@
             color: var(--primary); letter-spacing: 0.1em; text-align: center; width: 100%;
         }
 
+        /* コントロールエリア */
         .controls {
             margin-top: 60px; display: flex; flex-direction: column; align-items: center; gap: 15px;
             z-index: 20; transition: opacity 0.5s;
@@ -80,7 +81,15 @@
             background: var(--primary); color: white; border: none;
             padding: 16px 50px; font-size: 1.15rem; font-weight: bold;
             border-radius: 99px; box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3);
-            margin-top: 10px;
+            margin-top: 10px; cursor: pointer;
+        }
+
+        /* 瞑想中のUI状態 */
+        body.meditating .controls {
+            opacity: 0.2; /* 少し薄くする */
+        }
+        body.meditating .controls:hover {
+            opacity: 1; /* マウスホバーやタップでしっかり表示 */
         }
 
         .content-section { width: 100%; max-width: 600px; padding: 20px 20px 80px; box-sizing: border-box; }
@@ -88,14 +97,9 @@
         h2 { font-size: 1.3rem; margin-top: 0; color: var(--primary); border-bottom: 2px solid var(--bg-light); padding-bottom: 12px; margin-bottom: 20px; }
         h3 { font-size: 1.1rem; margin: 20px 0 8px 0; color: var(--text-main); }
         p { font-size: 0.95rem; line-height: 1.8; color: var(--text-sub); margin-bottom: 15px; }
-        .step-list { padding-left: 0; list-style: none; font-size: 0.95rem; color: var(--text-sub); line-height: 2; }
-        .step-list li::before { content: "・"; color: var(--primary); font-weight: bold; margin-right: 8px; }
 
-        body.meditating .controls { opacity: 0.1; pointer-events: none; }
-        body.meditating .controls:hover { opacity: 1; pointer-events: auto; }
-        
-        /* カウントダウン中の特別なスタイル */
-        .preparing .breathe-circle { opacity: 0.2; transform: scale(0.8); background: #94a3b8; }
+        /* カウントダウン中の背景 */
+        .preparing .breathe-circle { background: #94a3b8; transform: scale(0.7); opacity: 0.2; }
     </style>
 </head>
 <body>
@@ -113,12 +117,12 @@
     </div>
 
     <div class="controls">
-        <div class="rhythm-selector">
+        <div class="rhythm-selector" id="rhythmArea">
             <button onclick="setRhythm('zen')" id="btn-zen" class="active">禅 (5-5)</button>
             <button onclick="setRhythm('box')" id="btn-box">集中 (4-4-4-4)</button>
             <button onclick="setRhythm('relax')" id="btn-relax">休息 (4-7-8)</button>
         </div>
-        <div class="time-presets">
+        <div class="time-presets" id="timeArea">
             <button onclick="setDuration(300)" id="btn-time-300" class="active">5分</button>
             <button onclick="setDuration(600)" id="btn-time-600">10分</button>
             <button onclick="setDuration(900)" id="btn-time-900">15分</button>
@@ -126,30 +130,13 @@
         <div class="main-controls">
             <button class="start-btn" id="startBtn" onclick="toggleMeditation()">瞑想を開始する</button>
         </div>
-        <div style="color: var(--text-sub); font-size: 0.85rem; margin-top: 5px;">👇 下にスクロールでガイドを表示</div>
     </div>
 </div>
 
 <div class="content-section">
     <div class="card">
         <h2>🧘 瞑想の基本</h2>
-        <p>瞑想は、脳の疲れをリセットし、集中力を高めるための「心の筋トレ」です。</p>
-        <ul class="step-list">
-            <li>背筋をスッと伸ばし、リラックスして座ります。</li>
-            <li>手は膝の上に置くか、お腹の前で軽く組みます。</li>
-            <li>意識を「今、この瞬間の呼吸」に向けます。</li>
-            <li>雑念が浮かんでも自分を責めず、静かに呼吸に意識を戻しましょう。</li>
-        </ul>
-    </div>
-
-    <div class="card">
-        <h2>🫁 選べる3つの呼吸法</h2>
-        <h3>1. 禅呼吸 (5秒-5秒)</h3>
-        <p>基本の呼吸法です。吸う時間と吐く時間を一定に保つことで、自律神経のバランスを整え、心を穏やかにします。</p>
-        <h3>2. 集中：ボックスブリージング (4-4-4-4)</h3>
-        <p><strong>「吸う・止める・吐く・止める」</strong>をすべて4秒ずつ行います。脳を覚醒させつつ、緊張をコントロールして高いパフォーマンスを引き出します。</p>
-        <h3>3. 休息：4-7-8呼吸法</h3>
-        <p>吐く時間を吸う時間の2倍に設定します。副交感神経を強力に活性化させ、ストレス軽減や入眠前のリラックスに最適です。</p>
+        <p>瞑想は、脳の疲れをリセットし、集中力を高めるための「心の筋トレ」です。背筋を伸ばし、ゆったりと呼吸に意識を向けましょう。</p>
     </div>
 </div>
 
@@ -165,21 +152,23 @@
     let timeLeft = 300;
     let timerId = null;
     let isMeditating = false;
+    let isPreparing = false;
     let audioCtx = null;
     
     const circle = document.getElementById('circle');
     const guide = document.getElementById('guide');
     const display = document.getElementById('display');
+    const startBtn = document.getElementById('startBtn');
 
     function setRhythm(key) {
-        if (isMeditating) return;
+        if (isMeditating || isPreparing) return;
         currentRhythm = key;
         document.querySelectorAll('.rhythm-selector button').forEach(b => b.classList.remove('active'));
         document.getElementById(`btn-${key}`).classList.add('active');
     }
 
     function setDuration(sec) {
-        if (isMeditating) return;
+        if (isMeditating || isPreparing) return;
         defaultTime = sec;
         timeLeft = sec;
         document.querySelectorAll('.time-presets button').forEach(b => b.classList.remove('active'));
@@ -232,30 +221,38 @@
     }
 
     async function toggleMeditation() {
-        if (isMeditating) { stop(); return; }
+        // 瞑想中または準備中にボタンが押されたら「終了（中断）」
+        if (isMeditating || isPreparing) {
+            stop();
+            return;
+        }
         
-        // 準備時間（5秒カウントダウン）
-        isMeditating = true; // 途中で止められるようにフラグは先に立てる
+        // 開始処理
+        isPreparing = true;
         document.body.classList.add('meditating', 'preparing');
-        document.getElementById('startBtn').textContent = "キャンセル";
+        startBtn.textContent = "中断する";
+        document.getElementById('rhythmArea').style.pointerEvents = "none";
+        document.getElementById('timeArea').style.pointerEvents = "none";
         
         for (let i = 5; i > 0; i--) {
-            if (!isMeditating) return; // キャンセルされた場合
+            if (!isPreparing) return; 
             guide.textContent = `開始まで ${i}`;
             await new Promise(res => setTimeout(res, 1000));
         }
         
-        if (!isMeditating) return;
+        if (!isPreparing) return;
+        isPreparing = false;
+        isMeditating = true;
         document.body.classList.remove('preparing');
         start();
     }
 
     function start() {
-        document.getElementById('startBtn').textContent = "瞑想を終了する";
         guide.textContent = "開始";
         playBell();
         runBreatheCycle();
         timerId = setInterval(() => {
+            if (!isMeditating) return;
             timeLeft--;
             updateDisplay();
             if (timeLeft <= 0) stop(true);
@@ -264,15 +261,25 @@
 
     function stop(isFinished = false) {
         isMeditating = false;
+        isPreparing = false;
         clearInterval(timerId);
+        
         document.body.classList.remove('meditating', 'preparing');
-        document.getElementById('startBtn').textContent = "瞑想を開始する";
+        startBtn.textContent = "瞑想を開始する";
         guide.textContent = "準備はいいですか？";
+        
+        // 選択を有効化
+        document.getElementById('rhythmArea').style.pointerEvents = "auto";
+        document.getElementById('timeArea').style.pointerEvents = "auto";
+        
+        // 視覚リセット
         circle.style.transition = "all 0.5s ease";
         circle.style.transform = "scale(0.6)";
         circle.style.opacity = "0.1";
+        
         timeLeft = defaultTime;
         updateDisplay();
+        
         if (isFinished) {
             playBell();
             setTimeout(() => alert("心が整いました。"), 300);
