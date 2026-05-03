@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Zen Breath | 禅・瞑想タイマー</title>
+    <title>瞑想タイマー | セルフマネジメント・ツール</title>
     <style>
         :root {
-            --primary: #4f46e5;
+            --primary: #4f46e5; /* 落ち着いたインディゴ */
             --bg-light: #f8fafc;
             --card-bg: #ffffff;
             --text-main: #1e293b;
@@ -16,7 +16,7 @@
 
         body {
             margin: 0; padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: -apple-system, "Hiragino Sans", "Meiryo", sans-serif;
             background-color: var(--bg-light);
             color: var(--text-main);
             display: flex; flex-direction: column; align-items: center;
@@ -36,8 +36,8 @@
         }
 
         .app-name {
-            position: absolute; top: 40px; font-size: 0.9rem; font-weight: 800;
-            letter-spacing: 0.2em; color: var(--primary); opacity: 0.8;
+            position: absolute; top: 30px; font-size: 1.1rem; font-weight: 800;
+            letter-spacing: 0.1em; color: var(--primary);
         }
 
         .breathe-container {
@@ -54,17 +54,17 @@
 
         .zen-silhouette {
             position: absolute; width: 80px; height: 80px;
-            fill: var(--primary); opacity: 0.3; z-index: 5; pointer-events: none;
+            fill: var(--primary); opacity: 0.25; z-index: 5; pointer-events: none;
         }
 
         .timer-display {
-            font-size: 3.5rem; font-weight: 200; z-index: 10;
+            font-size: 3.8rem; font-weight: 200; z-index: 10;
             font-variant-numeric: tabular-nums; color: var(--text-main);
         }
 
         .guide-text {
-            position: absolute; bottom: -60px; font-size: 1.5rem; font-weight: 700;
-            color: var(--primary); letter-spacing: 0.2em; text-align: center; width: 100%;
+            position: absolute; bottom: -60px; font-size: 1.6rem; font-weight: 700;
+            color: var(--primary); letter-spacing: 0.1em; text-align: center; width: 100%;
         }
 
         .controls {
@@ -76,29 +76,33 @@
         
         button {
             background: white; border: 1px solid var(--border);
-            padding: 10px 20px; border-radius: 12px;
-            cursor: pointer; font-size: 0.85rem; transition: all 0.2s; font-weight: 500;
+            padding: 10px 18px; border-radius: 12px;
+            cursor: pointer; font-size: 0.9rem; transition: all 0.2s; font-weight: 600;
+            color: var(--text-sub);
         }
-        button.active { background: var(--primary); color: white; border-color: var(--primary); }
+        button.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2); }
 
         .start-btn {
             background: var(--primary); color: white; border: none;
-            padding: 16px 50px; font-size: 1.1rem; font-weight: bold;
+            padding: 16px 50px; font-size: 1.15rem; font-weight: bold;
             border-radius: 99px; box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3);
+            transition: transform 0.2s;
         }
+        .start-btn:active { transform: scale(0.98); }
 
         /* コンテンツエリア */
         .content-section {
-            width: 100%; max-width: 600px; padding: 40px 20px 80px; box-sizing: border-box;
+            width: 100%; max-width: 600px; padding: 20px 20px 80px; box-sizing: border-box;
         }
         .card {
-            background: var(--card-bg); border-radius: 20px; padding: 30px;
+            background: var(--card-bg); border-radius: 20px; padding: 28px;
             margin-bottom: 24px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
-        h2 { font-size: 1.25rem; margin-top: 0; color: var(--primary); border-bottom: 2px solid var(--bg-light); padding-bottom: 10px; }
-        h3 { font-size: 1rem; margin-bottom: 8px; }
-        p { font-size: 0.9rem; line-height: 1.7; color: var(--text-sub); margin-bottom: 15px; }
-        .step-list { padding-left: 20px; font-size: 0.9rem; color: var(--text-sub); line-height: 1.8; }
+        h2 { font-size: 1.3rem; margin-top: 0; color: var(--primary); border-bottom: 2px solid var(--bg-light); padding-bottom: 12px; margin-bottom: 20px; }
+        h3 { font-size: 1.1rem; margin: 20px 0 8px 0; color: var(--text-main); }
+        p { font-size: 0.95rem; line-height: 1.8; color: var(--text-sub); margin-bottom: 15px; }
+        .step-list { padding-left: 0; list-style: none; font-size: 0.95rem; color: var(--text-sub); line-height: 2; }
+        .step-list li::before { content: "・"; color: var(--primary); font-weight: bold; margin-right: 8px; }
 
         body.meditating .controls { opacity: 0.1; }
         body.meditating .controls:hover { opacity: 1; }
@@ -107,7 +111,7 @@
 <body>
 
 <div class="app-viewport">
-    <div class="app-name">ZEN BREATH</div>
+    <div class="app-name">瞑想タイマー</div>
     
     <div class="breathe-container">
         <div class="breathe-circle" id="circle"></div>
@@ -115,7 +119,7 @@
             <path d="M32 8c-4.4 0-8 3.6-8 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 18c-7.7 0-14 6.3-14 14v2h28v-2c0-7.7-6.3-14-14-14zm-16 18c-3.3 0-6 2.7-6 6s2.7 6 6 6 6-2.7 6-6c0-.3 0-.6-.1-.9l7.2-3.6c1.1.9 2.5 1.5 4 1.5 1.4 0 2.7-.5 3.8-1.4l7.3 3.6c-.1.3-.1.6-.1.9 0 3.3 2.7 6 6 6s6-2.7 6-6-2.7-6-6-6-6 2.7-6 6c0 .3 0 .6.1.9l-7.3-3.6c-1.1.9-2.5 1.5-3.9 1.5-1.5 0-2.8-.5-3.9-1.5l-7.2 3.6c.1-.3.1-.6.1-.9 0-3.3-2.7-6-6-6z"/>
         </svg>
         <div class="timer-display" id="display">05:00</div>
-        <div class="guide-text" id="guide">READY</div>
+        <div class="guide-text" id="guide">準備はいいですか？</div>
     </div>
 
     <div class="controls">
@@ -125,54 +129,53 @@
             <button onclick="setRhythm('relax')" id="btn-relax">休息 (4-7-8)</button>
         </div>
         <div class="main-controls">
-            <button class="start-btn" id="startBtn" onclick="toggleMeditation()">瞑想を開始</button>
+            <button class="start-btn" id="startBtn" onclick="toggleMeditation()">瞑想を開始する</button>
         </div>
-        <div style="color: var(--text-sub); font-size: 0.8rem;">↓ Scroll for Guide</div>
+        <div style="color: var(--text-sub); font-size: 0.85rem; margin-top: 10px;">👇 下にスクロールでガイドを表示</div>
     </div>
 </div>
 
-
-
 <div class="content-section">
     <div class="card">
-        <h2>🧘 瞑想のやりかた</h2>
-        <p>瞑想は「今、この瞬間」に意識を向けるトレーニングです。以下のステップで始めてみましょう。</p>
-        <div class="step-list">
-            1. 背筋を伸ばし、肩の力を抜いて座ります。<br>
-            2. 目は軽く閉じるか、1.5メートルほど先をぼんやり見ます。<br>
-            3. 手は膝の上で軽く組むか、自然に置きます。<br>
-            4. 意識を呼吸の流れ（鼻を通る空気の感覚など）に向けます。<br>
-            5. 雑念が湧いたら、否定せずに「あ、今考えていたな」と気づき、そっと呼吸に意識を戻します。
-        </div>
+        <h2>🧘 瞑想の基本</h2>
+        <p>瞑想は、脳の疲れをリセットし、集中力を高めるための「心の筋トレ」です。</p>
+        <ul class="step-list">
+            <li>背筋をスッと伸ばし、リラックスして座ります。</li>
+            <li>手は膝の上に置くか、お腹の前で軽く組みます。</li>
+            <li>意識を「今、この瞬間の呼吸」に向けます。</li>
+            <li>雑念が浮かんでも自分を責めず、静かに呼吸に意識を戻しましょう。</li>
+        </ul>
     </div>
 
     <div class="card">
-        <h2>🫁 各呼吸法の解説</h2>
+        <h2>🫁 選べる3つの呼吸法</h2>
         
-        <h3>■ 禅 (5秒-5秒)</h3>
-        <p>自律神経を整える基本の呼吸です。吸う時間と吐く時間を均等にすることで、心身のバランスを一定に保ちます。</p>
+        <h3>1. 禅呼吸 (5秒-5秒)</h3>
+        <p>基本の呼吸法です。吸う時間と吐く時間を一定に保つことで、自律神経のバランスを整え、心を穏やかにします。</p>
 
-        <h3>■ 集中：ボックスブリージング (4-4-4-4)</h3>
-        <p>米海軍特殊部隊（Navy SEALs）も採用している強力な集中法です。「吸う・止める・吐く・止める」を同じ秒数で行うことで、パニックを抑え、冷静な判断力を取り戻します。</p>
+        <h3>2. 集中：ボックスブリージング (4-4-4-4)</h3>
+        <p><strong>「吸う・止める・吐く・止める」</strong>をすべて4秒ずつ行います。 Navy SEALsも実践している方法で、脳を覚醒させつつ、緊張をコントロールして高いパフォーマンスを引き出します。</p>
 
-        <h3>■ 休息：4-7-8呼吸法</h3>
-        <p>「眠りのための呼吸」とも呼ばれます。吐く時間を長くすることで副交感神経を優位にし、深いリラクゼーション状態へ導きます。</p>
+        <h3>3. 休息：4-7-8呼吸法</h3>
+        <p>吐く時間を吸う時間の2倍に設定します。副交感神経を強力に活性化させ、ストレス軽減や入眠前のリラックスに最適です。</p>
     </div>
 
     <div class="card">
-        <h2>📱 アプリの利用方法</h2>
-        <p>1. 上部のボタンで、目的に合った呼吸法を選択します。<br>
-           2. 「瞑想を開始」ボタンを押すと、ベルの音と共にスタートします。<br>
-           3. 円が膨らむ時に<strong>「吸い」</strong>、円が止まっている時に<strong>「止め」</strong>、円が縮む時に<strong>「吐いて」</strong>ください。<br>
-           4. 終了すると再びベルが鳴り、元の画面に戻ります。</p>
+        <h2>💡 使いかた</h2>
+        <p>
+            1. 画面中央のボタンで、好みの呼吸法を選びます。<br>
+            2. 「瞑想を開始する」を押すと、ベルの音と共にスタートします。<br>
+            3. <strong>円が大きくなる時に「吸い」、止まっている時に「止め」、小さくなる時に「吐いて」ください。</strong><br>
+            4. 終了のベルが鳴るまで、ゆったりとした気持ちで続けましょう。
+        </p>
     </div>
 </div>
 
 <script>
     const rhythms = {
-        zen: { inhale: 5, hold1: 0, exhale: 5, hold2: 0, label: "禅" },
-        box: { inhale: 4, hold1: 4, exhale: 4, hold2: 4, label: "集中" },
-        relax: { inhale: 4, hold1: 7, exhale: 8, hold2: 0, label: "休息" }
+        zen: { inhale: 5, hold1: 0, exhale: 5, hold2: 0 },
+        box: { inhale: 4, hold1: 4, exhale: 4, hold2: 4 },
+        relax: { inhale: 4, hold1: 7, exhale: 8, hold2: 0 }
     };
 
     let currentRhythm = 'zen';
@@ -248,7 +251,7 @@
     function start() {
         isMeditating = true;
         document.body.classList.add('meditating');
-        document.getElementById('startBtn').textContent = "終了";
+        document.getElementById('startBtn').textContent = "瞑想を終了する";
         playBell();
         runBreatheCycle();
         timerId = setInterval(() => {
@@ -264,8 +267,8 @@
         isMeditating = false;
         clearInterval(timerId);
         document.body.classList.remove('meditating');
-        document.getElementById('startBtn').textContent = "瞑想を開始";
-        guide.textContent = "READY";
+        document.getElementById('startBtn').textContent = "瞑想を開始する";
+        guide.textContent = "準備はいいですか？";
         circle.style.transform = "scale(0.6)";
         circle.style.opacity = "0.1";
         timeLeft = 300;
