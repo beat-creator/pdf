@@ -119,6 +119,51 @@
             align-self: flex-start;
         }
 
+        /* 記事セクションのスタイル */
+        .blog-preview-section {
+            margin-top: 60px;
+            text-align: center;
+        }
+        .blog-preview-section h2 {
+            font-size: 1.2rem;
+            color: var(--text-sub);
+            margin-bottom: 25px;
+        }
+        .blog-list {
+            background: var(--card-bg);
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            text-align: left;
+            margin-bottom: 20px;
+        }
+        .blog-item-link {
+            display: block;
+            padding: 18px 20px;
+            text-decoration: none;
+            color: var(--text-main);
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-bottom: 1px solid var(--bg-site);
+            transition: background 0.2s;
+        }
+        .blog-item-link:last-child { border-bottom: none; }
+        .blog-item-link:hover { background: #f8fafc; color: var(--primary); }
+        
+        .view-all-btn {
+            display: inline-block;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: var(--text-sub);
+            text-decoration: none;
+            font-weight: 700;
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+        }
+        .view-all-btn:hover { background: var(--text-main); color: white; border-color: var(--text-main); }
+
         .benefits-section { margin-top: 60px; }
         .benefits-section h2 { font-size: 1.2rem; text-align: center; margin-bottom: 35px; color: var(--text-sub); }
         .benefit-item { background: var(--card-bg); border-radius: 20px; padding: 24px; margin-bottom: 20px; border-left: 6px solid var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.04); }
@@ -159,7 +204,7 @@
         <a href="./n-back-calc/" class="tool-card">
             <span class="tool-emoji">🧠</span>
             <span class="tool-name">N-Back計算</span>
-            <span class="tool-desc">情報を保持しながら処理する力を鍛え、複雑なタスクへの対応力を向上。思考の粘り強さを少しずつ底上げします。</span>
+            <span class="tool-desc">情報を保持しながら処理する力を鍛え、複雑なタスクへの対応力を向上。思考の粘り強さを底上げします。</span>
             <span class="tool-tag">脳の筋トレ / 集中前に</span>
         </a>
 
@@ -168,13 +213,6 @@
             <span class="tool-name">論理的リセット</span>
             <span class="tool-desc">状況を分解し、事実と解釈を切り分けて冷静さを取り戻します。判断ミスや思い込みを減らす思考整理ツール。</span>
             <span class="tool-tag">迷った時に / 5分〜</span>
-        </a>
-
-        <a href="./memory-game/" class="tool-card">
-            <span class="tool-emoji">📑</span>
-            <span class="tool-name">記憶力リソース</span>
-            <span class="tool-desc">脳内のリソース状態を視覚化し、情報の整理能力を確認。記憶の定着を助け、学習の土台を整えます。</span>
-            <span class="tool-tag">学習の合間に</span>
         </a>
     </div>
 
@@ -188,6 +226,22 @@
             <h3>🧠 知的基礎体力の継続訓練</h3>
             <p>脳機能の訓練を通じて、複雑な情報を同時並行で扱う際の処理能力を底上げし、認知負荷を軽減します。</p>
         </div>
+    </section>
+
+    <section class="blog-preview-section">
+        <h2>📚 集中力・作業効率を高める知識</h2>
+        <div class="blog-list">
+            <a href="./blog/concentration-tips.html" class="blog-item-link">
+                <span>集中力を上げる方法7選【科学的根拠あり】</span>
+            </a>
+            <a href="./blog/what-is-pomodoro.html" class="blog-item-link">
+                <span>ポモドーロタイマーとは？効果と正しいやり方</span>
+            </a>
+            <a href="./blog/n-back-training.html" class="blog-item-link">
+                <span>N-Back計算でワーキングメモリを鍛える理由</span>
+            </a>
+        </div>
+        <a href="./blog/" class="view-all-btn">すべての記事を見る</a>
     </section>
 </div>
 
