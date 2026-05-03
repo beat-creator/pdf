@@ -13,7 +13,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
     <title>セルフマネジメント・ツール集 | 自己規律と集中を支える道具箱</title>
-    <meta name="description" content="高度な判断と集中力が求められるプロフェッショナルのための自己管理ツールキット。集中、瞑想、脳機能トレーニングを1箇所に集約。">
+    <meta name="description" content="集中・思考・メンタルを整えるためのシンプルな実用ツール集。ブラウザだけで使える軽量な機能で、日々のパフォーマンスを無理なく支えます。">
 
     <link rel="icon" href="./icon-512.png" type="image/png">
     <link rel="apple-touch-icon" href="./icon-512.png">
@@ -40,9 +40,17 @@
 
         header {
             width: 100%;
-            padding: 60px 20px 40px;
+            padding: 60px 20px 30px;
             text-align: center;
             box-sizing: border-box;
+        }
+        .top-description {
+            max-width: 500px;
+            margin: 15px auto 0;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: var(--text-sub);
+            font-weight: 500;
         }
         .seo-tagline {
             font-size: 0.85rem;
@@ -59,27 +67,29 @@
         }
 
         .container {
-            max-width: 600px;
+            max-width: 650px;
             width: 95%;
             padding-bottom: 60px;
         }
 
         .tool-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-            margin-top: 20px;
+            grid-template-columns: 1fr; /* スマホ・PC共通で1カラムにして説明を読ませる構成に */
+            gap: 20px;
+            margin-top: 30px;
+        }
+        @media (min-width: 480px) {
+            .tool-grid { grid-template-columns: repeat(2, 1fr); }
         }
 
         .tool-card {
             background: var(--card-bg);
             border: 1px solid var(--border);
             border-radius: 24px;
-            padding: 35px 15px;
+            padding: 25px 20px;
             text-decoration: none;
             display: flex;
             flex-direction: column;
-            align-items: center;
             transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
             box-sizing: border-box;
@@ -89,63 +99,29 @@
             box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
             border-color: var(--primary);
         }
-        .tool-card:active {
-            transform: scale(0.96);
-        }
-        .tool-emoji {
-            font-size: 2.8rem;
-            margin-bottom: 15px;
-        }
-        .tool-name {
-            font-size: 1rem;
-            font-weight: 800;
-            color: var(--text-main);
-            text-align: center;
-        }
-
-        .benefits-section {
-            margin-top: 60px;
-            padding: 0 5px;
-        }
-        .benefits-section h2 {
-            font-size: 1.2rem;
-            text-align: center;
-            margin-bottom: 35px;
-            color: var(--text-sub);
-            letter-spacing: 0.02em;
-        }
-        .benefit-item {
-            background: var(--card-bg);
-            border-radius: 20px;
-            padding: 24px;
-            margin-bottom: 20px;
-            border-left: 6px solid var(--primary);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
-        }
-        .benefit-item h3 {
-            font-size: 1.05rem;
-            margin: 0 0 10px 0;
-            color: var(--text-main);
-        }
-        .benefit-item p {
-            font-size: 0.9rem;
-            line-height: 1.8;
-            color: var(--text-sub);
-            margin: 0;
+        .tool-emoji { font-size: 2.2rem; margin-bottom: 10px; }
+        .tool-name { font-size: 1.1rem; font-weight: 800; color: var(--text-main); margin-bottom: 8px; }
+        .tool-desc { font-size: 0.85rem; color: var(--text-sub); line-height: 1.5; margin-bottom: 15px; flex-grow: 1; }
+        
+        .tool-tag {
+            display: inline-block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--primary);
+            background: #eef2ff;
+            padding: 4px 12px;
+            border-radius: 12px;
+            align-self: flex-start;
         }
 
-        footer {
-            padding: 50px 20px;
-            font-size: 0.8rem;
-            color: var(--text-sub);
-            text-align: center;
-            border-top: 1px solid var(--border);
-            width: 100%;
-            background: #f8fafc;
-            margin-top: auto;
-        }
+        .benefits-section { margin-top: 60px; }
+        .benefits-section h2 { font-size: 1.2rem; text-align: center; margin-bottom: 35px; color: var(--text-sub); }
+        .benefit-item { background: var(--card-bg); border-radius: 20px; padding: 24px; margin-bottom: 20px; border-left: 6px solid var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.04); }
+        .benefit-item h3 { font-size: 1.05rem; margin: 0 0 10px 0; color: var(--text-main); }
+        .benefit-item p { font-size: 0.9rem; line-height: 1.8; color: var(--text-sub); margin: 0; }
+
+        footer { padding: 50px 20px; font-size: 0.8rem; color: var(--text-sub); text-align: center; border-top: 1px solid var(--border); width: 100%; background: #f8fafc; margin-top: auto; }
         footer a { color: var(--text-main); text-decoration: none; font-weight: 700; margin: 0 10px; }
-        footer p { margin-top: 15px; opacity: 0.7; }
     </style>
 </head>
 <body> 
@@ -153,6 +129,9 @@
 <header>
     <div class="seo-tagline">FOR HIGH PERFORMANCE</div>
     <h1>🛠️ セルフマネジメント・ツール集</h1>
+    <p class="top-description">
+        集中・思考・メンタルを整えるための実用ツール。ブラウザだけで使える軽量な機能で、日々のパフォーマンスを支えます。
+    </p>
 </header>
 
 <div class="container">
@@ -160,49 +139,48 @@
         <a href="./besttimer/" class="tool-card">
             <span class="tool-emoji">⏱️</span>
             <span class="tool-name">集中タイマー</span>
+            <span class="tool-desc">25分集中と休憩を繰り返し、無理なく作業効率を維持します。余計な機能を排除し、タスクに没頭できます。</span>
+            <span class="tool-tag">作業前に / おすすめ</span>
         </a>
 
         <a href="./zen/" class="tool-card">
             <span class="tool-emoji">🧘</span>
             <span class="tool-name">瞑想タイマー</span>
+            <span class="tool-desc">呼吸に意識を向け、思考のノイズをリセット。短時間でも頭をクリアにし、次の行動に落ち着いて取り組めます。</span>
+            <span class="tool-tag">3分〜 / 疲れた時に</span>
         </a>
 
         <a href="./n-back-calc/" class="tool-card">
             <span class="tool-emoji">🧠</span>
             <span class="tool-name">N-Back計算</span>
+            <span class="tool-desc">情報を保持しながら処理する力を鍛え、複雑なタスクへの対応力を向上。思考の粘り強さを底上げします。</span>
+            <span class="tool-tag">脳の筋トレ / 集中前に</span>
         </a>
 
         <a href="./pic/" class="tool-card">
             <span class="tool-emoji">🧩</span>
             <span class="tool-name">論理的リセット</span>
+            <span class="tool-desc">状況を分解し、事実と解釈を切り分けて冷静さを取り戻します。判断ミスや思い込みを減らす思考整理ツール。</span>
+            <span class="tool-tag">迷った時に / 5分〜</span>
         </a>
 
         <a href="./memory-game/" class="tool-card">
             <span class="tool-emoji">📑</span>
             <span class="tool-name">記憶力リソース</span>
+            <span class="tool-desc">頭の中のリソースを視覚化し、記憶の定着度を確認。情報の整理能力を高め、暗記や学習の土台を整えます。</span>
+            <span class="tool-tag">学習の合間に</span>
         </a>
     </div>
 
     <section class="benefits-section">
         <h2>日々を乗り切るための自己規律</h2>
-        
-        <div id="features-container">
-            <div class="benefit-item">
-                <h3>🎯 集中リソースの最適化</h3>
-                <p>高度な思考を必要とする業務において、持続可能なパフォーマンスを維持するための「集中」と「休息」のサイクルを構築します。</p>
-            </div>
-            <div class="benefit-item">
-                <h3>🧘 メンタルコンディションの調整</h3>
-                <p>呼吸を整えることで、冷静な判断を妨げる内面的なノイズを除去。常に安定した精神状態でタスクに臨むための土台を整えます。</p>
-            </div>
-            <div class="benefit-item">
-                <h3>🧠 知的基礎体力の継続訓練</h3>
-                <p>科学的アプローチによる脳機能の訓練を通じて、複雑な情報を同時並行で扱う際の処理能力を底上げし、認知負荷を軽減します。</p>
-            </div>
-            <div class="benefit-item">
-                <h3>🧩 思考の論理的リセット</h3>
-                <p>散漫になった意識を論理的な推論プロセスで「正解」へと一本化。脳内の情報を整理し、次の重要タスクへスムーズに移行させます。</p>
-            </div>
+        <div class="benefit-item">
+            <h3>🎯 集中リソースの最適化</h3>
+            <p>高度な思考を必要とする業務において、持続可能なパフォーマンスを維持するためのサイクルを構築します。</p>
+        </div>
+        <div class="benefit-item">
+            <h3>🧠 知的基礎体力の継続訓練</h3>
+            <p>脳機能の訓練を通じて、複雑な情報を同時並行で扱う際の処理能力を底上げし、認知負荷を軽減します。</p>
         </div>
     </section>
 </div>
