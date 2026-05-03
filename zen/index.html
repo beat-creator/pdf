@@ -23,7 +23,6 @@
             overflow-x: hidden;
         }
 
-        /* メインアプリエリア */
         .app-viewport {
             width: 100%; height: 100dvh;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -47,14 +46,9 @@
             transition: transform 4s ease-in-out, opacity 4s ease-in-out;
         }
 
-        .zen-silhouette {
-            position: absolute; width: 80px; height: 80px;
-            fill: var(--primary); opacity: 0.25; z-index: 5; pointer-events: none;
-        }
-
         .timer-display {
             font-size: 3.8rem; font-weight: 200; z-index: 10;
-            font-variant-numeric: tabular-nums; color: var(--text-main);
+            font-variant-numeric: tabular-nums;
         }
 
         .guide-text {
@@ -62,7 +56,6 @@
             color: var(--primary); letter-spacing: 0.1em; text-align: center; width: 100%;
         }
 
-        /* コントロールエリア */
         .controls {
             margin-top: 60px; display: flex; flex-direction: column; align-items: center; gap: 15px;
             z-index: 20; transition: opacity 0.5s;
@@ -73,10 +66,10 @@
         button {
             background: white; border: 1px solid var(--border);
             padding: 10px 18px; border-radius: 12px;
-            cursor: pointer; font-size: 0.9rem; transition: all 0.2s; font-weight: 600;
-            color: var(--text-sub);
+            cursor: pointer; font-size: 0.9rem; font-weight: 600;
+            color: var(--text-sub); transition: all 0.2s;
         }
-        button.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2); }
+        button.active { background: var(--primary); color: white; border-color: var(--primary); }
 
         .start-btn {
             background: var(--primary); color: white; border: none;
@@ -85,20 +78,18 @@
             margin-top: 10px; cursor: pointer;
         }
 
-        /* 瞑想中のUI状態 */
         body.meditating .controls { opacity: 0.2; }
         body.meditating .controls:hover { opacity: 1; }
 
-        /* コンテンツエリア（解説） */
+        /* コンテンツエリア */
         .content-section { width: 100%; max-width: 600px; padding: 20px 20px 80px; box-sizing: border-box; }
         .card { background: var(--card-bg); border-radius: 20px; padding: 28px; margin-bottom: 24px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-        h2 { font-size: 1.3rem; margin-top: 0; color: var(--primary); border-bottom: 2px solid var(--bg-light); padding-bottom: 12px; margin-bottom: 20px; }
+        h2 { font-size: 1.3rem; margin: 0 0 20px 0; color: var(--primary); border-bottom: 2px solid var(--bg-light); padding-bottom: 12px; }
         h3 { font-size: 1.1rem; margin: 20px 0 8px 0; color: var(--text-main); }
         p { font-size: 0.95rem; line-height: 1.8; color: var(--text-sub); margin-bottom: 15px; }
         .step-list { padding-left: 0; list-style: none; font-size: 0.95rem; color: var(--text-sub); line-height: 2; }
         .step-list li::before { content: "・"; color: var(--primary); font-weight: bold; margin-right: 8px; }
 
-        /* カウントダウン中の背景 */
         .preparing .breathe-circle { background: #94a3b8; transform: scale(0.7); opacity: 0.2; }
     </style>
 </head>
@@ -106,16 +97,11 @@
 
 <div class="app-viewport">
     <div class="app-name">瞑想タイマー</div>
-    
     <div class="breathe-container">
         <div class="breathe-circle" id="circle"></div>
-        <svg class="zen-silhouette" viewBox="0 0 64 64">
-            <path d="M32 8c-4.4 0-8 3.6-8 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 18c-7.7 0-14 6.3-14 14v2h28v-2c0-7.7-6.3-14-14-14zm-16 18c-3.3 0-6 2.7-6 6s2.7 6 6 6 6-2.7 6-6c0-.3 0-.6-.1-.9l7.2-3.6c1.1.9 2.5 1.5 4 1.5 1.4 0 2.7-.5 3.8-1.4l7.3 3.6c-.1.3-.1.6-.1.9 0 3.3 2.7 6 6 6s6-2.7 6-6-2.7-6-6-6-6 2.7-6 6c0 .3 0 .6.1.9l-7.3-3.6c-1.1.9-2.5 1.5-3.9 1.5-1.5 0-2.8-.5-3.9-1.5l-7.2 3.6c.1-.3.1-.6.1-.9 0-3.3-2.7-6-6-6z"/>
-        </svg>
         <div class="timer-display" id="display">05:00</div>
-        <div class="guide-text" id="guide"></div>
+        <div class="guide-text" id="guide">準備はいいですか？</div>
     </div>
-
     <div class="controls">
         <div class="rhythm-selector" id="rhythmArea">
             <button onclick="setRhythm('zen')" id="btn-zen" class="active">禅 (5-5)</button>
@@ -127,9 +113,7 @@
             <button onclick="setDuration(600)" id="btn-time-600">10分</button>
             <button onclick="setDuration(900)" id="btn-time-900">15分</button>
         </div>
-        <div class="main-controls">
-            <button class="start-btn" id="startBtn" onclick="toggleMeditation()">瞑想を開始する</button>
-        </div>
+        <button class="start-btn" id="startBtn" onclick="toggleMeditation()">瞑想を開始する</button>
         <div style="color: var(--text-sub); font-size: 0.85rem; margin-top: 5px;">👇 下にスクロールでガイドを表示</div>
     </div>
 </div>
@@ -137,33 +121,28 @@
 <div class="content-section">
     <div class="card">
         <h2>🧘 瞑想の基本</h2>
-        <p>瞑想は、脳の疲れをリセットし、集中力を高めるための「心の筋トレ」です。</p>
+        <p>瞑想は脳のリセット習慣です。背筋を伸ばし、リラックスして座ってください。</p>
         <ul class="step-list">
-            <li>背筋をスッと伸ばし、リラックスして座ります。</li>
-            <li>手は膝の上に置くか、お腹の前で軽く組みます。</li>
-            <li>意識を「今、この瞬間の呼吸」に向けます。</li>
-            <li>雑念が浮かんでも自分を責めず、静かに呼吸に意識を戻しましょう。</li>
+            <li>意識を「今、この瞬間の呼吸」だけに向けます。</li>
+            <li>雑念が浮かんでも、静かに呼吸に意識を戻しましょう。</li>
         </ul>
     </div>
 
     <div class="card">
-        <h2>🫁 選べる3つの呼吸法</h2>
-        <h3>1. 禅呼吸 (5秒-5秒)</h3>
-        <p>基本の呼吸法です。吸う時間と吐く時間を一定に保つことで、自律神経のバランスを整え、心を穏やかにします。</p>
+        <h2>🫁 呼吸法ガイド</h2>
+        <h3>1. 禅呼吸 (5-5)</h3>
+        <p>吸う・吐くを等しく行い、自律神経を整える基本の呼吸です。</p>
         <h3>2. 集中：ボックスブリージング (4-4-4-4)</h3>
-        <p><strong>「吸う・止める・吐く・止める」</strong>をすべて4秒ずつ行います。脳を覚醒させつつ、緊張をコントロールして高いパフォーマンスを引き出します。</p>
+        <p><strong>吸う・止める・吐く・止める</strong>の4拍子。脳をクリアにし、高い集中力を引き出します。</p>
         <h3>3. 休息：4-7-8呼吸法</h3>
-        <p>吐く時間を吸う時間の2倍に設定します。副交感神経を強力に活性化させ、ストレス軽減や入眠前のリラックスに最適です。</p>
+        <p>吐く時間を長くすることで、リラックス効果を最大化します。</p>
     </div>
 
     <div class="card">
-        <h2>💡 使いかた</h2>
-        <p>
-            1. 上のボタンで、呼吸法と時間（5分〜15分）を選びます。<br>
-            2. 「開始」を押すと5秒の準備時間（カウントダウン）が始まります。<br>
-            3. <strong>円が大きくなる時に「吸い」、止まっている時に「止め」、小さくなる時に「吐いて」ください。</strong><br>
-            4. 途中でやめたい時は「中断する」ボタンを押してください。
-        </p>
+        <h2>💡 機能について</h2>
+        <p>・<strong>音声ガイド：</strong>「吸って」「止めて」「吐いて」を音声でサポートします。<br>
+           ・<strong>画面スリープ防止：</strong>作動中は画面が暗くなりません。<br>
+           ・<strong>準備時間：</strong>開始ボタン後、5秒間の猶予があります。</p>
     </div>
 </div>
 
@@ -174,18 +153,21 @@
         relax: { inhale: 4, hold1: 7, exhale: 8, hold2: 0 }
     };
 
-    let currentRhythm = 'zen';
-    let defaultTime = 300;
-    let timeLeft = 300;
-    let timerId = null;
-    let isMeditating = false;
-    let isPreparing = false;
-    let audioCtx = null;
+    let currentRhythm = 'zen', defaultTime = 300, timeLeft = 300, timerId = null, isMeditating = false, isPreparing = false;
+    let audioCtx = null, wakeLock = null;
     
-    const circle = document.getElementById('circle');
-    const guide = document.getElementById('guide');
-    const display = document.getElementById('display');
-    const startBtn = document.getElementById('startBtn');
+    const circle = document.getElementById('circle'), guide = document.getElementById('guide'), display = document.getElementById('display'), startBtn = document.getElementById('startBtn');
+
+    function speak(text) {
+        if (!isMeditating && text !== "瞑想を開始します" && text !== "お疲れ様でした") return;
+        const uttr = new SpeechSynthesisUtterance(text);
+        uttr.lang = 'ja-JP'; uttr.rate = 1.2; uttr.volume = 0.5;
+        window.speechSynthesis.speak(uttr);
+    }
+
+    async function requestWakeLock() {
+        try { if ('wakeLock' in navigator) { wakeLock = await navigator.wakeLock.request('screen'); } } catch (err) {}
+    }
 
     function setRhythm(key) {
         if (isMeditating || isPreparing) return;
@@ -196,26 +178,21 @@
 
     function setDuration(sec) {
         if (isMeditating || isPreparing) return;
-        defaultTime = sec;
-        timeLeft = sec;
+        defaultTime = sec; timeLeft = sec;
         document.querySelectorAll('.time-presets button').forEach(b => b.classList.remove('active'));
         document.getElementById(`btn-time-${sec}`).classList.add('active');
         updateDisplay();
     }
 
     function updateDisplay() {
-        const m = Math.floor(timeLeft / 60);
-        const s = timeLeft % 60;
+        const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
         display.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
     }
 
     function playBell() {
         if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        if (audioCtx.state === 'suspended') audioCtx.resume();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+        const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+        osc.type = 'sine'; osc.frequency.setValueAtTime(440, audioCtx.currentTime);
         gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 3);
         osc.connect(gain); gain.connect(audioCtx.destination);
@@ -225,88 +202,59 @@
     async function runBreatheCycle() {
         while (isMeditating) {
             const r = rhythms[currentRhythm];
-            if (!isMeditating) break;
-            guide.textContent = "吸う";
-            circle.style.transition = `all ${r.inhale}s ease-in-out`;
-            circle.style.transform = "scale(1.1)";
-            circle.style.opacity = "0.4";
-            await new Promise(res => setTimeout(res, r.inhale * 1000));
+            guide.textContent = "吸う"; speak("吸って");
+            circle.style.transition = `all ${r.inhale}s ease-in-out`; circle.style.transform = "scale(1.1)"; circle.style.opacity = "0.4";
+            await new Promise(res => setTimeout(res, r.inhale * 1000)); if (!isMeditating) break;
 
+            if (r.hold1 > 0) { guide.textContent = "止める"; speak("止めて"); await new Promise(res => setTimeout(res, r.hold1 * 1000)); }
             if (!isMeditating) break;
-            if (r.hold1 > 0) { guide.textContent = "止める"; await new Promise(res => setTimeout(res, r.hold1 * 1000)); }
 
-            if (!isMeditating) break;
-            guide.textContent = "吐く";
-            circle.style.transition = `all ${r.exhale}s ease-in-out`;
-            circle.style.transform = "scale(0.6)";
-            circle.style.opacity = "0.1";
-            await new Promise(res => setTimeout(res, r.exhale * 1000));
+            guide.textContent = "吐く"; speak("吐いて");
+            circle.style.transition = `all ${r.exhale}s ease-in-out`; circle.style.transform = "scale(0.6)"; circle.style.opacity = "0.1";
+            await new Promise(res => setTimeout(res, r.exhale * 1000)); if (!isMeditating) break;
 
-            if (!isMeditating) break;
-            if (r.hold2 > 0) { guide.textContent = "止める"; await new Promise(res => setTimeout(res, r.hold2 * 1000)); }
+            if (r.hold2 > 0) { guide.textContent = "止める"; speak("止めて"); await new Promise(res => setTimeout(res, r.hold2 * 1000)); }
         }
     }
 
     async function toggleMeditation() {
-        if (isMeditating || isPreparing) {
-            stop();
-            return;
-        }
-        
+        if (isMeditating || isPreparing) { stop(); return; }
         isPreparing = true;
         document.body.classList.add('meditating', 'preparing');
         startBtn.textContent = "中断する";
-        document.getElementById('rhythmArea').style.pointerEvents = "none";
-        document.getElementById('timeArea').style.pointerEvents = "none";
-        
+        requestWakeLock();
         for (let i = 5; i > 0; i--) {
             if (!isPreparing) return; 
             guide.textContent = `開始まで ${i}`;
             await new Promise(res => setTimeout(res, 1000));
         }
-        
         if (!isPreparing) return;
-        isPreparing = false;
-        isMeditating = true;
+        isPreparing = false; isMeditating = true;
         document.body.classList.remove('preparing');
         start();
     }
 
     function start() {
         guide.textContent = "開始";
-        playBell();
+        playBell(); speak("瞑想を開始します");
         runBreatheCycle();
         timerId = setInterval(() => {
             if (!isMeditating) return;
-            timeLeft--;
-            updateDisplay();
+            timeLeft--; updateDisplay();
             if (timeLeft <= 0) stop(true);
         }, 1000);
     }
 
     function stop(isFinished = false) {
-        isMeditating = false;
-        isPreparing = false;
-        clearInterval(timerId);
-        
+        isMeditating = false; isPreparing = false;
+        clearInterval(timerId); window.speechSynthesis.cancel();
+        if (wakeLock) { wakeLock.release(); wakeLock = null; }
         document.body.classList.remove('meditating', 'preparing');
         startBtn.textContent = "瞑想を開始する";
-        guide.textContent = "";
-        
-        document.getElementById('rhythmArea').style.pointerEvents = "auto";
-        document.getElementById('timeArea').style.pointerEvents = "auto";
-        
-        circle.style.transition = "all 0.5s ease";
-        circle.style.transform = "scale(0.6)";
-        circle.style.opacity = "0.1";
-        
-        timeLeft = defaultTime;
-        updateDisplay();
-        
-        if (isFinished) {
-            playBell();
-            setTimeout(() => alert("心が整いました。"), 300);
-        }
+        guide.textContent = "準備はいいですか？";
+        circle.style.transition = "all 0.5s ease"; circle.style.transform = "scale(0.6)"; circle.style.opacity = "0.1";
+        timeLeft = defaultTime; updateDisplay();
+        if (isFinished) { playBell(); speak("お疲れ様でした"); setTimeout(() => alert("心が整いました。"), 500); }
     }
 </script>
 </body>
