@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>N-Back計算でワーキングメモリを鍛える理由｜科学的根拠と実践法 | セルフマネジメント・ツール集</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.8; color: #333; max-width: 800px; margin: 0 auto; padding: 20px; background: #f0f4f8; }
+        header { text-align: center; padding: 40px 0; }
+        h1 { font-size: 1.8rem; color: #1e293b; margin-bottom: 10px; line-height: 1.4; }
+        .meta { color: #64748b; font-size: 0.9rem; }
+        .toc { background: #fff; border: 1px solid #cbd5e1; padding: 20px; border-radius: 12px; margin: 30px 0; }
+        h2 { border-left: 6px solid #6366f1; padding-left: 15px; margin-top: 50px; color: #1e293b; font-size: 1.5rem; }
+        h3 { color: #4338ca; margin-top: 30px; font-size: 1.2rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 5px; }
+        p { margin-bottom: 20px; }
+        .logic-card { background: #fff; border: 1px solid #e2e8f0; padding: 25px; border-radius: 16px; margin: 20px 0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .image-placeholder { background: #d1d5db; width: 100%; height: 300px; display: flex; align-items: center; justify-content: center; border-radius: 12px; color: #4b5563; margin: 20px 0; border: 2px dashed #9ca3af; }
+        .app-link-box { background: linear-gradient(135deg, #6366f1, #4338ca); color: white; padding: 30px; border-radius: 20px; margin: 40px 0; text-align: center; }
+        .app-link-box h4 { margin: 0 0 12px 0; font-size: 1.3rem; }
+        .btn-white { background: white; color: #4338ca; padding: 14px 28px; border-radius: 30px; text-decoration: none; font-weight: bold; display: inline-block; transition: 0.2s; margin-top: 10px; }
+        .btn-white:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        .scientific-note { background: #e0e7ff; border-radius: 8px; padding: 15px; font-size: 0.9rem; color: #3730a3; margin: 20px 0; }
+        footer { margin-top: 60px; padding: 40px 0; border-top: 1px solid #cbd5e1; text-align: center; color: #64748b; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>N-Back計算でワーキングメモリを鍛える理由<br>科学的根拠と実践法</h1>
+    <p class="meta">公開日：2026年5月3日 | カテゴリ：脳機能・トレーニング</p>
+</header>
+
+<section>
+    <p>巷には多くの「脳トレ」があふれていますが、その多くは「そのゲーム自体が上手くなるだけ」で、実際の仕事や生活に役立つ効果（転移効果）については疑問視されているものも少なくありません。</p>
+    <p>その中で、脳科学や心理学の研究において最も注目され、認知機能を向上させる可能性が議論され続けているのが「N-Back（エヌ・バック）課題」です。本記事では、ワーキングメモリの重要性と、なぜN-Back計算が知的なパフォーマンスを底上げするのかを解説します。</p>
+</section>
+
+<div class="toc">
+    <strong>目次</strong>
+    <ul>
+        <li>1. ワーキングメモリ：脳の「処理スペース」の重要性</li>
+        <li>2. N-Back課題とは何か？その仕組みを解説</li>
+        <li>3. なぜN-Back計算は「地頭」を良くするのか（科学的根拠）</li>
+        <li>4. 効果的なトレーニングの頻度と難易度設定</li>
+        <li>5. 開発者がN-Back計算を実装した理由</li>
+    </ul>
+</div>
+
+<h2>1. ワーキングメモリ：脳の「処理スペース」の重要性</h2>
+<p>ワーキングメモリ（作業記憶）とは、情報を一時的に脳内に保持し、同時にそれを使って計算や判断を行う能力のことです。パソコンに例えるなら、ハードディスクではなく「メモリ（RAM）」に相当します。</p>
+<div class="logic-card">
+    <p>ワーキングメモリが高い状態とは：</p>
+    <ul>
+        <li>複数の複雑な指示を一度に理解できる</li>
+        <li>会話の文脈を正確に追いながら、自分の意見を構築できる</li>
+        <li>未知の問題に対して、過去の知識を組み合わせて論理的に解ける</li>
+    </ul>
+</div>
+<p>このメモリ容量が不足すると、新しい情報が入った瞬間に古い情報がこぼれ落ち、「何をしようとしていたか忘れる」「複雑な仕様書が読み解けない」といったミスに繋がります。</p>
+
+<h2>2. N-Back課題とは何か？その仕組みを解説</h2>
+<p>N-Back課題は、1958年にウェイン・キルヒナーによって考案された認知タスクです。ルールはシンプルですが、脳への負荷は非常に高いのが特徴です。</p>
+<p>例えば「2-Back計算」であれば、次々に表示される計算問題の「2問前の答え」を回答し続けます。目の前の計算を解きながら（処理）、2問前の結果を保持し（保持）、さらに1問前の記憶を更新する（更新）という、ワーキングメモリの全機能をフル活用します。</p>
+<div class="image-placeholder">【画像：N-Back課題の処理の流れを示す図解】</div>
+
+<h2>3. なぜN-Back計算は「地頭」を良くするのか</h2>
+<p>2008年、ミシガン大学のスザンヌ・イェギ博士らが行った研究により、「N-Backトレーニングを継続したグループは、流動性知能（新しい問題を解く能力）が有意に向上した」という結果が発表されました。</p>
+<div class="scientific-note">
+    <strong>流動性知能とは：</strong><br>
+    経験や知識に頼らず、その場で論理的に考えて問題を解決する能力。一般的に「地頭の良さ」と呼ばれるものに近い指標です。
+</div>
+<p>近年のメタ分析（複数の研究を統合した解析）では効果の大きさに議論はあるものの、依然として「実行機能（前頭前野の働き）」を強化する訓練として、最も有力な手法の一つとされています。</p>
+
+<h2>4. 効果的なトレーニングの頻度と難易度設定</h2>
+<p>脳の可塑性を引き出すためには、以下の3つのポイントが重要です。</p>
+<ol>
+    <li><b>適度な負荷：</b> 楽に解けるレベルではなく、「ギリギリ間違えてしまう」レベル（Nの数を増やす）で挑戦すること。</li>
+    <li><b>継続性：</b> 1日10〜15分程度、まずは2週間継続することで、脳のネットワークが最適化され始めます。</li>
+    <li><b>集中環境：</b> 雑音を避け、脳のリソースを100%課題に投入すること。</li>
+</ol>
+
+<div class="app-link-box">
+    <h4>余計な演出を排した、脳への高負荷トレーニング</h4>
+    <p>ブラウザで完結。Unityで開発された本格的な「N-Back計算」で、あなたの認知機能をテストしましょう。</p>
+    <a href="../n-back-calc/" class="btn-white">N-Back計算に挑戦する</a>
+</div>
+
+<h2>5. 開発者がN-Back計算を実装した理由</h2>
+<p>当サイトが「N-Back計算」を公開している理由は、それが単なるゲームではなく、実務におけるパフォーマンスに直結する「基礎体力の訓練」だと考えているからです。</p>
+<p>ITプロジェクトマネジメントのような、多変数を同時に制御し、不確実な状況で判断を繰り返す業務において、ワーキングメモリの余裕は「精神的な余裕」に直結します。感情に振り回されず、論理的な判断を維持するための土台を整える道具として、このツールを活用してください。</p>
+
+<footer>
+    <p>© 2026 Self-Management Toolkit | 個人開発によるセルフマネジメント支援ツール</p>
+    <a href="../" style="color: #6366f1; text-decoration: none; font-weight: bold;">トップページへ戻る</a>
+</footer>
+
+</body>
+</html>
