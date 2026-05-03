@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Ultimate Hybrid Timer - Stable Picker</title>
+    <title>Ultimate Hybrid Timer</title>
     <style>
         :root {
             --bg: #f2f4f7; --card: #ffffff; --primary: #1c1c1e;
@@ -58,7 +58,7 @@
 <body>
 
 <div class="container">
-    <div id="page-quick" class="content">
+    <div id="page-quick" class="content" style="display:none">
         <h2 style="margin-bottom:20px; padding-left:5px;">Quick Actions</h2>
         <div id="quick-list">
             <script>
@@ -92,7 +92,7 @@
         </div>
     </div>
 
-    <div id="page-custom" class="content" style="display:none">
+    <div id="page-custom" class="content">
         <div class="mode-selector">
             <button class="mode-btn" data-mode="timer">Timer</button>
             <button class="mode-btn" data-mode="repeat">Repeat</button>
@@ -114,8 +114,8 @@
     </div>
 
     <div class="tab-bar">
-        <div class="tab-item active" onclick="switchTab('quick')"><span class="tab-icon">⚡</span>クイック</div>
-        <div class="tab-item" onclick="switchTab('custom')"><span class="tab-icon">⚙️</span>カスタム</div>
+        <div class="tab-item" onclick="switchTab('quick')"><span class="tab-icon">⚡</span>クイック</div>
+        <div class="tab-item active" onclick="switchTab('custom')"><span class="tab-icon">⏱️</span>タイマー</div>
         <div class="tab-item" onclick="switchTab('fav')"><span class="tab-icon">⭐</span>保存済み</div>
     </div>
 </div>
@@ -149,23 +149,23 @@
     function switchTab(t) {
         document.querySelectorAll('.content').forEach(p => p.style.display = 'none');
         document.getElementById('page-' + t).style.display = 'block';
-        document.querySelectorAll('.tab-item').forEach(i => i.classList.toggle('active', i.innerText.includes(t === 'quick' ? 'クイック' : t === 'custom' ? 'カスタム' : '保存')));
+        
+        document.querySelectorAll('.tab-item').forEach(i => {
+            const isTarget = (t === 'quick' && i.innerText.includes('クイック')) ||
+                           (t === 'custom' && i.innerText.includes('タイマー')) ||
+                           (t === 'fav' && i.innerText.includes('保存'));
+            i.classList.toggle('active', isTarget);
+        });
         if(t === 'fav') renderPresets();
     }
 
-    // 修正：ピッカーのスクロールを強制同期させる
     function setPickerValue(id, val, max) {
         const el = document.getElementById(id);
         const mid = (max + 1) * H;
         const targetScroll = mid + (val * H);
-        
-        // 瞬時に移動（behavior: auto）
         el.scrollTo({ top: targetScroll, behavior: 'auto' });
-        
-        // 移動後に確実に描画を合わせる
         requestAnimationFrame(() => {
             el.scrollTo({ top: targetScroll, behavior: 'auto' });
-            // selected クラスを更新
             el.querySelectorAll('.picker-item').forEach((it, i) => {
                 it.classList.toggle('selected', i === Math.round(targetScroll / H));
             });
@@ -173,22 +173,14 @@
     }
 
     function quickAction(m, w, r, s, onlyTune) {
-        conf.mode = m; 
-        conf.work = w; 
-        conf.rest = r; 
-        conf.sets = s;
-        
+        conf.mode = m; conf.work = w; conf.rest = r; conf.sets = s;
         setModeUI(m);
-        
-        // 各ピッカーを引数の値で強制移動
         setPickerValue('w-m', Math.floor(w/60), 59);
         setPickerValue('w-s', w%60, 59);
         setPickerValue('r-m', Math.floor(r/60), 59);
         setPickerValue('r-s', r%60, 59);
         setPickerValue('s-v', s, 99);
-        
         updateTotalDisplay();
-        
         if (onlyTune) switchTab('custom'); else startWorkout();
     }
 
@@ -238,33 +230,25 @@
     function startWorkout() {
         if (conf.work <= 0 && conf.rest <= 0) return;
         if (audioCtx.state === 'suspended') audioCtx.resume();
-        
         let currentSet = 1;
         let phase = (conf.work > 0) ? 'work' : 'rest';
         let remaining = (phase === 'work') ? conf.work : conf.rest;
         let totalPhaseTime = remaining;
-
         const dash = document.getElementById('dashboard');
         dash.style.display = 'flex'; dash.classList.remove('flashing');
-        
         const tick = () => {
             document.getElementById('ui-time').textContent = `${String(Math.floor(remaining/60)).padStart(2,'0')}:${String(remaining%60).padStart(2,'0')}`;
             document.getElementById('ui-sets').textContent = conf.mode === 'timer' ? "" : `SET ${currentSet} / ${conf.sets}`;
-            
             const isW = phase === 'work';
             document.getElementById('ui-phase').textContent = isW ? "WORK" : "REST";
             document.getElementById('progress').style.stroke = isW ? 'var(--active)' : 'var(--rest)';
             document.getElementById('progress').style.strokeDashoffset = 628 - (628 * (remaining / totalPhaseTime));
-            
             if (remaining <= 3 && remaining > 0) beep(880, 0.1);
             if (remaining === 0) {
                 if (phase === 'work') {
                     if (conf.mode === 'timer' || (conf.mode === 'repeat' && currentSet >= conf.sets) || (conf.mode === 'interval' && currentSet >= conf.sets && conf.rest === 0)) return finish();
-                    if (conf.mode === 'interval' && conf.rest > 0) {
-                        phase = 'rest'; remaining = conf.rest; totalPhaseTime = conf.rest; beep(1200, 0.3);
-                    } else {
-                        currentSet++; remaining = conf.work; totalPhaseTime = conf.work; beep(1760, 0.3);
-                    }
+                    if (conf.mode === 'interval' && conf.rest > 0) { phase = 'rest'; remaining = conf.rest; totalPhaseTime = conf.rest; beep(1200, 0.3); } 
+                    else { currentSet++; remaining = conf.work; totalPhaseTime = conf.work; beep(1760, 0.3); }
                 } else {
                     if (currentSet >= conf.sets) return finish();
                     currentSet++; phase = 'work'; remaining = conf.work; totalPhaseTime = conf.work; beep(1760, 0.3);
@@ -311,6 +295,7 @@
         localStorage.setItem('timer_presets', JSON.stringify(JSON.parse(localStorage.getItem('timer_presets')).filter(x => x.id !== id))); renderPresets();
     }
 
+    // イベントリスナーと初期化
     document.querySelectorAll('.mode-btn').forEach(b => {
         b.onclick = () => {
             conf.mode = b.dataset.mode;
@@ -318,9 +303,14 @@
             updateTotalDisplay();
         };
     });
+
     mkPicker('w-m', 59); mkPicker('w-s', 59); mkPicker('r-m', 59); mkPicker('r-s', 59); mkPicker('s-v', 99);
     
-    setTimeout(updateTotalDisplay, 100);
+    // 初期表示のセットアップ
+    window.onload = () => {
+        setModeUI('timer');
+        updateTotalDisplay();
+    };
 </script>
 </body>
 </html>
