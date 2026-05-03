@@ -78,69 +78,81 @@
             color: var(--text-sub);
         }
 
-        .category-filter {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
-            overflow-x: auto;
-            padding-bottom: 10px;
-        }
-        .cat-tag {
-            background: white;
-            border: 1px solid var(--border);
-            padding: 6px 15px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            color: var(--text-sub);
-            white-space: nowrap;
-            cursor: pointer;
-        }
-        .cat-tag.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-
         .article-grid {
             display: grid;
-            gap: 24px;
+            gap: 20px;
         }
 
         .article-card {
             background: var(--card-bg);
             border: 1px solid var(--border);
             border-radius: 16px;
-            padding: 24px;
             text-decoration: none;
             color: inherit;
             transition: all 0.2s;
-            display: block;
+            display: flex; /* 画像とテキストを横並びに */
+            overflow: hidden;
         }
         .article-card:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
             border-color: var(--primary);
         }
+
+        /* サムネイル画像の設定 */
+        .article-thumb {
+            width: 150px; /* スマホ・PC共通の固定幅 */
+            min-width: 150px;
+            height: auto;
+            object-fit: cover;
+            border-right: 1px solid var(--border);
+        }
+
+        /* テキスト部分の設定 */
+        .article-content {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
         .article-card h2 {
-            font-size: 1.25rem;
-            margin: 0 0 12px 0;
+            font-size: 1.15rem;
+            margin: 0 0 8px 0;
             color: var(--text-main);
             line-height: 1.4;
         }
         .article-card p {
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             color: var(--text-sub);
-            margin-bottom: 15px;
+            margin-bottom: 10px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2; /* 2行で省略 */
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
         .article-meta {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: var(--text-sub);
             display: flex;
-            gap: 15px;
+            gap: 12px;
         }
         .article-tag {
             color: var(--primary);
             font-weight: 700;
+        }
+
+        /* スマホ向け調整（幅が狭い場合は縦並びにする） */
+        @media (max-width: 500px) {
+            .article-card {
+                flex-direction: column;
+            }
+            .article-thumb {
+                width: 100%;
+                height: 160px;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+            }
         }
 
         footer {
@@ -166,45 +178,42 @@
         <p>集中力・思考・メンタルを整え、パフォーマンスを最大化する知恵</p>
     </section>
 
-    <div class="category-filter">
-        <span class="cat-tag active">すべて</span>
-        <span class="cat-tag">集中力</span>
-        <span class="cat-tag">時間管理</span>
-        <span class="cat-tag">脳トレ</span>
-        <span class="cat-tag">メンタル</span>
-    </div>
-
     <div class="article-grid">
         <a href="./concentration-tips.html" class="article-card">
-            <div class="article-meta">
-                <span class="article-tag">集中力</span>
-                <span>2026.05.03</span>
+            <img src="./images/concentration-thumb.jpg" alt="集中力" class="article-thumb">
+            <div class="article-content">
+                <div class="article-meta">
+                    <span class="article-tag">集中力</span>
+                    <span>2026.05.03</span>
+                </div>
+                <h2>集中力を上げる方法7選【科学的根拠あり】</h2>
+                <p>なぜ集中は続かないのか？脳の仕組みから紐解く、誰にでも実践可能な7つの向上メソッド。</p>
             </div>
-            <h2>集中力を上げる方法7選【科学的根拠あり】</h2>
-            <p>なぜ集中は続かないのか？脳の仕組みから紐解く、誰にでも実践可能な7つの集中力向上メソッド。</p>
         </a>
 
         <a href="./what-is-pomodoro.html" class="article-card">
-            <div class="article-meta">
-                <span class="article-tag">時間管理</span>
-                <span>2026.05.03</span>
+            <img src="./images/pomodoro-thumb.jpg" alt="ポモドーロ" class="article-thumb">
+            <div class="article-content">
+                <div class="article-meta">
+                    <span class="article-tag">時間管理</span>
+                    <span>2026.05.03</span>
+                </div>
+                <h2>ポモドーロタイマーとは？効果と正しいやり方を解説</h2>
+                <p>25分集中＋5分休憩。シンプルながら強力な時間管理術「ポモドーロ・テクニック」の実践ガイド。</p>
             </div>
-            <h2>ポモドーロタイマーとは？効果と正しいやり方を徹底解説</h2>
-            <p>25分集中＋5分休憩。シンプルながら強力な時間管理術「ポモドーロ・テクニック」の全貌と実践のコツ。</p>
         </a>
 
         <a href="./n-back-training.html" class="article-card">
-            <div class="article-meta">
-                <span class="article-tag">脳トレ</span>
-                <span>2026.05.03</span>
+            <img src="./images/n-back-thumb.jpg" alt="N-Back" class="article-thumb">
+            <div class="article-content">
+                <div class="article-meta">
+                    <span class="article-tag">脳トレ</span>
+                    <span>2026.05.03</span>
+                </div>
+                <h2>N-Back計算でワーキングメモリを鍛える理由と実践法</h2>
+                <p>脳の「処理スペース」を広げるトレーニング。なぜビジネスパフォーマンスに直結するのかを解説。</p>
             </div>
-            <h2>N-Back計算でワーキングメモリを鍛える理由｜科学的根拠と実践法</h2>
-            <p>脳の「地頭」を鍛えるトレーニング。N-Back課題がなぜビジネスパフォーマンスに直結するのかを解説。</p>
         </a>
-
-        <div style="padding: 40px; border: 2px dashed var(--border); border-radius: 16px; text-align: center; color: var(--text-sub); font-size: 0.9rem;">
-            新着記事を準備中です。
-        </div>
     </div>
 </main>
 
