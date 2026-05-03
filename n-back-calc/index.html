@@ -10,7 +10,7 @@
             --card: #ffffff; --success: #34c759; --danger: #ff3b30; --muted: #8e8e93;
         }
         body {
-            background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, sans-serif;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             height: 100svh; margin: 0; overflow: hidden; touch-action: manipulation; user-select: none;
         }
@@ -19,23 +19,23 @@
 
         .problem-container { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; gap: 15px; }
         
-        /* 問題表示エリアの改善 */
-        .q-display { display: flex; align-items: center; gap: 15px; }
-        .q-badge { background: var(--text); color: white; padding: 5px 12px; border-radius: 8px; font-size: 1.2rem; font-weight: 900; }
-        .formula-main { font-size: 3.5rem; font-weight: 900; color: var(--text); }
+        /* 上段：問題表示 */
+        .q-display { display: flex; align-items: baseline; gap: 12px; margin-bottom: 5px; }
+        .q-badge { color: var(--muted); font-size: 1.1rem; font-weight: bold; min-width: 45px; text-align: right; }
+        .formula-main { font-size: 3.4rem; font-weight: 900; color: var(--text); letter-spacing: -1px; }
 
+        /* 下段：回答エリアの調整 */
         .lower-box { 
-            text-align: center; padding: 20px; background: var(--card); 
-            border-radius: 20px; width: 85%; max-width: 320px; border: 2px solid transparent;
+            text-align: center; padding: 18px 25px; background: var(--card); 
+            border-radius: 20px; width: 88%; max-width: 340px; border: 2px solid transparent;
             box-shadow: 0 4px 12px rgba(0,0,0,0.05); transition: 0.3s;
-            display: flex; flex-direction: column; align-items: center;
         }
-        .waiting-input { border-color: var(--accent); box-shadow: 0 0 15px rgba(0, 122, 255, 0.2); animation: blink 1.5s infinite; }
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.8; } }
+        .waiting-input { border-color: var(--accent); box-shadow: 0 0 15px rgba(0, 122, 255, 0.15); animation: blink 1.5s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.75; } }
 
-        .formula-sub { font-size: 1.8rem; font-weight: bold; color: var(--muted); display: flex; align-items: center; gap: 8px; }
-        .ans-badge { background: #e2e8f0; color: var(--muted); padding: 2px 8px; border-radius: 6px; font-size: 1rem; }
-        .ans-target { font-size: 2.2rem; color: #ff9500; font-weight: 900; }
+        .formula-sub { font-size: 1.8rem; font-weight: bold; color: var(--muted); display: flex; align-items: baseline; justify-content: center; gap: 15px; }
+        .ans-badge { font-size: 1rem; color: var(--muted); font-weight: bold; min-width: 40px; text-align: right; }
+        .ans-target { font-size: 2.2rem; color: #ff9500; font-weight: 900; min-width: 30px; text-align: left; }
 
         .num-pad {
             display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
@@ -43,22 +43,22 @@
         }
         .btn {
             background: var(--card); border: none; border-radius: 12px;
-            color: var(--text); font-size: 1.8rem; font-weight: bold; padding: 15px 0; cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.08); -webkit-tap-highlight-color: transparent;
+            color: var(--text); font-size: 1.8rem; font-weight: bold; padding: 16px 0; cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.06); -webkit-tap-highlight-color: transparent;
         }
         .btn:active { background: var(--text); color: white; }
 
         .screen { position: absolute; inset: 0; background: var(--bg); z-index: 200; overflow-y: auto; }
-        .screen-content { min-height: 100%; display: flex; flex-direction: column; align-items: center; padding: 40px 20px 80px 20px; text-align: center; box-sizing: border-box; }
+        .screen-content { min-height: 100%; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; text-align: center; box-sizing: border-box; }
         
-        .info-card { background: var(--card); border-radius: 20px; padding: 25px; width: 100%; max-width: 340px; margin-top: 30px; text-align: left; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .info-card h2 { font-size: 18px; margin-top: 0; color: var(--accent); border-bottom: 2px solid var(--bg); padding-bottom: 8px; }
-        .info-card p, .info-card li { font-size: 14px; line-height: 1.6; color: #444; }
+        .info-card { background: var(--card); border-radius: 20px; padding: 20px; width: 100%; max-width: 340px; margin: 20px 0; text-align: left; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .info-card h2 { font-size: 17px; margin-top: 0; color: var(--accent); border-bottom: 2px solid var(--bg); padding-bottom: 5px; margin-bottom: 10px; }
+        .info-card p, .info-card li { font-size: 13.5px; line-height: 1.5; color: #444; }
 
-        .footer-guide { margin-top: auto; padding-top: 20px; font-size: 12px; color: var(--muted); font-weight: bold; }
+        .footer-guide { font-size: 12px; color: var(--muted); font-weight: bold; margin-top: 5px; }
 
-        .start-btn { width: 100%; max-width: 300px; padding: 18px; font-size: 1.2rem; background: var(--text); color: white; border: none; border-radius: 18px; cursor: pointer; font-weight: 900; margin-bottom: 15px; }
-        .reset-btn { background: none; border: 1px solid #ccc; color: var(--muted); padding: 10px 20px; border-radius: 20px; cursor: pointer; font-size: 0.9rem; font-weight: bold; }
+        .start-btn { width: 100%; max-width: 300px; padding: 18px; font-size: 1.2rem; background: var(--text); color: white; border: none; border-radius: 18px; cursor: pointer; font-weight: 900; margin-bottom: 12px; }
+        .reset-btn { background: none; border: 1px solid #ccc; color: var(--muted); padding: 8px 20px; border-radius: 20px; cursor: pointer; font-size: 0.85rem; font-weight: bold; }
         .hidden { display: none !important; }
     </style>
 </head>
@@ -68,40 +68,38 @@
 
     <div id="start-screen" class="screen">
         <div class="screen-content">
-            <h1 style="margin-bottom: 10px; font-weight: 900;">N-Back計算</h1>
-            <div id="level-status" style="font-size: 1.4rem; color: var(--accent); font-weight: 900; margin-bottom: 5px;">レベル 1</div>
-            <p id="level-desc" style="color: var(--muted); margin-bottom: 30px; font-weight: bold;">2-Back (通常速度)</p>
+            <h1 style="margin-bottom: 5px; font-weight: 900;">N-Back計算</h1>
+            <div id="level-status" style="font-size: 1.3rem; color: var(--accent); font-weight: 900;">レベル 1</div>
+            <p id="level-desc" style="color: var(--muted); margin-bottom: 20px; font-weight: bold; font-size: 14px;">2-Back (通常速度)</p>
             
             <button class="start-btn" onclick="initGame()">トレーニング開始</button>
             <button class="reset-btn" onclick="resetAll()">レベル1にリセット</button>
 
             <div class="info-card">
                 <h2>概要</h2>
-                <p>N-Back計算は、最新の問題を覚えながら、数問前の答えを思い出す脳トレです。</p>
-                <h2>使い方</h2>
-                <ul style="padding-left: 20px;">
-                    <li><b>Qバッジ:</b> 今表示されている数式の番号です。</li>
-                    <li><b>Aバッジ:</b> 回答すべき「何問前か」の番号です。</li>
-                    <li><b>PC操作:</b> 数字キー (0-9) で入力可能です。</li>
+                <p>最新の問題を覚えながら、指定された数問前の計算結果を回答するワーキングメモリ訓練です。</p>
+                <h2 style="margin-top:15px">使い方</h2>
+                <ul style="padding-left: 18px; margin: 0;">
+                    <li><b>問[n]:</b> 今表示されている数式の番号。</li>
+                    <li><b>答[n]:</b> 回答すべき過去の設問番号。</li>
+                    <li><b>PC操作:</b> 数字キー (0-9) が使えます。</li>
                 </ul>
             </div>
             
-            <div class="footer-guide">↓ 下にスクロールして概要を確認</div>
+            <div class="footer-guide">↓ 下にスクロールして詳細を確認</div>
         </div>
     </div>
 
     <div class="problem-container">
-        <div class="label-sm" id="progress-text">最新</div>
         <div class="q-display">
-            <div class="q-badge" id="q-num">Q1</div>
+            <div class="q-badge" id="q-num">問1</div>
             <div class="formula-main" id="formula-mem">?+?=</div>
         </div>
 
         <div id="ans-box-ui" class="lower-box">
-            <div class="label-sm" id="lower-q-label">回答</div>
             <div class="formula-sub">
-                <div class="ans-badge" id="a-num">A?</div>
-                <span id="formula-ans">???=</span>
+                <div class="ans-badge" id="a-num">答?</div>
+                <span id="formula-ans" style="letter-spacing: 1px;">???=</span>
                 <span id="ans-result" class="ans-target">?</span>
             </div>
         </div>
@@ -126,7 +124,7 @@
         function beep(f, d, type='sine') {
             if (audioCtx.state === 'suspended') audioCtx.resume();
             const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
-            o.type = type; o.frequency.value = f; g.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            o.type = type; o.frequency.value = f; g.gain.setValueAtTime(0.08, audioCtx.currentTime);
             g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + d);
             o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime + d);
         }
@@ -137,11 +135,9 @@
             formulaMem: document.getElementById('formula-mem'),
             formulaAns: document.getElementById('formula-ans'),
             ansResult: document.getElementById('ans-result'),
-            progress: document.getElementById('progress-text'),
             qNum: document.getElementById('q-num'),
             aNum: document.getElementById('a-num'),
             ansBox: document.getElementById('ans-box-ui'),
-            lowerQLabel: document.getElementById('lower-q-label'),
             bar: document.getElementById('timer-bar'),
             startScreen: document.getElementById('start-screen'),
             levelStatus: document.getElementById('level-status'),
@@ -173,7 +169,7 @@
             el.ansBox.classList.remove('waiting-input');
             el.ansResult.innerText = "?"; el.ansResult.style.color = "#ff9500";
             el.formulaAns.innerText = "???=";
-            el.aNum.innerText = "A?";
+            el.aNum.innerText = "答?";
 
             const a = Math.floor(Math.random() * 5) + 1;
             const b = Math.floor(Math.random() * 4) + 1;
@@ -183,16 +179,14 @@
 
             questions.push({ formula, ans });
             el.formulaMem.innerText = formula;
-            el.qNum.innerText = `Q${questions.length}`;
+            el.qNum.innerText = `問${questions.length}`;
             
             const interval = isHighSpeed ? 2500 : 4000;
 
             if (questions.length <= n) {
-                el.lowerQLabel.innerText = "暗記中...";
                 setTimeout(nextStep, interval);
             } else {
-                el.lowerQLabel.innerText = "回答ステージ";
-                el.aNum.innerText = `A${qIndex + 1}`;
+                el.aNum.innerText = `答${qIndex + 1}`;
                 el.ansBox.classList.add('waiting-input'); 
                 isWaiting = false; 
                 startTimer(interval - 300);
