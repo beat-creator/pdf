@@ -11,10 +11,12 @@
     
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>集中力・作業効率を高める方法 | セルフマネジメント・ブログ</title>
-    <meta name="description" content="科学的根拠に基づいた集中力向上メソッドや、ポモドーロテクニック、ワーキングメモリの鍛え方を解説。">
+    
+    <title>Concentration & Efficiency | セルフマネジメント・ブログ</title>
+    <meta name="description" content="スマホ依存への対策や集中力の維持、ワーキングメモリのトレーニングなど、日々の作業効率を整えるための考え方と実践法。">
 
     <style>
+        /* 既存のスタイルを維持 */
         :root {
             --primary: #4f46e5;
             --text-main: #0f172a;
@@ -76,6 +78,7 @@
         }
         .blog-header p {
             color: var(--text-sub);
+            font-size: 0.95rem;
         }
 
         .article-grid {
@@ -90,7 +93,7 @@
             text-decoration: none;
             color: inherit;
             transition: all 0.2s;
-            display: flex; /* 画像とテキストを横並びに */
+            display: flex;
             overflow: hidden;
         }
         .article-card:hover {
@@ -99,16 +102,14 @@
             border-color: var(--primary);
         }
 
-        /* サムネイル画像の設定 */
         .article-thumb {
-            width: 150px; /* スマホ・PC共通の固定幅 */
+            width: 150px;
             min-width: 150px;
             height: auto;
             object-fit: cover;
             border-right: 1px solid var(--border);
         }
 
-        /* テキスト部分の設定 */
         .article-content {
             padding: 20px;
             display: flex;
@@ -119,7 +120,6 @@
         .article-card h2 {
             font-size: 1.15rem;
             margin: 0 0 8px 0;
-            color: var(--text-main);
             line-height: 1.4;
         }
         .article-card p {
@@ -127,7 +127,7 @@
             color: var(--text-sub);
             margin-bottom: 10px;
             display: -webkit-box;
-            -webkit-line-clamp: 2; /* 2行で省略 */
+            -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
@@ -142,17 +142,9 @@
             font-weight: 700;
         }
 
-        /* スマホ向け調整（幅が狭い場合は縦並びにする） */
         @media (max-width: 500px) {
-            .article-card {
-                flex-direction: column;
-            }
-            .article-thumb {
-                width: 100%;
-                height: 160px;
-                border-right: none;
-                border-bottom: 1px solid var(--border);
-            }
+            .article-card { flex-direction: column; }
+            .article-thumb { width: 100%; height: 160px; border-right: none; border-bottom: 1px solid var(--border); }
         }
 
         footer {
@@ -160,6 +152,8 @@
             padding: 60px 20px;
             color: var(--text-sub);
             font-size: 0.85rem;
+            border-top: 1px solid var(--border);
+            margin-top: 60px;
         }
     </style>
 </head>
@@ -175,7 +169,7 @@
 <main>
     <section class="blog-header">
         <h1>Concentration & Efficiency</h1>
-        <p>集中力・思考・メンタルを整え、パフォーマンスを最大化する知恵</p>
+        <p>スマホ依存や集中力、思考の整理について。日々の作業を整えるための覚え書き。</p>
     </section>
 
     <div class="article-grid">
@@ -186,8 +180,8 @@
                     <span class="article-tag">集中力</span>
                     <span>2026.05.03</span>
                 </div>
-                <h2>集中力を上げる方法7選【科学的根拠あり】</h2>
-                <p>なぜ集中は続かないのか？脳の仕組みから紐解く、誰にでも実践可能な7つの向上メソッド。</p>
+                <h2>集中力を上げる方法と、スマホとの距離感</h2>
+                <p>なぜ作業中にスマホを触ってしまうのか。脳の仕組みと、物理的に集中環境を作るための具体的な工夫について。</p>
             </div>
         </a>
 
@@ -198,8 +192,8 @@
                     <span class="article-tag">時間管理</span>
                     <span>2026.05.03</span>
                 </div>
-                <h2>ポモドーロタイマーとは？効果と正しいやり方を解説</h2>
-                <p>25分集中＋5分休憩。シンプルながら強力な時間管理術「ポモドーロ・テクニック」の実践ガイド。</p>
+                <h2>ポモドーロタイマーを効果的に使うためのルール</h2>
+                <p>25分集中して5分休む。シンプルな手法を、飽きずに継続するための設定やマインドセットの解説。</p>
             </div>
         </a>
 
@@ -210,15 +204,15 @@
                     <span class="article-tag">脳トレ</span>
                     <span>2026.05.03</span>
                 </div>
-                <h2>N-Back計算でワーキングメモリを鍛える理由と実践法</h2>
-                <p>脳の「処理スペース」を広げるトレーニング。なぜビジネスパフォーマンスに直結するのかを解説。</p>
+                <h2>N-Back計算でワーキングメモリを鍛えるメリット</h2>
+                <p>情報の処理スピードを上げるトレーニング。日常の判断力や集中力にどう影響するのかをまとめました。</p>
             </div>
         </a>
     </div>
 </main>
 
 <footer>
-    <p>© 2026 Self-Management Toolkit | Individual Development</p>
+    <p>© 2026 Self-Management Toolkit | 個人開発の記録</p>
 </footer>
 
 </body>
