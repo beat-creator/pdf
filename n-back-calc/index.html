@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>N-Back Pro | Cognitive Training</title>
+    <title>N-Back Pro | ワーキングメモリ・脳トレ計算</title>
     <style>
         :root {
             --bg: #f2f4f7; --text: #1c1c1e; --accent: #007aff;
@@ -19,12 +19,10 @@
 
         .problem-container { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; gap: 15px; }
         
-        /* 上段：問題表示 */
         .q-display { display: flex; align-items: baseline; gap: 12px; margin-bottom: 5px; }
         .q-badge { color: var(--muted); font-size: 1.1rem; font-weight: bold; min-width: 45px; text-align: right; }
         .formula-main { font-size: 3.4rem; font-weight: 900; color: var(--text); letter-spacing: -1px; }
 
-        /* 下段：回答エリアの調整 */
         .lower-box { 
             text-align: center; padding: 18px 25px; background: var(--card); 
             border-radius: 20px; width: 88%; max-width: 340px; border: 2px solid transparent;
@@ -48,14 +46,16 @@
         }
         .btn:active { background: var(--text); color: white; }
 
+        /* スクリーン設定 */
         .screen { position: absolute; inset: 0; background: var(--bg); z-index: 200; overflow-y: auto; }
         .screen-content { min-height: 100%; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; text-align: center; box-sizing: border-box; }
         
-        .info-card { background: var(--card); border-radius: 20px; padding: 20px; width: 100%; max-width: 340px; margin: 20px 0; text-align: left; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .info-card h2 { font-size: 17px; margin-top: 0; color: var(--accent); border-bottom: 2px solid var(--bg); padding-bottom: 5px; margin-bottom: 10px; }
-        .info-card p, .info-card li { font-size: 13.5px; line-height: 1.5; color: #444; }
+        .info-card { background: var(--card); border-radius: 20px; padding: 22px; width: 100%; max-width: 360px; margin: 20px 0; text-align: left; box-shadow: 0 4px 12px rgba(0,0,0,0.05); box-sizing: border-box; }
+        .info-card h2 { font-size: 17px; margin: 0 0 10px 0; color: var(--accent); border-bottom: 2px solid var(--bg); padding-bottom: 5px; }
+        .info-card p, .info-card li { font-size: 13.5px; line-height: 1.6; color: #444; margin-bottom: 10px; }
+        .info-card b { color: var(--text); }
 
-        .footer-guide { font-size: 12px; color: var(--muted); font-weight: bold; margin-top: 5px; }
+        .footer-guide { font-size: 12px; color: var(--muted); font-weight: bold; margin: 20px 0 40px 0; }
 
         .start-btn { width: 100%; max-width: 300px; padding: 18px; font-size: 1.2rem; background: var(--text); color: white; border: none; border-radius: 18px; cursor: pointer; font-weight: 900; margin-bottom: 12px; }
         .reset-btn { background: none; border: 1px solid #ccc; color: var(--muted); padding: 8px 20px; border-radius: 20px; cursor: pointer; font-size: 0.85rem; font-weight: bold; }
@@ -76,17 +76,25 @@
             <button class="reset-btn" onclick="resetAll()">レベル1にリセット</button>
 
             <div class="info-card">
-                <h2>概要</h2>
-                <p>最新の問題を覚えながら、指定された数問前の計算結果を回答するワーキングメモリ訓練です。</p>
-                <h2 style="margin-top:15px">使い方</h2>
+                <h2>N-Back計算とは？</h2>
+                <p>「脳のメモ帳」と呼ばれる<b>ワーキングメモリ（作業記憶）</b>を鍛えるための、科学的に裏付けられたトレーニングです。</p>
+                
+                <h2>鍛えるメリット</h2>
+                <ul>
+                    <li><b>マルチタスク能力の向上:</b> 仕事中、複数の情報を整理しやすくなります。</li>
+                    <li><b>学習効率アップ:</b> 読解力や論理的思考力が向上します。</li>
+                    <li><b>集中力と感情制御:</b> 注意をコントロールする力がつき、イライラしにくくなります。</li>
+                </ul>
+
+                <h2>ルールと使い方</h2>
                 <ul style="padding-left: 18px; margin: 0;">
-                    <li><b>問[n]:</b> 今表示されている数式の番号。</li>
-                    <li><b>答[n]:</b> 回答すべき過去の設問番号。</li>
-                    <li><b>PC操作:</b> 数字キー (0-9) が使えます。</li>
+                    <li><b>問[n]:</b> 今出題されている最新の式です。</li>
+                    <li><b>答[n]:</b> 画面が青く光ったとき、<b>n問前の答え</b>を入力します。</li>
+                    <li><b>PC操作:</b> キーボードの<b>数字キー（0-9）</b>やテンキーで直接入力できます。</li>
                 </ul>
             </div>
             
-            <div class="footer-guide">↓ 下にスクロールして詳細を確認</div>
+            <div class="footer-guide">↑ スクロールしてメリットをチェック</div>
         </div>
     </div>
 
