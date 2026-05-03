@@ -61,7 +61,7 @@
             z-index: 20; transition: opacity 0.5s;
         }
 
-        .rhythm-selector, .time-presets { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+        .rhythm-selector, .time-presets, .option-selector { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
         
         button {
             background: white; border: 1px solid var(--border);
@@ -81,7 +81,7 @@
         body.meditating .controls { opacity: 0.2; }
         body.meditating .controls:hover { opacity: 1; }
 
-        /* コンテンツエリア */
+        /* コンテンツエリア（復活した説明文） */
         .content-section { width: 100%; max-width: 600px; padding: 20px 20px 80px; box-sizing: border-box; }
         .card { background: var(--card-bg); border-radius: 20px; padding: 28px; margin-bottom: 24px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
         h2 { font-size: 1.3rem; margin: 0 0 20px 0; color: var(--primary); border-bottom: 2px solid var(--bg-light); padding-bottom: 12px; }
@@ -104,14 +104,17 @@
     </div>
     <div class="controls">
         <div class="rhythm-selector" id="rhythmArea">
-            <button onclick="setRhythm('zen')" id="btn-zen" class="active">禅 (5-5)</button>
+            <button onclick="setRhythm('zen')" id="btn-zen">禅 (5-5)</button>
             <button onclick="setRhythm('box')" id="btn-box">集中 (4-4-4-4)</button>
             <button onclick="setRhythm('relax')" id="btn-relax">休息 (4-7-8)</button>
         </div>
         <div class="time-presets" id="timeArea">
-            <button onclick="setDuration(300)" id="btn-time-300" class="active">5分</button>
+            <button onclick="setDuration(300)" id="btn-time-300">5分</button>
             <button onclick="setDuration(600)" id="btn-time-600">10分</button>
             <button onclick="setDuration(900)" id="btn-time-900">15分</button>
+        </div>
+        <div class="option-selector">
+            <button onclick="toggleVoice()" id="btn-voice">音声ガイド: ON</button>
         </div>
         <button class="start-btn" id="startBtn" onclick="toggleMeditation()">瞑想を開始する</button>
         <div style="color: var(--text-sub); font-size: 0.85rem; margin-top: 5px;">👇 下にスクロールでガイドを表示</div>
@@ -121,28 +124,30 @@
 <div class="content-section">
     <div class="card">
         <h2>🧘 瞑想の基本</h2>
-        <p>瞑想は脳のリセット習慣です。背筋を伸ばし、リラックスして座ってください。</p>
+        <p>瞑想は、脳の疲れをリセットし、集中力を高めるための「心の筋トレ」です。</p>
         <ul class="step-list">
-            <li>意識を「今、この瞬間の呼吸」だけに向けます。</li>
-            <li>雑念が浮かんでも、静かに呼吸に意識を戻しましょう。</li>
+            <li>背筋をスッと伸ばし、リラックスして座ります。</li>
+            <li>手は膝の上に置くか、お腹の前で軽く組みます。</li>
+            <li>意識を「今、この瞬間の呼吸」に向けます。</li>
+            <li>雑念が浮かんでも自分を責めず、静かに呼吸に意識を戻しましょう。</li>
         </ul>
     </div>
 
     <div class="card">
         <h2>🫁 呼吸法ガイド</h2>
         <h3>1. 禅呼吸 (5-5)</h3>
-        <p>吸う・吐くを等しく行い、自律神経を整える基本の呼吸です。</p>
+        <p>基本の呼吸法です。自律神経を整え、心を穏やかにします。</p>
         <h3>2. 集中：ボックスブリージング (4-4-4-4)</h3>
-        <p><strong>吸う・止める・吐く・止める</strong>の4拍子。脳をクリアにし、高い集中力を引き出します。</p>
+        <p>「吸う・止める・吐く・止める」を一定のリズムで行います。脳を覚醒させ、集中力を引き出します。</p>
         <h3>3. 休息：4-7-8呼吸法</h3>
-        <p>吐く時間を長くすることで、リラックス効果を最大化します。</p>
+        <p>吐く時間を長くすることで、副交感神経を活性化し、深いリラックスをもたらします。</p>
     </div>
 
     <div class="card">
-        <h2>💡 機能について</h2>
-        <p>・<strong>音声ガイド：</strong>「吸って」「止めて」「吐いて」を音声でサポートします。<br>
-           ・<strong>画面スリープ防止：</strong>作動中は画面が暗くなりません。<br>
-           ・<strong>準備時間：</strong>開始ボタン後、5秒間の猶予があります。</p>
+        <h2>💡 便利機能について</h2>
+        <p>・<strong>設定の保存：</strong>音声のON/OFFや選んだリズムは自動で保存されます。<br>
+           ・<strong>画面スリープ防止：</strong>タイマー動作中、画面が消えないように設定しました。<br>
+           ・<strong>準備時間：</strong>開始ボタン後、姿勢を整えるための5秒間があります。</p>
     </div>
 </div>
 
@@ -153,16 +158,42 @@
         relax: { inhale: 4, hold1: 7, exhale: 8, hold2: 0 }
     };
 
-    let currentRhythm = 'zen', defaultTime = 300, timeLeft = 300, timerId = null, isMeditating = false, isPreparing = false;
+    // 保存データの読み込み
+    let currentRhythm = localStorage.getItem('med_rhythm') || 'zen';
+    let defaultTime = parseInt(localStorage.getItem('med_time')) || 300;
+    let isVoiceEnabled = (localStorage.getItem('med_voice') !== 'false');
+
+    let timeLeft = defaultTime, timerId = null, isMeditating = false, isPreparing = false;
     let audioCtx = null, wakeLock = null;
     
     const circle = document.getElementById('circle'), guide = document.getElementById('guide'), display = document.getElementById('display'), startBtn = document.getElementById('startBtn');
 
+    window.onload = () => {
+        setRhythm(currentRhythm);
+        setDuration(defaultTime);
+        updateVoiceUI();
+    };
+
     function speak(text) {
+        if (!isVoiceEnabled) return;
         if (!isMeditating && text !== "瞑想を開始します" && text !== "お疲れ様でした") return;
+        window.speechSynthesis.cancel();
         const uttr = new SpeechSynthesisUtterance(text);
         uttr.lang = 'ja-JP'; uttr.rate = 1.2; uttr.volume = 0.5;
         window.speechSynthesis.speak(uttr);
+    }
+
+    function toggleVoice() {
+        if (isMeditating || isPreparing) return;
+        isVoiceEnabled = !isVoiceEnabled;
+        localStorage.setItem('med_voice', isVoiceEnabled);
+        updateVoiceUI();
+    }
+
+    function updateVoiceUI() {
+        const btn = document.getElementById('btn-voice');
+        btn.textContent = `音声ガイド: ${isVoiceEnabled ? 'ON' : 'OFF'}`;
+        btn.classList.toggle('active', isVoiceEnabled);
     }
 
     async function requestWakeLock() {
@@ -172,6 +203,7 @@
     function setRhythm(key) {
         if (isMeditating || isPreparing) return;
         currentRhythm = key;
+        localStorage.setItem('med_rhythm', key);
         document.querySelectorAll('.rhythm-selector button').forEach(b => b.classList.remove('active'));
         document.getElementById(`btn-${key}`).classList.add('active');
     }
@@ -179,8 +211,10 @@
     function setDuration(sec) {
         if (isMeditating || isPreparing) return;
         defaultTime = sec; timeLeft = sec;
+        localStorage.setItem('med_time', sec);
         document.querySelectorAll('.time-presets button').forEach(b => b.classList.remove('active'));
-        document.getElementById(`btn-time-${sec}`).classList.add('active');
+        const btn = document.getElementById(`btn-time-${sec}`);
+        if(btn) btn.classList.add('active');
         updateDisplay();
     }
 
