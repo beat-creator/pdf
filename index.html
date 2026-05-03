@@ -10,23 +10,18 @@
     </script>
     
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    
-    <title>セルフマネジメント・ツール集 | 個人開発の自己管理・集中支援ツール</title>
-    <meta name="description" content="個人開発のセルフマネジメント支援ツール。集中・思考・メンタルを整えるための実用ツールを1箇所に集約。">
-
-    <link rel="icon" href="./icon-512.png" type="image/png">
-    <link rel="apple-touch-icon" href="./icon-512.png">
-    <link rel="manifest" href="./manifest.json">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>集中力・作業効率を高める方法 | セルフマネジメント・ブログ</title>
+    <meta name="description" content="科学的根拠に基づいた集中力向上メソッドや、ポモドーロテクニック、ワーキングメモリの鍛え方を解説。">
 
     <style>
         :root {
             --primary: #4f46e5;
             --text-main: #0f172a;
             --text-sub: #475569;
-            --bg-site: #f1f5f9;
+            --bg-site: #f8fafc;
             --card-bg: #ffffff;
-            --border: #cbd5e1;
+            --border: #e2e8f0;
         }
 
         body {
@@ -34,220 +29,196 @@
             background-color: var(--bg-site);
             color: var(--text-main);
             margin: 0; padding: 0;
-            display: flex; flex-direction: column; align-items: center;
-            min-height: 100vh;
+            line-height: 1.6;
         }
 
         header {
-            width: 100%;
-            padding: 60px 20px 20px;
-            text-align: center;
-            box-sizing: border-box;
+            background: white;
+            border-bottom: 1px solid var(--border);
+            padding: 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
-        .top-description {
-            max-width: 550px;
-            margin: 18px auto 0;
-            font-size: 0.95rem;
-            line-height: 1.7;
+        .header-container {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .site-title {
+            font-weight: 800;
+            text-decoration: none;
+            color: var(--text-main);
+            font-size: 1.1rem;
+        }
+        .back-to-tools {
+            font-size: 0.85rem;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        main {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .blog-header {
+            margin-bottom: 40px;
+            text-align: center;
+        }
+        .blog-header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+        .blog-header p {
             color: var(--text-sub);
         }
-        .top-description b {
-            color: var(--text-main);
-            display: block;
-            margin-bottom: 5px;
-            font-size: 1.05rem;
-        }
-        .seo-tagline {
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 8px;
-            letter-spacing: 0.15em;
-        }
-        h1 {
-            font-size: 1.8rem;
-            margin: 0;
-            color: var(--text-main);
-            letter-spacing: -0.5px;
-        }
 
-        .container {
-            max-width: 650px;
-            width: 95%;
-            padding-bottom: 60px;
-        }
-
-        .tool-grid {
+        .article-grid {
             display: grid;
-            grid-template-columns: 1fr;
             gap: 20px;
-            margin-top: 30px;
-        }
-        @media (min-width: 480px) {
-            .tool-grid { grid-template-columns: repeat(2, 1fr); }
         }
 
-        .tool-card {
+        .article-card {
             background: var(--card-bg);
             border: 1px solid var(--border);
-            border-radius: 24px;
-            padding: 25px 20px;
+            border-radius: 16px;
             text-decoration: none;
-            display: flex;
-            flex-direction: column;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-            box-sizing: border-box;
+            color: inherit;
+            transition: all 0.2s;
+            display: flex; /* 画像とテキストを横並びに */
+            overflow: hidden;
         }
-        .tool-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+        .article-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
             border-color: var(--primary);
         }
-        .tool-emoji { font-size: 2.2rem; margin-bottom: 10px; }
-        .tool-name { font-size: 1.1rem; font-weight: 800; color: var(--text-main); margin-bottom: 8px; }
-        .tool-desc { font-size: 0.85rem; color: var(--text-sub); line-height: 1.5; margin-bottom: 15px; flex-grow: 1; }
-        
-        .tool-tag {
-            display: inline-block;
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: var(--primary);
-            background: #eef2ff;
-            padding: 4px 12px;
-            border-radius: 12px;
-            align-self: flex-start;
+
+        /* サムネイル画像の設定 */
+        .article-thumb {
+            width: 150px; /* スマホ・PC共通の固定幅 */
+            min-width: 150px;
+            height: auto;
+            object-fit: cover;
+            border-right: 1px solid var(--border);
         }
 
-        /* 記事セクションのスタイル */
-        .blog-preview-section {
-            margin-top: 60px;
-            text-align: center;
+        /* テキスト部分の設定 */
+        .article-content {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
-        .blog-preview-section h2 {
-            font-size: 1.2rem;
-            color: var(--text-sub);
-            margin-bottom: 25px;
-        }
-        .blog-list {
-            background: var(--card-bg);
-            border-radius: 24px;
-            border: 1px solid var(--border);
-            overflow: hidden;
-            text-align: left;
-            margin-bottom: 20px;
-        }
-        .blog-item-link {
-            display: block;
-            padding: 18px 20px;
-            text-decoration: none;
+
+        .article-card h2 {
+            font-size: 1.15rem;
+            margin: 0 0 8px 0;
             color: var(--text-main);
-            font-size: 0.95rem;
-            font-weight: 600;
-            border-bottom: 1px solid var(--bg-site);
-            transition: background 0.2s;
+            line-height: 1.4;
         }
-        .blog-item-link:last-child { border-bottom: none; }
-        .blog-item-link:hover { background: #f8fafc; color: var(--primary); }
-        
-        .view-all-btn {
-            display: inline-block;
-            margin-top: 10px;
+        .article-card p {
             font-size: 0.9rem;
             color: var(--text-sub);
-            text-decoration: none;
-            font-weight: 700;
-            padding: 8px 16px;
-            border-radius: 20px;
-            border: 1px solid var(--border);
-            transition: all 0.2s;
+            margin-bottom: 10px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2; /* 2行で省略 */
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
-        .view-all-btn:hover { background: var(--text-main); color: white; border-color: var(--text-main); }
+        .article-meta {
+            font-size: 0.75rem;
+            color: var(--text-sub);
+            display: flex;
+            gap: 12px;
+        }
+        .article-tag {
+            color: var(--primary);
+            font-weight: 700;
+        }
 
-        .benefits-section { margin-top: 60px; }
-        .benefits-section h2 { font-size: 1.2rem; text-align: center; margin-bottom: 35px; color: var(--text-sub); }
-        .benefit-item { background: var(--card-bg); border-radius: 20px; padding: 24px; margin-bottom: 20px; border-left: 6px solid var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.04); }
-        .benefit-item h3 { font-size: 1.05rem; margin: 0 0 10px 0; color: var(--text-main); }
-        .benefit-item p { font-size: 0.9rem; line-height: 1.8; color: var(--text-sub); margin: 0; }
+        /* スマホ向け調整（幅が狭い場合は縦並びにする） */
+        @media (max-width: 500px) {
+            .article-card {
+                flex-direction: column;
+            }
+            .article-thumb {
+                width: 100%;
+                height: 160px;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+            }
+        }
 
-        footer { padding: 50px 20px; font-size: 0.8rem; color: var(--text-sub); text-align: center; border-top: 1px solid var(--border); width: 100%; background: #f8fafc; margin-top: auto; }
-        footer a { color: var(--text-main); text-decoration: none; font-weight: 700; margin: 0 10px; }
+        footer {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-sub);
+            font-size: 0.85rem;
+        }
     </style>
 </head>
-<body> 
+<body>
 
 <header>
-    <div class="seo-tagline">FOR HIGH PERFORMANCE</div>
-    <h1>🛠️ セルフマネジメント・ツール集</h1>
-    <p class="top-description">
-        <b>個人開発によるセルフマネジメント支援ツールです。</b>
-        集中・思考・メンタルを整えるための実用機能を厳選。ブラウザだけで動作し、日々のパフォーマンスを無理なく支えます。
-    </p>
+    <div class="header-container">
+        <a href="../" class="site-title">🛠️ Self-Management Toolkit</a>
+        <a href="../" class="back-to-tools">ツール一覧へ戻る</a>
+    </div>
 </header>
 
-<div class="container">
-    <div class="tool-grid">
-        <a href="./besttimer/" class="tool-card">
-            <span class="tool-emoji">⏱️</span>
-            <span class="tool-name">集中タイマー</span>
-            <span class="tool-desc">25分集中と休憩を繰り返し、無理なく作業効率を維持します。通知や余計な機能を排除し、今やるべきタスクにだけ集中できます。</span>
-            <span class="tool-tag">作業前に / おすすめ</span>
+<main>
+    <section class="blog-header">
+        <h1>Concentration & Efficiency</h1>
+        <p>集中力・思考・メンタルを整え、パフォーマンスを最大化する知恵</p>
+    </section>
+
+    <div class="article-grid">
+        <a href="./concentration-tips.html" class="article-card">
+            <img src="./images/concentration-thumb.jpg" alt="集中力" class="article-thumb">
+            <div class="article-content">
+                <div class="article-meta">
+                    <span class="article-tag">集中力</span>
+                    <span>2026.05.03</span>
+                </div>
+                <h2>集中力を上げる方法7選【科学的根拠あり】</h2>
+                <p>なぜ集中は続かないのか？脳の仕組みから紐解く、誰にでも実践可能な7つの向上メソッド。</p>
+            </div>
         </a>
 
-        <a href="./zen/" class="tool-card">
-            <span class="tool-emoji">🧘</span>
-            <span class="tool-name">瞑想タイマー</span>
-            <span class="tool-desc">呼吸に意識を向け、思考のノイズをリセット。短時間でも頭をクリアにし、次の行動に落ち着いて取り組めます。</span>
-            <span class="tool-tag">3分〜 / 疲れた時に</span>
+        <a href="./what-is-pomodoro.html" class="article-card">
+            <img src="./images/pomodoro-thumb.jpg" alt="ポモドーロ" class="article-thumb">
+            <div class="article-content">
+                <div class="article-meta">
+                    <span class="article-tag">時間管理</span>
+                    <span>2026.05.03</span>
+                </div>
+                <h2>ポモドーロタイマーとは？効果と正しいやり方を解説</h2>
+                <p>25分集中＋5分休憩。シンプルながら強力な時間管理術「ポモドーロ・テクニック」の実践ガイド。</p>
+            </div>
         </a>
 
-        <a href="./n-back-calc/" class="tool-card">
-            <span class="tool-emoji">🧠</span>
-            <span class="tool-name">N-Back計算</span>
-            <span class="tool-desc">情報を保持しながら処理する力を鍛え、複雑なタスクへの対応力を向上。思考の粘り強さを底上げします。</span>
-            <span class="tool-tag">脳の筋トレ / 集中前に</span>
-        </a>
-
-        <a href="./pic/" class="tool-card">
-            <span class="tool-emoji">🧩</span>
-            <span class="tool-name">論理的リセット</span>
-            <span class="tool-desc">状況を分解し、事実と解釈を切り分けて冷静さを取り戻します。判断ミスや思い込みを減らす思考整理ツール。</span>
-            <span class="tool-tag">迷った時に / 5分〜</span>
+        <a href="./n-back-training.html" class="article-card">
+            <img src="./images/n-back-thumb.jpg" alt="N-Back" class="article-thumb">
+            <div class="article-content">
+                <div class="article-meta">
+                    <span class="article-tag">脳トレ</span>
+                    <span>2026.05.03</span>
+                </div>
+                <h2>N-Back計算でワーキングメモリを鍛える理由と実践法</h2>
+                <p>脳の「処理スペース」を広げるトレーニング。なぜビジネスパフォーマンスに直結するのかを解説。</p>
+            </div>
         </a>
     </div>
-
-    <section class="benefits-section">
-        <h2>日々を乗り切るための自己規律</h2>
-        <div class="benefit-item">
-            <h3>🎯 集中リソースの最適化</h3>
-            <p>高度な思考を必要とする業務において、持続可能なパフォーマンスを維持するためのサイクルを構築します。</p>
-        </div>
-        <div class="benefit-item">
-            <h3>🧠 知的基礎体力の継続訓練</h3>
-            <p>脳機能の訓練を通じて、複雑な情報を同時並行で扱う際の処理能力を底上げし、認知負荷を軽減します。</p>
-        </div>
-    </section>
-
-    <section class="blog-preview-section">
-        <h2>📚 集中力・作業効率を高める知識</h2>
-        <div class="blog-list">
-            <a href="./blog/concentration-tips.html" class="blog-item-link">
-                <span>集中力を上げる方法7選【科学的根拠あり】</span>
-            </a>
-            <a href="./blog/what-is-pomodoro.html" class="blog-item-link">
-                <span>ポモドーロタイマーとは？効果と正しいやり方</span>
-            </a>
-            <a href="./blog/n-back-training.html" class="blog-item-link">
-                <span>N-Back計算でワーキングメモリを鍛える理由</span>
-            </a>
-        </div>
-        <a href="./blog/" class="view-all-btn">すべての記事を見る</a>
-    </section>
-</div>
+</main>
 
 <footer>
-    <a href="./privacy.html">プライバシーポリシー</a>
-    <p>© 2026 Self-Management Toolkit</p>
+    <p>© 2026 Self-Management Toolkit | Individual Development</p>
 </footer>
 
 </body>
