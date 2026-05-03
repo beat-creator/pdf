@@ -13,6 +13,13 @@
         .container { height: 100svh; display: flex; flex-direction: column; }
         .content { flex: 1; overflow-y: auto; padding: 15px; padding-bottom: 100px; }
 
+        /* 追加：ガイドセクションのスタイル */
+        .guide-box { background: #eef2f6; border-radius: 16px; padding: 15px; margin-bottom: 20px; border: 1px solid #d1d9e6; }
+        .guide-title { font-size: 18px; font-weight: 900; margin: 0 0 5px 0; color: var(--primary); }
+        .guide-desc { font-size: 13px; color: var(--text-sub); line-height: 1.4; margin-bottom: 10px; }
+        .guide-steps { display: flex; gap: 8px; font-size: 11px; color: var(--muted); font-weight: bold; }
+        .step { background: white; padding: 4px 8px; border-radius: 6px; border: 1px solid #ddd; }
+
         .quick-row { 
             background: var(--card); border-radius: 16px; padding: 12px 15px; 
             margin-bottom: 10px; display: flex; align-items: center; 
@@ -61,38 +68,20 @@
     <div id="page-quick" class="content" style="display:none">
         <h2 style="margin-bottom:20px; padding-left:5px;">Quick Actions</h2>
         <div id="quick-list">
-            <script>
-                const presets = [
-                    {m:'timer', w:180, r:0, s:1, e:'🍜', t:'カップ麺', d:'3分'},
-                    {m:'timer', w:300, r:0, s:1, e:'🧘', t:'瞑想', d:'5分'},
-                    {m:'timer', w:420, r:0, s:1, e:'🥚', t:'ゆで卵', d:'7分'},
-                    {m:'timer', w:600, r:0, s:1, e:'🧹', t:'10分集中', d:'掃除・片付け'},
-                    {m:'timer', w:900, r:0, s:1, e:'💤', t:'仮眠', d:'15分'},
-                    {m:'repeat', w:60, r:0, s:10, e:'📝', t:'ゼロ秒思考', d:'1分 × 10回'},
-                    {m:'interval', w:20, r:10, s:8, e:'🏋️', t:'HIIT', d:'20s/10s × 8'},
-                    {m:'interval', w:30, r:5, s:10, e:'🤸', t:'ストレッチ', d:'30s × 10'},
-                    {m:'interval', w:25*60, r:300, s:4, e:'🍅', t:'ポモドーロ', d:'25m/5m × 4'}
-                ];
-                document.write(presets.map(p => `
-                    <div class="quick-row">
-                        <div class="quick-info">
-                            <span class="quick-emoji">${p.e}</span>
-                            <div class="quick-text-group">
-                                <span class="quick-title">${p.t}</span>
-                                <span class="quick-desc">${p.d}</span>
-                            </div>
-                        </div>
-                        <div class="row-btn-group">
-                            <button class="btn-mini-tune" onclick="quickAction('${p.m}', ${p.w}, ${p.r}, ${p.s}, true)">⚙️</button>
-                            <button class="btn-mini-start" onclick="quickAction('${p.m}', ${p.w}, ${p.r}, ${p.s}, false)">▶️</button>
-                        </div>
-                    </div>
-                `).join(''));
-            </script>
-        </div>
+            </div>
     </div>
 
     <div id="page-custom" class="content">
+        <div class="guide-box">
+            <h1 class="guide-title">Custom Timer</h1>
+            <p class="guide-desc">用途に合わせた自由な時間設定が可能です。単発のタイマーから、インターバルトレーニングまで対応します。</p>
+            <div class="guide-steps">
+                <span class="step">1. モード選択</span>
+                <span class="step">2. 時間/回数設定</span>
+                <span class="step">3. START</span>
+            </div>
+        </div>
+
         <div class="mode-selector">
             <button class="mode-btn" data-mode="timer">Timer</button>
             <button class="mode-btn" data-mode="repeat">Repeat</button>
@@ -131,6 +120,33 @@
 </div>
 
 <script>
+    const presets = [
+        {m:'timer', w:180, r:0, s:1, e:'🍜', t:'カップ麺', d:'3分'},
+        {m:'timer', w:300, r:0, s:1, e:'🧘', t:'瞑想', d:'5分'},
+        {m:'timer', w:420, r:0, s:1, e:'🥚', t:'ゆで卵', d:'7分'},
+        {m:'timer', w:600, r:0, s:1, e:'🧹', t:'10分集中', d:'掃除・片付け'},
+        {m:'timer', w:900, r:0, s:1, e:'💤', t:'仮眠', d:'15分'},
+        {m:'repeat', w:60, r:0, s:10, e:'📝', t:'ゼロ秒思考', d:'1分 × 10回'},
+        {m:'interval', w:20, r:10, s:8, e:'🏋️', t:'HIIT', d:'20s/10s × 8'},
+        {m:'interval', w:30, r:5, s:10, e:'🤸', t:'ストレッチ', d:'30s × 10'},
+        {m:'interval', w:25*60, r:300, s:4, e:'🍅', t:'ポモドーロ', d:'25m/5m × 4'}
+    ];
+    document.getElementById('quick-list').innerHTML = presets.map(p => `
+        <div class="quick-row">
+            <div class="quick-info">
+                <span class="quick-emoji">${p.e}</span>
+                <div class="quick-text-group">
+                    <span class="quick-title">${p.t}</span>
+                    <span class="quick-desc">${p.d}</span>
+                </div>
+            </div>
+            <div class="row-btn-group">
+                <button class="btn-mini-tune" onclick="quickAction('${p.m}', ${p.w}, ${p.r}, ${p.s}, true)">⚙️</button>
+                <button class="btn-mini-start" onclick="quickAction('${p.m}', ${p.w}, ${p.r}, ${p.s}, false)">▶️</button>
+            </div>
+        </div>
+    `).join('');
+
     const H = 105;
     let conf = { mode: 'timer', work: 180, rest: 0, sets: 1 };
     let tId = null;
@@ -149,7 +165,6 @@
     function switchTab(t) {
         document.querySelectorAll('.content').forEach(p => p.style.display = 'none');
         document.getElementById('page-' + t).style.display = 'block';
-        
         document.querySelectorAll('.tab-item').forEach(i => {
             const isTarget = (t === 'quick' && i.innerText.includes('クイック')) ||
                            (t === 'custom' && i.innerText.includes('タイマー')) ||
@@ -295,7 +310,6 @@
         localStorage.setItem('timer_presets', JSON.stringify(JSON.parse(localStorage.getItem('timer_presets')).filter(x => x.id !== id))); renderPresets();
     }
 
-    // イベントリスナーと初期化
     document.querySelectorAll('.mode-btn').forEach(b => {
         b.onclick = () => {
             conf.mode = b.dataset.mode;
@@ -306,7 +320,6 @@
 
     mkPicker('w-m', 59); mkPicker('w-s', 59); mkPicker('r-m', 59); mkPicker('r-s', 59); mkPicker('s-v', 99);
     
-    // 初期表示のセットアップ
     window.onload = () => {
         setModeUI('timer');
         updateTotalDisplay();
