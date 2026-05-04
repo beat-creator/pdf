@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
-    <meta name="description" content="数字をヒントにドット絵を完成させる、大人のための無料お絵かきロジック。脳トレや毎日のリフレッシュに最適です。">
+    <meta name="description" content="数字をヒントにドット絵を完成させる、大人のための無料お絵かきロジック。脳トレやリフレッシュに最適です。">
     <title>大人の脳トレ！お絵かきロジック | 無料ピクロス・パズル</title>
     <style>
         :root {
@@ -36,7 +36,6 @@
         }
         .diff-btn.active-diff { background: var(--accent); border-color: var(--accent); color: white; }
 
-        /* ステージ選択画面 */
         #menu-screen { flex: 1; padding: 20px; display: flex; flex-direction: column; align-items: center; }
         .level-grid {
             display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); 
@@ -53,11 +52,10 @@
             background: var(--success); color: white; font-size: 10px; padding: 2px 8px; border-radius: 10px;
         }
 
-        /* パズル本体 */
         #game-screen { display: none; flex-direction: column; align-items: center; padding-bottom: 220px; }
         .game-container { width: 100%; overflow: auto; padding: 20px 10px; display: flex; justify-content: flex-start; }
         .grid { display: grid; background: #636366; border: 2px solid #636366; width: max-content; }
-        .cell { background: var(--card); border: 0.5px solid #aeaeb2; box-sizing: border-box; touch-action: none; }
+        .cell { background: var(--card); border: 0.5px solid #aeaeb2; box-sizing: border-box; touch-action: manipulation; }
         
         .hint-v, .hint-h { background: #e5e5ea; font-size: 10px; color: #3a3a3c; font-weight: bold; position: sticky; z-index: 10; }
         .hint-v { top: 0; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; padding-bottom: 2px; }
@@ -69,14 +67,14 @@
         .filled { background: var(--filled) !important; }
         .mark-x::after { content: "×"; color: var(--danger); font-size: 24px; font-weight: bold; }
 
-        /* クリア通知（絵を隠さないよう下部に配置） */
+        /* クリア通知を下部に配置し、絵を隠さないように */
         #msg { 
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); 
-            background: white; border-radius: 24px; padding: 20px; text-align: center; 
-            display: none; z-index: 3000; width: 90%; max-width: 340px; 
-            box-shadow: 0 -10px 30px rgba(0,0,0,0.15); border: 3px solid var(--success); 
+            position: fixed; bottom: 120px; left: 50%; transform: translateX(-50%); 
+            background: white; border-radius: 20px; padding: 15px 20px; text-align: center; 
+            display: none; z-index: 3000; width: 85%; max-width: 320px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2); border: 3px solid var(--success); 
         }
-        #clear-title { font-size: 20px; font-weight: 900; margin-bottom: 8px; display: block; color: var(--text); }
+        #clear-title { font-size: 18px; font-weight: 900; margin-bottom: 8px; display: block; color: var(--text); }
 
         .controls { 
             display: flex; gap: 50px; padding: 20px 20px 40px 20px; background: var(--card); 
@@ -84,18 +82,17 @@
             position: fixed; bottom: 0; width: 100%; z-index: 2000; 
         }
         .mode-btn { 
-            width: 75px; height: 75px; border-radius: 24px; border: 4px solid var(--border); 
+            width: 70px; height: 70px; border-radius: 22px; border: 4px solid var(--border); 
             background: white; font-size: 32px; display: flex; align-items: center; 
             justify-content: center; cursor: pointer; touch-action: none;
         }
         .active-mode { border-color: var(--accent); background: #eef7ff; }
 
-        /* 説明用カード */
         .info-card { background: var(--card); border-radius: 20px; padding: 22px; width: 100%; max-width: 380px; margin: 20px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.05); box-sizing: border-box; }
         .info-card h2 { font-size: 17px; margin-top: 0; color: var(--accent); border-bottom: 1px solid var(--bg); padding-bottom: 8px; }
         .info-card p, .info-card li { font-size: 13.5px; line-height: 1.6; margin-bottom: 8px; }
 
-        .back-btn { margin-top: 10px; padding: 15px; background: var(--text); border: none; border-radius: 14px; color: white; font-weight: bold; width: 100%; cursor: pointer; }
+        .back-btn { margin-top: 5px; padding: 12px; background: var(--text); border: none; border-radius: 12px; color: white; font-weight: bold; width: 100%; cursor: pointer; }
         .cleared-overlay { opacity: 0.1; pointer-events: none; }
     </style>
 </head>
@@ -115,14 +112,14 @@
 
     <section class="info-card">
         <h2>お絵かきロジックの遊び方</h2>
-        <p>数字の数だけマスを塗り、隠れた絵を完成させるパズルです。</p>
+        <p>数字をヒントにマスを塗り、隠れた絵を完成させましょう。</p>
         <ul style="padding-left: 18px;">
             <li>数字の数だけ連続してマスを塗ります。</li>
-            <li>「3 1」のように数字が並ぶ場合、3マスと1マスの間には必ず1マス以上の空白が必要です。</li>
-            <li>絶対に塗らないマスには「❌」を付けて目印にしましょう。</li>
+            <li>複数の数字がある場合は、間に必ず1マス以上の空白が必要です。</li>
+            <li>絶対に塗らないマスには「❌」を活用しましょう。</li>
         </ul>
-        <h2 style="margin-top: 20px;">脳のリフレッシュに</h2>
-        <p>1つのパズルに集中することで、脳が活性化し、考えすぎによるストレスを解消する効果が期待できます。</p>
+        <h2 style="margin-top: 20px;">リフレッシュ効果</h2>
+        <p>パズルに集中することで、脳内をデフラグし、思考を整理する効果が期待できます。</p>
     </section>
 </main>
 
@@ -135,7 +132,6 @@
 </div>
 
 <div id="msg">
-    <span style="font-size: 12px; color: var(--success); font-weight: bold; letter-spacing: 1px;">STAGE CLEAR!</span>
     <span id="clear-title">タイトル</span>
     <button class="back-btn" onpointerdown="backToMenu()">ステージ一覧へ</button>
 </div>
@@ -149,7 +145,7 @@
             const res = await fetch('levels.json');
             allLevels = await res.json();
             changeDifficulty(5);
-        } catch (e) { console.error("データ読み込み失敗"); }
+        } catch (e) { console.error("Data error"); }
     }
 
     function changeDifficulty(size) {
@@ -219,7 +215,8 @@
                 if((j+1)%5===0 && j!==currentSize-1) cell.classList.add('v-line');
                 if((i+1)%5===0 && i!==currentSize-1) cell.classList.add('h-line');
                 
-                cell.onpointerdown = (e) => {
+                // ★修正：マス目は onclick (離した時) に戻して誤操作を防ぐ
+                cell.onclick = (e) => {
                     if(document.getElementById('msg').style.display === 'block') return;
                     if(currentMode === 'fill') { cell.classList.remove('mark-x'); cell.classList.toggle('filled'); }
                     else { cell.classList.remove('filled'); cell.classList.toggle('mark-x'); }
@@ -248,9 +245,8 @@
             const key = `${currentSize}_${currentLevel.id}`;
             if(!clearedList.includes(key)) { clearedList.push(key); localStorage.setItem('cleared_pic_levels', JSON.stringify(clearedList)); }
             
-            // クリア時は操作ボタンを隠してメッセージを表示
             document.getElementById('game-controls').style.display = 'none';
-            document.getElementById('clear-title').innerText = `「${currentLevel.title}」`;
+            document.getElementById('clear-title').innerText = `正解：${currentLevel.title}`;
 
             cells.forEach((cell, idx) => {
                 const r = Math.floor(idx / currentSize), c = idx % currentSize;
