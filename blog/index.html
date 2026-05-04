@@ -16,9 +16,9 @@
     <meta name="description" content="スマホ依存への対策や集中力の維持、ワーキングメモリのトレーニングなど、日々の作業効率を整えるための考え方と実践法。">
 
     <style>
-        /* 既存のスタイルを維持 */
         :root {
             --primary: #4f46e5;
+            --accent-zen: #10b981; /* 瞑想用のアクセントカラー */
             --text-main: #0f172a;
             --text-sub: #475569;
             --bg-site: #f8fafc;
@@ -141,6 +141,7 @@
             color: var(--primary);
             font-weight: 700;
         }
+        .tag-zen { color: var(--accent-zen); }
 
         @media (max-width: 500px) {
             .article-card { flex-direction: column; }
@@ -173,6 +174,18 @@
     </section>
 
     <div class="article-grid">
+        <a href="./zen.html" class="article-card">
+            <img src="./images/meditation-focus-brain.png" alt="瞑想と脳" class="article-thumb">
+            <div class="article-content">
+                <div class="article-meta">
+                    <span class="article-tag tag-zen">メンタル</span>
+                    <span>2026.05.04</span>
+                </div>
+                <h2>「何もしない」が脳を研ぎ澄ます｜瞑想タイマー活用術</h2>
+                <p>脳のデフォルト・モード・ネットワークを制御し、蓄積したノイズをリセット。集中力の土台を作るための習慣。 </p>
+            </div>
+        </a>
+
         <a href="./concentration-tips.html" class="article-card">
             <img src="./images/concentration-thumb.jpg" alt="集中力" class="article-thumb">
             <div class="article-content">
