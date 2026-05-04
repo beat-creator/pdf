@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
-    <meta name="description" content="論理的思考で脳をデフラグ。無料で遊べるイラストロジック（ピクロス）ゲーム。集中力アップとストレス解消に。">
-    <title>ロジカルリセット | 脳を整える無料ピクロス・イラストロジック</title>
+    <meta name="description" content="数字をヒントにマスを塗る、大人のための無料お絵かきロジック（ピクロス）パズル。脳トレや毎日のリフレッシュに最適です。">
+    <title>大人の脳トレ！お絵かきロジック | 無料ピクロス・パズル</title>
     <style>
         :root {
             --bg: #f2f4f7; --text: #1c1c1e; --accent: #007aff;
@@ -17,7 +17,6 @@
             font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
             margin: 0; display: flex; flex-direction: column; min-height: 100vh;
             -webkit-tap-highlight-color: transparent;
-            /* 誤操作防止：テキスト選択を禁止 */
             user-select: none; -webkit-user-select: none;
         }
 
@@ -27,7 +26,7 @@
             position: sticky; top: 0;
         }
 
-        h1 { font-size: 16px; margin: 0; letter-spacing: 1px; color: var(--text); }
+        h1 { font-size: 16px; margin: 0; font-weight: 800; color: var(--text); letter-spacing: 0.5px; }
 
         .difficulty-selector { display: flex; gap: 8px; margin-top: 10px; justify-content: center; }
         .diff-btn { 
@@ -51,7 +50,7 @@
         }
         .level-card:active { transform: scale(0.95); }
         
-        /* クリアバッジを強調 */
+        /* クリアバッジ */
         .level-card.cleared { border-color: var(--success); background: #f0fff4; }
         .level-card.cleared::after {
             content: "完了"; position: absolute; top: -5px; right: -5px; 
@@ -93,7 +92,7 @@
 <body>
 
 <header>
-    <h1>🧠 ロジカルリセット</h1>
+    <h1>🎨 お絵かきロジック</h1>
     <div class="difficulty-selector">
         <button id="btn-size5" class="diff-btn" onclick="changeDifficulty(5)">5x5</button>
         <button id="btn-size10" class="diff-btn" onclick="changeDifficulty(10)">10x10</button>
@@ -105,15 +104,15 @@
     <div class="level-grid" id="level-list"></div>
 
     <section class="info-card">
-        <h2>イラストロジックの遊び方</h2>
-        <p>数字をヒントにマスを塗り、隠れた絵を完成させるパズルです。</p>
+        <h2>お絵かきロジックの遊び方</h2>
+        <p>数字をヒントにしてマスを塗りつぶし、隠されたドット絵を完成させるパズルゲームです。</p>
         <ul style="padding-left: 18px;">
-            <li>数字の数だけ連続してマスを塗ります。</li>
-            <li>複数の数字がある場合は、間に1マス以上の空白が必要です。</li>
-            <li>確実に塗らない場所は「❌」を活用しましょう。</li>
+            <li>上に並ぶ数字と左に並ぶ数字は、それぞれの列で「連続して塗るマスの数」を示しています。</li>
+            <li>複数の数字がある場合は、数字と数字の間に必ず1マス以上の空白を空けます。</li>
+            <li>絶対に塗らないとわかったマスには、誤操作を防ぐために「❌」マークを置いていくのがコツです。</li>
         </ul>
-        <h2 style="margin-top: 20px;">脳のリフレッシュ効果</h2>
-        <p>1つの作業に集中することで、散らかった思考が整理（デフラグ）され、ストレス解消や仕事の合間のリフレッシュに最適です。</p>
+        <h2 style="margin-top: 20px;">脳トレとしての効果</h2>
+        <p>1つのパズルを解くことで論理的な思考力が鍛えられ、頭の中のモヤモヤを解消する効果（脳のリフレッシュ）も期待できます。</p>
     </section>
 </main>
 
@@ -127,8 +126,8 @@
 
 <div id="msg">
     <div id="msg-text" style="font-size: 16px; font-weight: 900; color: var(--success);">ステージクリア！</div>
-    <p style="font-size: 12px; margin: 5px 0;">お見事！脳がスッキリ整いました。</p>
-    <button class="back-btn" onclick="backToMenu()">ステージ一覧へ</button>
+    <p style="font-size: 12px; margin: 5px 0;">お見事！綺麗なドット絵が完成しました。</p>
+    <button class="back-btn" onclick="backToMenu()">ステージ一覧へ戻る</button>
 </div>
 
 <script>
@@ -140,7 +139,7 @@
             const res = await fetch('levels.json');
             allLevels = await res.json();
             changeDifficulty(5);
-        } catch (e) { console.error("データ読み込み失敗"); }
+        } catch (e) { console.error("データ読み込みに失敗しました"); }
     }
 
     function changeDifficulty(size) {
@@ -208,7 +207,6 @@
                 if((j+1)%5===0 && j!==currentSize-1) cell.classList.add('v-line');
                 if((i+1)%5===0 && i!==currentSize-1) cell.classList.add('h-line');
                 
-                // ★改善：敏感すぎる反応を抑えるため onclick を採用
                 cell.onclick = (e) => {
                     if(document.getElementById('msg').style.display === 'block') return;
                     if(currentMode === 'fill') { cell.classList.remove('mark-x'); cell.classList.toggle('filled'); }
