@@ -1,214 +1,4 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    
-    <title>Memory Master | ワーキングメモリ訓練ゲーム</title>
-    
-    <style>
-        :root {
-            --bg: #f2f4f7; 
-            --text: #1c1c1e; 
-            --accent: #007aff;
-            --card: #ffffff; 
-            --tile: #e5e7eb;
-            --success: #34c759; 
-            --danger: #ff3b30; 
-            --muted: #8e8e93;
-            --warning: #ff9500;
-        }
-
-        body {
-            background: var(--bg); 
-            color: var(--text); 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            margin: 0; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center;
-            min-height: 100vh;
-            user-select: none;
-            touch-action: manipulation;
-        }
-
-        /* スクリーン設定（N-Backと統一） */
-        .screen {
-            position: fixed; inset: 0; background: var(--bg); z-index: 1000;
-            overflow-y: auto; display: flex; flex-direction: column; align-items: center;
-            padding: 40px 20px; box-sizing: border-box; text-align: center;
-        }
-
-        .game-container {
-            flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            width: 100%; max-width: 400px; padding: 20px; box-sizing: border-box;
-        }
-
-        .stats-header { text-align: center; margin-bottom: 20px; }
-        .big-level { font-size: 3.5rem; font-weight: 900; color: var(--accent); margin: 0; }
-        .sub-info { font-size: 1rem; color: var(--muted); font-weight: bold; }
-
-        /* 4x4 グリッド */
-        .game-board {
-            display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
-            width: 100%; aspect-ratio: 1 / 1;
-            background: var(--card); padding: 15px; border-radius: 24px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05); box-sizing: border-box;
-        }
-
-        .tile {
-            background-color: var(--tile); border: none; border-radius: 12px;
-            transition: all 0.1s; cursor: pointer;
-        }
-        .tile.active { background-color: var(--accent); transform: scale(0.95); box-shadow: 0 0 15px var(--accent); }
-        .tile.error { background-color: var(--danger); transform: scale(0.95); }
-
-        /* 解説カード（N-Backと統一） */
-        .info-card { 
-            background: var(--card); border-radius: 20px; padding: 22px; 
-            width: 100%; max-width: 360px; margin: 20px 0; text-align: left; 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05); box-sizing: border-box; 
-        }
-        .info-card h2 { font-size: 17px; margin: 0 0 10px 0; color: var(--accent); border-bottom: 2px solid var(--bg); padding-bottom: 5px; }
-        .info-card p, .info-card li { font-size: 13.5px; line-height: 1.6; color: #444; margin-bottom: 10px; }
-        .info-card b { color: var(--text); }
-
-        .start-btn { 
-            width: 100%; max-width: 300px; padding: 18px; font-size: 1.2rem; 
-            background: var(--text); color: white; border: none; border-radius: 18px; 
-            cursor: pointer; font-weight: 900; margin-bottom: 12px; 
-        }
-        .footer-guide { font-size: 12px; color: var(--muted); font-weight: bold; margin-top: 10px; }
-        .hidden { display: none !important; }
-
-        footer { margin: 40px 0; font-size: 0.8rem; color: var(--muted); }
-    </style>
-</head>
-<body>
-
-    <div id="start-screen" class="screen">
-        <h1 style="margin-bottom: 5px; font-weight: 900;">Memory Master</h1>
-        <div id="best-display" style="font-size: 1.2rem; color: var(--warning); font-weight: 900; margin-bottom: 20px;">BEST LEVEL: 0</div>
-        
-        <button class="start-btn" onclick="startGame()">トレーニング開始</button>
-
-        <div class="info-card">
-            <h2>記憶力トレーニングとは？</h2>
-            <p>光ったパネルの順番を記憶し、正確に再現するトレーニングです。<b>ワーキングメモリ（作業記憶）</b>の容量と処理速度を同時に高めます。</p>
-            
-            <h2>このゲームの仕組み</h2>
-            <ul>
-                <li><b>難易度上昇:</b> 3回クリアするごとに、覚えるパネルの数が1つ増えます。</li>
-                <li><b>速度変化:</b> レベルの節目でパネルが光る速度が<b>「高速」</b>になり、より高い集中力が求められます。</li>
-            </ul>
-
-            <h2>鍛えるメリット</h2>
-            <p>瞬間的な記憶保持能力が向上することで、会話の内容を正確に把握したり、複雑な手順をミスなく実行できる力が養われます。</p>
-        </div>
-        <div class="footer-guide">↑ スクロールしてメリットをチェック</div>
-        <footer>&copy; 2026 Time Toolkit Games</footer>
-    </div>
-
-    <div class="game-container">
-        <div class="stats-header">
-            <p class="sub-info">LEVEL</p>
-            <h2 class="big-level" id="level-val">1</h2>
-            <p class="sub-info" id="status-text">準備はいいですか？</p>
-        </div>
-
-        <div class="game-board" id="board"></div>
-    </div>
-
-    <script>
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        function playTone(freq, duration) {
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.start();
-            osc.stop(audioCtx.currentTime + duration);
-        }
-
-        const board = document.getElementById('board');
-        const levelDisplay = document.getElementById('level-val');
-        const statusText = document.getElementById('status-text');
-        const startScreen = document.getElementById('start-screen');
-        const bestDisplay = document.getElementById('best-display');
-        
-        let sequence = [];
-        let playerIndex = 0;
-        let isWaiting = true;
-        let totalAttempts = 0;
-        let highScore = localStorage.getItem('memoryGameBest') || 0;
-
-        bestDisplay.innerText = `BEST LEVEL: ${highScore}`;
-
-        // ボード生成
-        for (let i = 0; i < 16; i++) {
-            const tile = document.createElement('button');
-            tile.classList.add('tile');
-            tile.id = `tile-${i}`;
-            tile.addEventListener('pointerdown', (e) => {
-                e.preventDefault();
-                handleTileClick(i);
-            });
-            board.appendChild(tile);
-        }
-
-        const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
-        function startGame() {
-            startScreen.classList.add('hidden');
-            totalAttempts = 0;
-            nextLevel();
-        }
-
-        async function nextLevel() {
-            isWaiting = true;
-            playerIndex = 0;
-            totalAttempts++;
-
-            const memoryCount = Math.floor((totalAttempts - 1) / 3) + 2;
-            const isFast = (totalAttempts % 3 === 0);
-            const displaySpeed = isFast ? 200 : 500;
-
-            sequence = [];
-            for (let i = 0; i < memoryCount; i++) {
-                sequence.push(Math.floor(Math.random() * 16));
-            }
-
-            levelDisplay.innerText = totalAttempts;
-            statusText.innerText = isFast ? "スピードアップ！" : "覚えてください...";
-            statusText.style.color = isFast ? "var(--warning)" : "var(--muted)";
-
-            await sleep(1000);
-
-            for (const id of sequence) {
-                await flashTile(id, displaySpeed);
-                await sleep(isFast ? 100 : 250);
-            }
-
-            statusText.innerText = "再現してください";
-            statusText.style.color = var(--accent);
-            isWaiting = false;
-        }
-
-        async function flashTile(id, duration, type = 'active') {
-            const tile = document.getElementById(`tile-${id}`);
-            const freq = (type === 'active') ? 220 + (id * 20) : 120;
-            playTone(freq, duration / 1000);
-            tile.classList.add(type);
-            await sleep(duration);
-            tile.classList.remove(type);
-        }
-
-        async function handleTileClick(id) {
+async function handleTileClick(id) {
             if (isWaiting) return;
 
             if (id === sequence[playerIndex]) {
@@ -227,10 +17,39 @@
                 isWaiting = true;
                 await flashTile(id, 500, 'error');
                 statusText.innerText = "ミス！終了です";
+                statusText.style.color = "var(--danger)"; // 修正点
                 await sleep(1000);
                 startScreen.classList.remove('hidden');
             }
         }
-    </script>
-</body>
-</html>
+
+        // nextLevel関数内の色指定も修正
+        async function nextLevel() {
+            isWaiting = true;
+            playerIndex = 0;
+            totalAttempts++;
+
+            const memoryCount = Math.floor((totalAttempts - 1) / 3) + 2;
+            const isFast = (totalAttempts % 3 === 0);
+            const displaySpeed = isFast ? 200 : 500;
+
+            sequence = [];
+            for (let i = 0; i < memoryCount; i++) {
+                sequence.push(Math.floor(Math.random() * 16));
+            }
+
+            levelDisplay.innerText = totalAttempts;
+            statusText.innerText = isFast ? "スピードアップ！" : "覚えてください...";
+            statusText.style.color = isFast ? "var(--warning)" : "var(--muted)"; // 修正点
+
+            await sleep(1000);
+
+            for (const id of sequence) {
+                await flashTile(id, displaySpeed);
+                await sleep(isFast ? 100 : 250);
+            }
+
+            statusText.innerText = "再現してください";
+            statusText.style.color = "var(--accent)"; // 修正点：文字列にする
+            isWaiting = false;
+        }
