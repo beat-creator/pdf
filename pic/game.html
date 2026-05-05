@@ -5,123 +5,276 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
     <title>ロジカル・リセット | プレイ</title>
     <style>
-        :root { --bg: #f0f9ff; --text: #333333; --accent: #3b82f6; --card: #ffffff; --filled: #1c1c1e; --success: #59b183; --danger: #ff3b30; }
-        body { background: var(--bg); color: var(--text); font-family: sans-serif; margin: 0; display: flex; flex-direction: column; min-height: 100vh; touch-action: manipulation; }
-        header { padding: 10px; background: var(--card); border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1100; }
-        .nav-btn { background: none; border: none; color: var(--accent); font-weight: bold; }
-        .timer { font-family: monospace; font-size: 16px; font-weight: bold; background: #eee; padding: 2px 8px; border-radius: 4px; }
+        :root {
+            --bg: #f0f9ff; --text: #333333; --accent: #3b82f6;
+            --card: #ffffff; --border: #333333; --filled: #1c1c1e;
+            --success: #59b183; --danger: #ff3b30; --sky: #8dd3cf;
+        }
+
+        body {
+            background: var(--bg); color: var(--text); 
+            font-family: sans-serif; margin: 0; display: flex; flex-direction: column; min-height: 100vh;
+            touch-action: manipulation;
+        }
+
+        /* --- ヘッダー・ナビゲーション --- */
+        header { 
+            padding: 10px; background: var(--card); text-align: center; 
+            border-bottom: 1px solid #ddd; position: sticky; top: 0; z-index: 1100;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .nav-btn { background: none; border: none; color: var(--accent); font-weight: bold; cursor: pointer; padding: 5px 10px; }
         .diff-btn { padding: 6px 12px; border-radius: 20px; border: 1px solid #ccc; background: #fff; font-size: 12px; font-weight: bold; }
         .active-diff { background: var(--accent); color: white; border-color: var(--accent); }
+
+        /* --- ステージ選択メニュー --- */
         #menu-screen { padding: 20px; display: flex; flex-direction: column; align-items: center; }
-        .level-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); gap: 12px; width: 100%; max-width: 450px; }
-        .level-card { background: var(--card); border: 2.5px solid #ddd; aspect-ratio: 1/1; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 900; position: relative; }
+        .level-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); 
+            gap: 12px; width: 100%; max-width: 450px; margin-top: 10px;
+        }
+        .level-card { 
+            background: var(--card); border: 2.5px solid #ddd; aspect-ratio: 1/1; 
+            border-radius: 12px; display: flex; align-items: center; justify-content: center; 
+            font-weight: 900; position: relative; font-size: 20px;
+        }
         .level-card.cleared { border-color: var(--success); background: #f0fff4; }
+        .level-card.cleared::after { content: "✔"; position: absolute; top: 2px; right: 4px; color: var(--success); font-size: 14px; }
+
+        /* --- ゲーム画面 --- */
         #game-screen { display: none; flex-direction: column; align-items: center; padding-bottom: 150px; }
-        .grid { display: grid; background: #636366; border: 2px solid #636366; width: max-content; margin: 0 auto; }
+        .game-container { 
+            width: 100vw; overflow-x: auto; -webkit-overflow-scrolling: touch; padding: 20px 0;
+        }
+        .grid { 
+            display: grid; background: #636366; border: 2px solid #636366; 
+            width: max-content; margin-left: 10px;
+        }
         .cell { background: #fff; border: 0.5px solid #aeaeb2; box-sizing: border-box; position: relative; }
-        .hint-v, .hint-h, .corner { background: #e5e5ea; font-size: 10px; font-weight: bold; position: sticky; }
+        .hint-v, .hint-h, .corner { background: #e5e5ea; font-size: 10px; font-weight: bold; position: sticky; z-index: 10; }
         .hint-v { top: 0; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; }
         .hint-h { left: 0; display: flex; justify-content: flex-end; align-items: center; padding-right: 4px; border-right: 2px solid #636366; }
-        .corner { left: 0; top: 0; z-index: 20; background: #d1d1d6; border-right: 2px solid #636366; height: 55px; }
+        .corner { left: 0; top: 0; z-index: 20; background: #d1d1d6; border-right: 2px solid #636366; }
+        
         .v-line { border-right: 2.5px solid #636366 !important; }
         .h-line { border-bottom: 2.5px solid #636366 !important; }
         .filled { background: var(--filled) !important; }
         .mark-x::after { content: "×"; color: var(--danger); font-size: 24px; position: absolute; inset: 0; display: flex; justify-content: center; align-items: center; }
-        .controls { display: flex; gap: 40px; padding: 20px; background: #fff; justify-content: center; border-top: 1px solid #ddd; position: fixed; bottom: 0; width: 100%; z-index: 2000; }
+
+        /* フッター操作 */
+        .controls { 
+            display: flex; gap: 40px; padding: 20px; background: #fff; 
+            justify-content: center; border-top: 1px solid #ddd; 
+            position: fixed; bottom: 0; width: 100%; z-index: 2000; 
+        }
         .mode-btn { width: 65px; height: 65px; border-radius: 18px; border: 4px solid #ddd; font-size: 28px; display: flex; align-items: center; justify-content: center; }
         .active-mode { border-color: var(--accent); background: #eef7ff; }
-        #msg { position: fixed; bottom: 120px; left: 50%; transform: translateX(-50%); background: white; border-radius: 20px; padding: 20px; text-align: center; display: none; z-index: 3000; width: 85%; box-shadow: 0 10px 30px rgba(0,0,0,0.2); border: 3px solid var(--success); }
+
+        /* クリアメッセージ */
+        #msg { 
+            position: fixed; bottom: 120px; left: 50%; transform: translateX(-50%); 
+            background: white; border-radius: 20px; padding: 20px; text-align: center; 
+            display: none; z-index: 3000; width: 85%; max-width: 320px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2); border: 3px solid var(--success); 
+        }
         .back-btn { margin-top: 10px; padding: 12px; background: #333; color: white; border-radius: 12px; width: 100%; border: none; font-weight: bold; }
     </style>
 </head>
 <body>
+
 <header>
-    <button class="nav-btn" onclick="backToMenu()">◀ 戻る</button>
+    <button class="nav-btn" onclick="location.href='index.html'">◀ 戻る</button>
     <div class="difficulty-selector">
         <button id="btn-size5" class="diff-btn" onclick="changeDifficulty(5)">5x5</button>
         <button id="btn-size10" class="diff-btn" onclick="changeDifficulty(10)">10x10</button>
         <button id="btn-size15" class="diff-btn" onclick="changeDifficulty(15)">15x15</button>
     </div>
-    <div id="game-timer" class="timer">00:00</div>
+    <button class="nav-btn" onclick="location.href='manual.html'">ヘルプ</button>
 </header>
-<main id="menu-screen"><div class="level-grid" id="level-list"></div></main>
-<div id="game-screen">
-    <div class="game-container" style="padding: 20px 0; overflow-x: auto;"><div id="game-grid" class="grid"></div></div>
-    <div class="controls"><div id="mode-fill" class="mode-btn active-mode" onclick="setMode('fill')">⬛</div><div id="mode-x" class="mode-btn" onclick="setMode('x')">❌</div></div>
-</div>
-<div id="msg"><span id="clear-title" style="font-weight:900;"></span><br><span id="clear-time"></span><br><button class="back-btn" onclick="backToMenu()">戻る</button></div>
-<script>
-    const GRID = { 5: {cs:55}, 10: {cs:38}, 15: {cs:30} };
-    let curMode = 'fill', curSize = 5, curLv = null, allLvs = null, startTime, timerInt;
-    const audio = new (window.AudioContext || window.webkitAudioContext)();
-    function beep(f, d) { const o=audio.createOscillator(), g=audio.createGain(); o.frequency.value=f; g.gain.exponentialRampToValueAtTime(0.01, audio.currentTime+d); o.connect(g); g.connect(audio.destination); o.start(); o.stop(audio.currentTime+d); }
 
-    async function init() {
-        const res = await fetch('levels.json'); allLvs = await res.json();
-        changeDifficulty(parseInt(localStorage.getItem('last_size')) || 5);
+<main id="menu-screen">
+    <div class="level-grid" id="level-list"></div>
+</main>
+
+<div id="game-screen">
+    <div class="game-container"><div id="game-grid" class="grid"></div></div>
+    <div class="controls">
+        <div id="mode-fill" class="mode-btn active-mode" onclick="setMode('fill')">⬛</div>
+        <div id="mode-x" class="mode-btn" onclick="setMode('x')">❌</div>
+    </div>
+</div>
+
+<div id="msg">
+    <span id="clear-title" style="font-weight:900; font-size: 1.2em;"></span><br>
+    <button class="back-btn" onclick="backToMenu()">ステージ一覧へ</button>
+</div>
+
+<script>
+    // --- [CONFIG & STATE] ---
+    const GRID_SETTING = {
+        5:  { cellSize: 55, padding: 50 },
+        10: { cellSize: 38, padding: 80 },
+        15: { cellSize: 30, padding: 120 }
+    };
+
+    let currentMode = 'fill', currentSize = 5, currentLevel = null, allLevels = null;
+
+    // --- [AUDIO] ---
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playTone(freq, type, duration, vol) {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.start(); osc.stop(audioCtx.currentTime + duration);
     }
-    function changeDifficulty(s) {
-        curSize = s; localStorage.setItem('last_size', s);
-        document.getElementById('msg').style.display = 'none'; document.getElementById('game-screen').style.display = 'none';
+    const sound = {
+        select: () => playTone(659.25, 'sine', 0.1, 0.1),
+        clear: () => {
+            playTone(523.25, 'triangle', 0.3, 0.2);
+            setTimeout(() => playTone(659.25, 'triangle', 0.3, 0.2), 150);
+            setTimeout(() => playTone(783.99, 'triangle', 0.5, 0.2), 300);
+        }
+    };
+
+    // --- [LOGIC] ---
+    async function init() {
+        try {
+            const res = await fetch('levels.json');
+            allLevels = await res.json();
+            // 前回選んだ難易度があれば復元
+            const savedSize = localStorage.getItem('last_size');
+            changeDifficulty(savedSize ? parseInt(savedSize) : 5);
+        } catch (e) { alert("データ読み込み失敗。サーバー環境で実行してください。"); }
+    }
+
+    function changeDifficulty(size) {
+        currentSize = size;
+        localStorage.setItem('last_size', size);
+        document.getElementById('msg').style.display = 'none';
+        document.getElementById('game-screen').style.display = 'none';
         document.getElementById('menu-screen').style.display = 'flex';
-        document.querySelectorAll('.diff-btn').forEach(b => b.classList.toggle('active-diff', b.id === `btn-size${s}`));
-        const list = document.getElementById('level-list'); list.innerHTML = '';
-        const cleared = JSON.parse(localStorage.getItem('cleared_pic_levels') || '[]');
-        (allLvs[`size${s}`] || []).forEach((l, i) => {
-            const card = document.createElement('div'); card.className = `level-card ${cleared.includes(`${s}_${l.id}`) ? 'cleared' : ''}`;
-            card.innerHTML = `<span>${i+1}</span>`; card.onclick = () => startLevel(l); list.appendChild(card);
+        document.querySelectorAll('.diff-btn').forEach(btn => btn.classList.toggle('active-diff', btn.id === `btn-size${size}`));
+
+        const list = document.getElementById('level-list');
+        list.innerHTML = '';
+        const pool = allLevels ? (allLevels[`size${size}`] || []) : [];
+        const clearedList = JSON.parse(localStorage.getItem('cleared_pic_levels') || '[]');
+
+        pool.forEach((level, index) => {
+            const isCleared = clearedList.includes(`${size}_${level.id}`);
+            const card = document.createElement('div');
+            card.className = `level-card ${isCleared ? 'cleared' : ''}`;
+            card.innerHTML = `<span>${index + 1}</span>`;
+            card.onclick = () => { sound.select(); startLevel(level); };
+            list.appendChild(card);
         });
     }
-    function startLevel(l) {
-        curLv = l; document.getElementById('menu-screen').style.display = 'none'; document.getElementById('game-screen').style.display = 'flex';
-        startTime = Date.now(); timerInt = setInterval(() => {
-            const s = Math.floor((Date.now()-startTime)/1000);
-            document.getElementById('game-timer').innerText = `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
-        }, 1000);
+
+    function startLevel(level) {
+        currentLevel = level;
+        document.getElementById('menu-screen').style.display = 'none';
+        document.getElementById('game-screen').style.display = 'flex';
+        window.scrollTo(0,0);
         render();
     }
-    function backToMenu() { clearInterval(timerInt); changeDifficulty(curSize); }
-    function setMode(m) { curMode = m; document.getElementById('mode-fill').classList.toggle('active-mode', m === 'fill'); document.getElementById('mode-x').classList.toggle('active-mode', m === 'x'); }
+
+    function backToMenu() { changeDifficulty(currentSize); }
+    function setMode(m) { sound.select(); currentMode = m; document.getElementById('mode-fill').classList.toggle('active-mode', m === 'fill'); document.getElementById('mode-x').classList.toggle('active-mode', m === 'x'); }
+
+    // --- [RENDER & UI CONTROL] ---
     function render() {
-        const g = document.getElementById('game-grid'), c = GRID[curSize];
-        g.innerHTML = ''; g.style.gridTemplateColumns = `45px repeat(${curSize}, ${c.cs}px)`;
-        const cor = document.createElement('div'); cor.className = 'corner'; cor.style.height='55px'; g.appendChild(cor);
-        for(let j=0; j<curSize; j++) {
-            const h = document.createElement('div'); h.className='hint-v'; h.style.width=c.cs+'px';
-            if((j+1)%5===0 && j!==curSize-1) h.classList.add('v-line');
-            h.innerHTML = getH(curLv.data.map(r => r[j])).join("<br>"); g.appendChild(h);
+        const container = document.getElementById('game-grid');
+        const conf = GRID_SETTING[currentSize];
+        container.innerHTML = '';
+        container.style.gridTemplateColumns = `45px repeat(${currentSize}, ${conf.cellSize}px)`;
+        container.style.paddingRight = conf.padding + "px";
+
+        const corner = document.createElement('div');
+        corner.className = 'corner'; corner.style.height = '55px'; container.appendChild(corner);
+
+        // 列ヒント
+        for(let j=0; j<currentSize; j++) {
+            const h = document.createElement('div'); h.className = 'hint-v'; h.style.width = conf.cellSize + 'px';
+            if((j+1)%5===0 && j!==currentSize-1) h.classList.add('v-line');
+            let col = []; for(let i=0; i<currentSize; i++) col.push(currentLevel.data[i][j]);
+            h.innerHTML = getHints(col).join("<br>"); container.appendChild(h);
         }
-        for(let i=0; i<curSize; i++) {
-            const rh = document.createElement('div'); rh.className='hint-h'; rh.style.height=c.cs+'px';
-            if((i+1)%5===0 && i!==curSize-1) rh.classList.add('h-line');
-            rh.innerText = getH(curLv.data[i]).join(" "); g.appendChild(rh);
-            for(let j=0; j<curSize; j++) {
-                const cl = document.createElement('div'); cl.className='cell'; cl.style.width=cl.style.height=c.cs+'px';
-                if((j+1)%5===0 && j!==curSize-1) cl.classList.add('v-line');
-                if((i+1)%5===0 && i!==curSize-1) cl.classList.add('h-line');
-                cl.onclick = () => { cl.classList.remove(curMode==='fill'?'mark-x':'filled'); cl.classList.toggle(curMode==='fill'?'filled':'mark-x'); check(); };
-                g.appendChild(cl);
+
+        // 行・セル
+        for(let i=0; i<currentSize; i++) {
+            const rh = document.createElement('div'); rh.className = 'hint-h'; rh.style.height = conf.cellSize + 'px';
+            if((i+1)%5===0 && i!==currentSize-1) rh.classList.add('h-line');
+            rh.innerText = getHints(currentLevel.data[i]).join(" "); container.appendChild(rh);
+
+            for(let j=0; j<currentSize; j++) {
+                const cell = document.createElement('div'); cell.className = 'cell';
+                cell.style.width = conf.cellSize + 'px'; cell.style.height = conf.cellSize + 'px';
+                if((j+1)%5===0 && j!==currentSize-1) cell.classList.add('v-line');
+                if((i+1)%5===0 && i!==currentSize-1) cell.classList.add('h-line');
+                
+                // タッチ誤爆防止ロジック（最新版）
+                let isMove = false, sX, sY;
+                cell.addEventListener('touchstart', (e) => { isMove = false; sX = e.touches[0].clientX; sY = e.touches[0].clientY; }, {passive: true});
+                cell.addEventListener('touchmove', (e) => { 
+                    if(Math.abs(e.touches[0].clientX - sX) > 10 || Math.abs(e.touches[0].clientY - sY) > 10) isMove = true; 
+                }, {passive: true});
+                cell.addEventListener('touchend', (e) => { 
+                    if(!isMove) { e.preventDefault(); toggleCell(cell, i, j); } 
+                });
+                // マウス操作（PC）
+                cell.onclick = (e) => { if(e.pointerType !== 'touch') toggleCell(cell, i, j); };
+
+                container.appendChild(cell);
             }
         }
     }
-    function getH(a) { let h=[], c=0; a.forEach(v=>{ if(v===1)c++; else if(c>0){h.push(c);c=0;} }); if(c>0)h.push(c); return h.length?h:[0]; }
+
+    function toggleCell(cell, r, c) {
+        if(document.getElementById('msg').style.display === 'block') return;
+        sound.select();
+        if(currentMode === 'fill') { cell.classList.remove('mark-x'); cell.classList.toggle('filled'); }
+        else { cell.classList.remove('filled'); cell.classList.toggle('mark-x'); }
+        check();
+    }
+
+    function getHints(arr) {
+        let h = [], c = 0; arr.forEach(v => { if(v===1) c++; else if(c>0){ h.push(c); c=0; } });
+        if(c>0) h.push(c); return h.length ? h : [0];
+    }
+
     function check() {
-        const cls = document.querySelectorAll('.cell');
-        if([...cls].every((cl, idx) => (curLv.data[Math.floor(idx/curSize)][idx%curSize]===1) === cl.classList.contains('filled'))) {
-            clearInterval(timerInt); beep(523, 0.3);
-            const cleared = JSON.parse(localStorage.getItem('cleared_pic_levels') || '[]');
-            if(!cleared.includes(`${curSize}_${curLv.id}`)) { cleared.push(`${curSize}_${curLv.id}`); localStorage.setItem('cleared_pic_levels', JSON.stringify(cleared)); }
-            document.getElementById('clear-title').innerText = `正解：${curLv.title}`;
-            document.getElementById('clear-time').innerText = `Time: ${document.getElementById('game-timer').innerText}`;
-            document.querySelectorAll('.hint-v, .hint-h, .corner').forEach(el => el.style.opacity = '0');
-            cls.forEach((cl, idx) => {
-                const col = curLv.colorMap[Math.floor(idx/curSize)][idx%curSize];
-                cl.style.setProperty('background-color', col !== 0 ? col : 'transparent', 'important');
-                cl.style.opacity = col !== 0 ? '1' : '0'; cl.classList.remove('mark-x', 'v-line', 'h-line'); cl.style.border='none';
+        const cells = document.querySelectorAll('.cell');
+        let ok = true;
+        cells.forEach((cell, idx) => {
+            const r = Math.floor(idx / currentSize), c = idx % currentSize;
+            const filled = cell.classList.contains('filled');
+            if((currentLevel.data[r][c]===1 && !filled) || (currentLevel.data[r][c]===0 && filled)) ok = false;
+        });
+        if(ok) {
+            sound.clear();
+            const clearedList = JSON.parse(localStorage.getItem('cleared_pic_levels') || '[]');
+            const key = `${currentSize}_${currentLevel.id}`;
+            if(!clearedList.includes(key)) { clearedList.push(key); localStorage.setItem('cleared_pic_levels', JSON.stringify(clearedList)); }
+            
+            document.getElementById('clear-title').innerText = `正解：${currentLevel.title}`;
+            cells.forEach((cell, idx) => {
+                const r = Math.floor(idx / currentSize), c = idx % currentSize;
+                const col = currentLevel.colorMap[r][c];
+                if(col !== 0) { 
+                    cell.style.setProperty('background-color', col, 'important'); 
+                    cell.style.borderColor = "transparent"; 
+                } else { 
+                    cell.style.opacity = "0.1"; cell.classList.remove('mark-x'); 
+                }
             });
-            setTimeout(() => document.getElementById('msg').style.display='block', 800);
+            setTimeout(() => { document.getElementById('msg').style.display = 'block'; }, 500);
         }
     }
+
     init();
 </script>
 </body>
