@@ -3,149 +3,161 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
-    <meta name="description" content="数字をヒントにドット絵を完成させる、大人のための無料お絵かきロジック。脳トレやリフレッシュに最適です。">
-    <title>大人の脳トレ！お絵かきロジック | 無料ピクロス・パズル</title>
+    <title>ロジカル・リセット | お絵かきパズル</title>
     <style>
         :root {
-            --bg: #f2f4f7; --text: #1c1c1e; --accent: #007aff;
-            --card: #ffffff; --border: #d1d1d6; --filled: #1c1c1e;
-            --hint: #8e8e93; --success: #34c759; --danger: #ff3b30;
+            --bg: #f0f9ff; --text: #333333; --accent: #3b82f6;
+            --card: #ffffff; --border: #333333; --filled: #1c1c1e;
+            --success: #59b183; --danger: #ff3b30; --sky: #8dd3cf;
         }
 
         body {
             background: var(--bg); color: var(--text); 
             font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
             margin: 0; display: flex; flex-direction: column; min-height: 100vh;
-            -webkit-tap-highlight-color: transparent;
-            user-select: none; -webkit-user-select: none;
+            overflow-x: hidden;
         }
 
+        /* --- タイトル画面 --- */
+        #title-screen {
+            position: fixed; inset: 0; background: var(--sky); z-index: 5000;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .title-row { display: flex; gap: 8px; margin-bottom: 15px; }
+        .tile { 
+            background: #fff; border: 4px solid var(--border); border-radius: 12px;
+            width: 65px; height: 65px; display: flex; align-items: center; justify-content: center;
+            font-size: 38px; font-weight: 900; box-shadow: 0 6px 0 rgba(0,0,0,0.1);
+        }
+        .btn-group { display: flex; flex-direction: column; gap: 15px; margin-top: 40px; }
+        .btn-main {
+            width: 260px; padding: 18px; border: none; border-radius: 50px;
+            font-size: 24px; font-weight: bold; color: #fff; cursor: pointer;
+            box-shadow: 0 8px 0 rgba(0,0,0,0.2); transition: 0.1s; text-align: center; text-decoration: none;
+        }
+        .btn-start { background: linear-gradient(135deg, #6ee7b7, #3b82f6); }
+        .btn-list { background: #4c78a8; font-size: 18px; }
+        .btn-main:active { transform: translateY(4px); box-shadow: 0 4px 0 rgba(0,0,0,0.2); }
+
+        /* --- ヘッダー & メニュー --- */
         header { 
             padding: 15px; background: var(--card); text-align: center; 
-            border-bottom: 1px solid var(--border); flex-shrink: 0; z-index: 1100;
-            position: sticky; top: 0;
+            border-bottom: 1px solid #ddd; position: sticky; top: 0; z-index: 1100;
         }
-
-        h1 { font-size: 16px; margin: 0; font-weight: 800; }
-
-        .difficulty-selector { display: flex; gap: 8px; margin-top: 10px; justify-content: center; }
         .diff-btn { 
-            padding: 8px 16px; border-radius: 20px; border: 1px solid var(--border); 
-            background: var(--card); color: var(--hint); font-size: 13px; font-weight: bold;
-            cursor: pointer; touch-action: manipulation;
+            padding: 8px 16px; border-radius: 20px; border: 1px solid #ccc; 
+            background: var(--card); font-size: 13px; font-weight: bold; cursor: pointer;
         }
-        .diff-btn.active-diff { background: var(--accent); border-color: var(--accent); color: white; }
+        .active-diff { background: var(--accent); color: white; border-color: var(--accent); }
 
-        #menu-screen { flex: 1; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        #menu-screen { padding: 20px; display: none; flex-direction: column; align-items: center; }
         .level-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); 
-            gap: 15px; width: 100%; max-width: 400px; margin-bottom: 30px;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); 
+            gap: 12px; width: 100%; max-width: 400px; margin-top: 20px;
         }
         .level-card { 
             background: var(--card); border: 2px solid transparent; aspect-ratio: 1/1; 
-            border-radius: 18px; display: flex; align-items: center; justify-content: center; 
-            cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.05); position: relative;
+            border-radius: 14px; display: flex; align-items: center; justify-content: center; 
+            cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.05); font-weight: 900;
         }
-        .level-card.cleared { border-color: var(--success); background: #f0fff4; }
-        .level-card.cleared::after {
-            content: "完了"; position: absolute; top: -5px; right: -5px; 
-            background: var(--success); color: white; font-size: 10px; padding: 2px 8px; border-radius: 10px;
-        }
+        .level-card.cleared { border-color: var(--success); background: #f0fff4; opacity: 0.8; }
 
-        #game-screen { display: none; flex-direction: column; align-items: center; padding-bottom: 220px; }
-        .game-container { width: 100%; overflow: auto; padding: 20px 10px; display: flex; justify-content: flex-start; }
+        /* --- ゲーム画面 --- */
+        #game-screen { display: none; flex-direction: column; align-items: center; padding-bottom: 150px; }
+        .game-container { width: 100%; overflow: auto; padding: 20px 10px; display: flex; justify-content: center; }
         .grid { display: grid; background: #636366; border: 2px solid #636366; width: max-content; }
-        .cell { background: var(--card); border: 0.5px solid #aeaeb2; box-sizing: border-box; touch-action: manipulation; }
-        
-        .hint-v, .hint-h { background: #e5e5ea; font-size: 10px; color: #3a3a3c; font-weight: bold; position: sticky; z-index: 10; }
-        .hint-v { top: 0; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; padding-bottom: 2px; }
+        .cell { background: #fff; border: 0.5px solid #aeaeb2; box-sizing: border-box; }
+        .hint-v, .hint-h { background: #e5e5ea; font-size: 10px; font-weight: bold; position: sticky; z-index: 10; }
+        .hint-v { top: 0; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; }
         .hint-h { left: 0; display: flex; justify-content: flex-end; align-items: center; padding-right: 4px; }
         .corner { position: sticky; left: 0; top: 0; z-index: 20; background: #d1d1d6; }
-        
         .v-line { border-right: 2.5px solid #636366 !important; }
         .h-line { border-bottom: 2.5px solid #636366 !important; }
         .filled { background: var(--filled) !important; }
-        .mark-x::after { content: "×"; color: var(--danger); font-size: 24px; font-weight: bold; }
+        .mark-x::after { content: "×"; color: var(--danger); font-size: 24px; font-weight: bold; display: flex; justify-content: center; }
 
-        /* クリア通知を下部に配置し、絵を隠さないように */
+        .controls { 
+            display: flex; gap: 40px; padding: 20px; background: var(--card); 
+            justify-content: center; border-top: 1px solid #ddd; 
+            position: fixed; bottom: 0; width: 100%; z-index: 2000; 
+        }
+        .mode-btn { width: 70px; height: 70px; border-radius: 20px; border: 4px solid #ddd; font-size: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .active-mode { border-color: var(--accent); background: #eef7ff; }
+
         #msg { 
             position: fixed; bottom: 120px; left: 50%; transform: translateX(-50%); 
-            background: white; border-radius: 20px; padding: 15px 20px; text-align: center; 
+            background: white; border-radius: 20px; padding: 20px; text-align: center; 
             display: none; z-index: 3000; width: 85%; max-width: 320px; 
             box-shadow: 0 10px 30px rgba(0,0,0,0.2); border: 3px solid var(--success); 
         }
-        #clear-title { font-size: 18px; font-weight: 900; margin-bottom: 8px; display: block; color: var(--text); }
-
-        .controls { 
-            display: flex; gap: 50px; padding: 20px 20px 40px 20px; background: var(--card); 
-            justify-content: center; border-top: 1px solid var(--border); 
-            position: fixed; bottom: 0; width: 100%; z-index: 2000; 
-        }
-        .mode-btn { 
-            width: 70px; height: 70px; border-radius: 22px; border: 4px solid var(--border); 
-            background: white; font-size: 32px; display: flex; align-items: center; 
-            justify-content: center; cursor: pointer; touch-action: none;
-        }
-        .active-mode { border-color: var(--accent); background: #eef7ff; }
-
-        .info-card { background: var(--card); border-radius: 20px; padding: 22px; width: 100%; max-width: 380px; margin: 20px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.05); box-sizing: border-box; }
-        .info-card h2 { font-size: 17px; margin-top: 0; color: var(--accent); border-bottom: 1px solid var(--bg); padding-bottom: 8px; }
-        .info-card p, .info-card li { font-size: 13.5px; line-height: 1.6; margin-bottom: 8px; }
-
-        .back-btn { margin-top: 5px; padding: 12px; background: var(--text); border: none; border-radius: 12px; color: white; font-weight: bold; width: 100%; cursor: pointer; }
-        .cleared-overlay { opacity: 0.1; pointer-events: none; }
+        .back-btn { margin-top: 10px; padding: 12px; background: #333; color: white; border-radius: 12px; width: 100%; border: none; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
-<header>
-    <h1>🎨 お絵かきロジック</h1>
+<div id="title-screen">
+    <div class="title-row">
+        <div class="tile">ロ</div><div class="tile">ジ</div><div class="tile">ッ</div><div class="tile">ク</div>
+    </div>
+    <div class="title-row">
+        <div class="tile">パ</div><div class="tile">ズ</div><div class="tile">ル</div>
+    </div>
+    <div class="btn-group">
+        <button class="btn-main btn-start" onclick="quickStart()">スタート</button>
+        <button class="btn-main btn-list" onclick="showMenu()">問題一覧</button>
+    </div>
+</div>
+
+<header id="app-header" style="display:none;">
     <div class="difficulty-selector">
-        <button id="btn-size5" class="diff-btn" onpointerdown="changeDifficulty(5)">5x5</button>
-        <button id="btn-size10" class="diff-btn" onpointerdown="changeDifficulty(10)">10x10</button>
-        <button id="btn-size15" class="diff-btn" onpointerdown="changeDifficulty(15)">15x15</button>
+        <button id="btn-size5" class="diff-btn" onclick="changeDifficulty(5)">5x5</button>
+        <button id="btn-size10" class="diff-btn" onclick="changeDifficulty(10)">10x10</button>
+        <button id="btn-size15" class="diff-btn" onclick="changeDifficulty(15)">15x15</button>
     </div>
 </header>
 
 <main id="menu-screen">
     <div class="level-grid" id="level-list"></div>
-
-    <section class="info-card">
-        <h2>お絵かきロジックの遊び方</h2>
-        <p>数字をヒントにマスを塗り、隠れた絵を完成させましょう。</p>
-        <ul style="padding-left: 18px;">
-            <li>数字の数だけ連続してマスを塗ります。</li>
-            <li>複数の数字がある場合は、間に必ず1マス以上の空白が必要です。</li>
-            <li>絶対に塗らないマスには「❌」を活用しましょう。</li>
-        </ul>
-        <h2 style="margin-top: 20px;">リフレッシュ効果</h2>
-        <p>パズルに集中することで、脳内をデフラグし、思考を整理する効果が期待できます。</p>
-    </section>
 </main>
 
 <div id="game-screen">
     <div class="game-container"><div id="game-grid" class="grid"></div></div>
-    <div class="controls" id="game-controls">
-        <div id="mode-fill" class="mode-btn active-mode" onpointerdown="setMode('fill')">⬛</div>
-        <div id="mode-x" class="mode-btn" onpointerdown="setMode('x')">❌</div>
+    <div class="controls">
+        <div id="mode-fill" class="mode-btn active-mode" onclick="setMode('fill')">⬛</div>
+        <div id="mode-x" class="mode-btn" onclick="setMode('x')">❌</div>
     </div>
 </div>
 
 <div id="msg">
-    <span id="clear-title">タイトル</span>
-    <button class="back-btn" onpointerdown="backToMenu()">ステージ一覧へ</button>
+    <span id="clear-title" style="font-weight:900; font-size:18px;"></span>
+    <button class="back-btn" onclick="backToMenu()">ステージ一覧へ</button>
 </div>
 
 <script>
     let currentMode = 'fill', currentSize = 5, currentLevel = null;
-    let levelData = [], colorMap = [], allLevels = null;
+    let allLevels = null;
 
     async function init() {
         try {
             const res = await fetch('levels.json');
             allLevels = await res.json();
-            changeDifficulty(5);
-        } catch (e) { console.error("Data error"); }
+        } catch (e) { console.error("Data Load Error"); }
+    }
+
+    // タイトルから「未クリア」へ直行
+    function quickStart() {
+        document.getElementById('title-screen').style.display = 'none';
+        document.getElementById('app-header').style.display = 'block';
+        const clearedList = JSON.parse(localStorage.getItem('cleared_pic_levels') || '[]');
+        const pool = allLevels[`size${currentSize}`] || [];
+        const next = pool.find(l => !clearedList.includes(`${currentSize}_${l.id}`)) || pool[0];
+        startLevel(next);
+    }
+
+    function showMenu() {
+        document.getElementById('title-screen').style.display = 'none';
+        document.getElementById('app-header').style.display = 'block';
+        changeDifficulty(currentSize);
     }
 
     function changeDifficulty(size) {
@@ -153,7 +165,6 @@
         document.getElementById('msg').style.display = 'none';
         document.getElementById('game-screen').style.display = 'none';
         document.getElementById('menu-screen').style.display = 'flex';
-        document.getElementById('game-controls').style.display = 'flex';
         document.querySelectorAll('.diff-btn').forEach(btn => btn.classList.toggle('active-diff', btn.id === `btn-size${size}`));
 
         const list = document.getElementById('level-list');
@@ -165,18 +176,16 @@
             const isCleared = clearedList.includes(`${size}_${level.id}`);
             const card = document.createElement('div');
             card.className = `level-card ${isCleared ? 'cleared' : ''}`;
-            card.innerHTML = `<div style="font-size:20px; font-weight:900;">${index + 1}</div>`;
-            card.onpointerdown = () => startLevel(level);
+            card.innerHTML = index + 1;
+            card.onclick = () => startLevel(level);
             list.appendChild(card);
         });
     }
 
     function startLevel(level) {
-        currentLevel = level; levelData = level.data; colorMap = level.colorMap;
+        currentLevel = level;
         document.getElementById('menu-screen').style.display = 'none';
         document.getElementById('game-screen').style.display = 'flex';
-        document.getElementById('game-controls').classList.remove('cleared-overlay');
-        window.scrollTo(0,0);
         render();
     }
 
@@ -201,23 +210,20 @@
         for(let j=0; j<currentSize; j++) {
             const h = document.createElement('div'); h.className = 'hint-v'; h.style.width = cellSize + 'px';
             if((j+1)%5===0 && j!==currentSize-1) h.classList.add('v-line');
-            let col = []; for(let i=0; i<currentSize; i++) col.push(levelData[i][j]);
+            let col = []; for(let i=0; i<currentSize; i++) col.push(currentLevel.data[i][j]);
             h.innerHTML = getHints(col).join("<br>"); container.appendChild(h);
         }
 
         for(let i=0; i<currentSize; i++) {
             const rh = document.createElement('div'); rh.className = 'hint-h'; rh.style.height = cellSize + 'px';
             if((i+1)%5===0 && i!==currentSize-1) rh.classList.add('h-line');
-            rh.innerText = getHints(levelData[i]).join(" "); container.appendChild(rh);
+            rh.innerText = getHints(currentLevel.data[i]).join(" "); container.appendChild(rh);
             for(let j=0; j<currentSize; j++) {
                 const cell = document.createElement('div'); cell.className = 'cell';
                 cell.style.width = cellSize + 'px'; cell.style.height = cellSize + 'px';
                 if((j+1)%5===0 && j!==currentSize-1) cell.classList.add('v-line');
                 if((i+1)%5===0 && i!==currentSize-1) cell.classList.add('h-line');
-                
-                // ★修正：マス目は onclick (離した時) に戻して誤操作を防ぐ
-                cell.onclick = (e) => {
-                    if(document.getElementById('msg').style.display === 'block') return;
+                cell.onclick = () => {
                     if(currentMode === 'fill') { cell.classList.remove('mark-x'); cell.classList.toggle('filled'); }
                     else { cell.classList.remove('filled'); cell.classList.toggle('mark-x'); }
                     check();
@@ -238,26 +244,23 @@
         cells.forEach((cell, idx) => {
             const r = Math.floor(idx / currentSize), c = idx % currentSize;
             const filled = cell.classList.contains('filled');
-            if((levelData[r][c]===1 && !filled) || (levelData[r][c]===0 && filled)) ok = false;
+            if((currentLevel.data[r][c]===1 && !filled) || (currentLevel.data[r][c]===0 && filled)) ok = false;
         });
         if(ok) {
             const clearedList = JSON.parse(localStorage.getItem('cleared_pic_levels') || '[]');
             const key = `${currentSize}_${currentLevel.id}`;
             if(!clearedList.includes(key)) { clearedList.push(key); localStorage.setItem('cleared_pic_levels', JSON.stringify(clearedList)); }
             
-            document.getElementById('game-controls').style.display = 'none';
             document.getElementById('clear-title').innerText = `正解：${currentLevel.title}`;
-
             cells.forEach((cell, idx) => {
                 const r = Math.floor(idx / currentSize), c = idx % currentSize;
-                const col = colorMap[r][c];
+                const col = currentLevel.colorMap[r][c];
                 if(col !== 0) { cell.style.setProperty('background-color', col, 'important'); cell.style.borderColor = "transparent"; }
                 else { cell.style.opacity = "0.1"; cell.classList.remove('mark-x'); }
             });
             setTimeout(() => { document.getElementById('msg').style.display = 'block'; }, 400);
         }
     }
-    window.oncontextmenu = (e) => e.preventDefault();
     init();
 </script>
 </body>
