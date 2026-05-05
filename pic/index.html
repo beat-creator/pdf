@@ -53,7 +53,7 @@
         #menu-screen { padding: 20px; display: none; flex-direction: column; align-items: center; }
         .level-grid {
             display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); /* 横に並ぶ設定 */
+            grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); 
             gap: 12px; width: 100%; max-width: 400px; margin-top: 20px;
         }
         .level-card { 
@@ -115,7 +115,7 @@
     </div>
     <div class="title-desc">思考を整え、脳をリセットする。</div>
     <div class="btn-group">
-        <button class="btn-main" onclick="showMenu()">スタート</button>
+        <button class="btn-main" onclick="handleStart()">スタート</button>
     </div>
 </div>
 
@@ -152,11 +152,44 @@
     let currentMode = 'fill', currentSize = 5, currentLevel = null;
     let allLevels = null;
 
+    // --- 効果音生成エンジン ---
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playTone(freq, type, duration, vol) {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+    }
+
+    const sound = {
+        start: () => playTone(523.25, 'sine', 0.2, 0.2), // ド
+        select: () => playTone(659.25, 'sine', 0.1, 0.2), // ミ
+        clear: () => {
+            // ファンファーレ（ド・ミ・ソ）
+            setTimeout(() => playTone(523.25, 'triangle', 0.3, 0.2), 0);
+            setTimeout(() => playTone(659.25, 'triangle', 0.3, 0.2), 150);
+            setTimeout(() => playTone(783.99, 'triangle', 0.5, 0.2), 300);
+        }
+    };
+
     async function init() {
         try {
             const res = await fetch('levels.json');
             allLevels = await res.json();
         } catch (e) { console.error("Data Load Error"); }
+    }
+
+    // タイトルボタン用：音を鳴らしつつオーディオコンテキストを有効化
+    function handleStart() {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        sound.start();
+        showMenu();
     }
 
     function showMenu() {
@@ -182,7 +215,10 @@
             const card = document.createElement('div');
             card.className = `level-card ${isCleared ? 'cleared' : ''}`;
             card.innerHTML = `<span style="font-size:18px;">${index + 1}</span>`;
-            card.onclick = () => startLevel(level);
+            card.onclick = () => {
+                sound.select();
+                startLevel(level);
+            };
             list.appendChild(card);
         });
     }
@@ -195,8 +231,13 @@
         render();
     }
 
-    function backToMenu() { changeDifficulty(currentSize); }
+    function backToMenu() { 
+        sound.start();
+        changeDifficulty(currentSize); 
+    }
+
     function setMode(m) {
+        sound.select();
         currentMode = m;
         document.getElementById('mode-fill').classList.toggle('active-mode', m === 'fill');
         document.getElementById('mode-x').classList.toggle('active-mode', m === 'x');
@@ -254,6 +295,7 @@
             if((currentLevel.data[r][c]===1 && !filled) || (currentLevel.data[r][c]===0 && filled)) ok = false;
         });
         if(ok) {
+            sound.clear();
             const clearedList = JSON.parse(localStorage.getItem('cleared_pic_levels') || '[]');
             const key = `${currentSize}_${currentLevel.id}`;
             if(!clearedList.includes(key)) { clearedList.push(key); localStorage.setItem('cleared_pic_levels', JSON.stringify(clearedList)); }
