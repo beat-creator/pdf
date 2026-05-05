@@ -245,7 +245,7 @@
         document.getElementById('mode-x').classList.toggle('active-mode', m === 'x');
     }
 
-    function render() {
+  function render() {
         const container = document.getElementById('game-grid');
         container.innerHTML = '';
         const cellSize = currentSize === 15 ? 30 : (currentSize === 10 ? 38 : 55);
@@ -267,17 +267,48 @@
             const rh = document.createElement('div'); rh.className = 'hint-h'; rh.style.height = cellSize + 'px';
             if((i+1)%5===0 && i!==currentSize-1) rh.classList.add('h-line');
             rh.innerText = getHints(currentLevel.data[i]).join(" "); container.appendChild(rh);
+
             for(let j=0; j<currentSize; j++) {
                 const cell = document.createElement('div'); cell.className = 'cell';
                 cell.style.width = cellSize + 'px'; cell.style.height = cellSize + 'px';
                 if((j+1)%5===0 && j!==currentSize-1) cell.classList.add('v-line');
                 if((i+1)%5===0 && i!==currentSize-1) cell.classList.add('h-line');
-                cell.onclick = () => {
+
+                // --- タッチ誤爆防止ロジック ---
+                let touchStartX, touchStartY;
+                
+                cell.addEventListener('touchstart', (e) => {
+                    touchStartX = e.touches[0].clientX;
+                    touchStartY = e.touches[0].clientY;
+                }, { passive: true });
+
+                cell.addEventListener('touchend', (e) => {
+                    const touchEndX = e.changedTouches[0].clientX;
+                    const touchEndY = e.changedTouches[0].clientY;
+                    
+                    // 指の移動距離を計算（5ピクセル以上動いていたらスクロールとみなす）
+                    const dist = Math.sqrt(Math.pow(touchEndX - touchStartX, 2) + Math.pow(touchEndY - touchStartY, 2));
+                    
+                    if (dist < 6) { // ほとんど動いていなければタップと判定
+                        if(document.getElementById('msg').style.display === 'block') return;
+                        if(currentMode === 'fill') { 
+                            cell.classList.remove('mark-x'); cell.classList.toggle('filled'); 
+                        } else { 
+                            cell.classList.remove('filled'); cell.classList.toggle('mark-x'); 
+                        }
+                        check();
+                    }
+                });
+
+                // PCマウス操作用も残しておく
+                cell.onclick = (e) => {
+                    if (e.pointerType === 'touch') return; // タッチイベントですでに処理済みなら無視
                     if(document.getElementById('msg').style.display === 'block') return;
                     if(currentMode === 'fill') { cell.classList.remove('mark-x'); cell.classList.toggle('filled'); }
                     else { cell.classList.remove('filled'); cell.classList.toggle('mark-x'); }
                     check();
                 };
+
                 container.appendChild(cell);
             }
         }
