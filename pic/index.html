@@ -15,6 +15,7 @@
             background: var(--bg); color: var(--text); 
             font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
             margin: 0; display: flex; flex-direction: column; min-height: 100vh;
+            touch-action: manipulation; /* ズームによる誤動作防止 */
         }
 
         /* --- タイトル画面 --- */
@@ -66,22 +67,29 @@
             content: "✔"; position: absolute; top: 2px; right: 4px; color: var(--success); font-size: 16px;
         }
 
-        .info-section { 
-            background: #fff; border-radius: 15px; padding: 15px; margin-top: 30px; 
-            width: 100%; max-width: 400px; border: 2px solid var(--sky);
-        }
-        .info-section h3 { margin: 0 0 10px; font-size: 16px; color: var(--accent); }
-        .info-section p { font-size: 13px; margin: 0; line-height: 1.5; color: #666; }
-
-        /* --- ゲーム画面 --- */
+        /* --- ゲーム画面 (ここを重点修正) --- */
         #game-screen { display: none; flex-direction: column; align-items: center; padding-bottom: 150px; }
-        .game-container { width: 100%; overflow: auto; padding: 20px 10px; display: flex; justify-content: center; }
-        .grid { display: grid; background: #636366; border: 2px solid #636366; width: max-content; }
+        .game-container { 
+            width: 100vw; 
+            overflow-x: auto; /* 横スクロールを明示 */
+            overflow-y: hidden;
+            -webkit-overflow-scrolling: touch; 
+            padding: 20px 0; /* 左右のパディングを抜く */
+        }
+        .grid { 
+            display: grid; 
+            background: #636366; 
+            border: 2px solid #636366; 
+            width: max-content; 
+            margin-left: 10px; /* 少しだけ左に隙間 */
+            padding-right: 100px; /* 右側に大きな余白を作って、端までスクロール可能に */
+        }
         .cell { background: #fff; border: 0.5px solid #aeaeb2; box-sizing: border-box; }
         .hint-v, .hint-h { background: #e5e5ea; font-size: 10px; font-weight: bold; position: sticky; z-index: 10; }
         .hint-v { top: 0; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; }
-        .hint-h { left: 0; display: flex; justify-content: flex-end; align-items: center; padding-right: 4px; }
-        .corner { position: sticky; left: 0; top: 0; z-index: 20; background: #d1d1d6; }
+        .hint-h { left: 0; display: flex; justify-content: flex-end; align-items: center; padding-right: 4px; border-right: 1px solid #ccc; }
+        .corner { position: sticky; left: 0; top: 0; z-index: 20; background: #d1d1d6; border-right: 1px solid #ccc; }
+        
         .v-line { border-right: 2.5px solid #636366 !important; }
         .h-line { border-bottom: 2.5px solid #636366 !important; }
         .filled { background: var(--filled) !important; }
@@ -131,7 +139,7 @@
     <div class="level-grid" id="level-list"></div>
     <div class="info-section">
         <h3>パズルの遊び方</h3>
-        <p>数字をヒントにマスを埋めて、隠されたドット絵を完成させましょう。集中して解くことで、散らかった脳内が「デフラグ（整理）」されます。</p>
+        <p>数字をヒントにマスを埋めて、隠されたドット絵を完成させましょう。</p>
     </div>
 </main>
 
@@ -152,7 +160,6 @@
     let currentMode = 'fill', currentSize = 5, currentLevel = null;
     let allLevels = null;
 
-    // --- 効果音生成エンジン ---
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     function playTone(freq, type, duration, vol) {
         const osc = audioCtx.createOscillator();
@@ -168,10 +175,9 @@
     }
 
     const sound = {
-        start: () => playTone(523.25, 'sine', 0.2, 0.2), // ド
-        select: () => playTone(659.25, 'sine', 0.1, 0.2), // ミ
+        start: () => playTone(523.25, 'sine', 0.2, 0.2),
+        select: () => playTone(659.25, 'sine', 0.1, 0.2),
         clear: () => {
-            // ファンファーレ（ド・ミ・ソ）
             setTimeout(() => playTone(523.25, 'triangle', 0.3, 0.2), 0);
             setTimeout(() => playTone(659.25, 'triangle', 0.3, 0.2), 150);
             setTimeout(() => playTone(783.99, 'triangle', 0.5, 0.2), 300);
@@ -185,7 +191,6 @@
         } catch (e) { console.error("Data Load Error"); }
     }
 
-    // タイトルボタン用：音を鳴らしつつオーディオコンテキストを有効化
     function handleStart() {
         if (audioCtx.state === 'suspended') audioCtx.resume();
         sound.start();
@@ -215,10 +220,7 @@
             const card = document.createElement('div');
             card.className = `level-card ${isCleared ? 'cleared' : ''}`;
             card.innerHTML = `<span style="font-size:18px;">${index + 1}</span>`;
-            card.onclick = () => {
-                sound.select();
-                startLevel(level);
-            };
+            card.onclick = () => { sound.select(); startLevel(level); };
             list.appendChild(card);
         });
     }
