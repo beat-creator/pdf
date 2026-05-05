@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
     <title>ロジカル・リセット | プレイ</title>
     <style>
+        /* --- [1. 基本カラー・変数定義] --- */
         :root {
             --bg: #f0f9ff; --text: #333333; --accent: #3b82f6;
             --card: #ffffff; --border: #333333; --filled: #1c1c1e;
@@ -14,10 +15,10 @@
         body {
             background: var(--bg); color: var(--text); 
             font-family: sans-serif; margin: 0; display: flex; flex-direction: column; min-height: 100vh;
-            touch-action: manipulation;
+            touch-action: manipulation; /* ブラウザのダブルタップズームを防止 */
         }
 
-        /* --- ヘッダー・ナビゲーション --- */
+        /* --- [2. ヘッダー・ナビゲーション] --- */
         header { 
             padding: 10px; background: var(--card); text-align: center; 
             border-bottom: 1px solid #ddd; position: sticky; top: 0; z-index: 1100;
@@ -27,7 +28,7 @@
         .diff-btn { padding: 6px 12px; border-radius: 20px; border: 1px solid #ccc; background: #fff; font-size: 12px; font-weight: bold; }
         .active-diff { background: var(--accent); color: white; border-color: var(--accent); }
 
-        /* --- ステージ選択メニュー --- */
+        /* --- [3. ステージ選択画面] --- */
         #menu-screen { padding: 20px; display: flex; flex-direction: column; align-items: center; }
         .level-grid {
             display: grid; grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); 
@@ -41,27 +42,32 @@
         .level-card.cleared { border-color: var(--success); background: #f0fff4; }
         .level-card.cleared::after { content: "✔"; position: absolute; top: 2px; right: 4px; color: var(--success); font-size: 14px; }
 
-        /* --- ゲーム画面 --- */
+        /* --- [4. ゲーム実行画面] --- */
         #game-screen { display: none; flex-direction: column; align-items: center; padding-bottom: 150px; }
         .game-container { 
             width: 100vw; overflow-x: auto; -webkit-overflow-scrolling: touch; padding: 20px 0;
         }
         .grid { 
             display: grid; background: #636366; border: 2px solid #636366; 
-            width: max-content; margin-left: 10px;
+            width: max-content; margin-left: 10px; /* ★左側の見切れを防ぐための重要マージン */
         }
         .cell { background: #fff; border: 0.5px solid #aeaeb2; box-sizing: border-box; position: relative; }
+        
+        /* ヒント表示（固定配置） */
         .hint-v, .hint-h, .corner { background: #e5e5ea; font-size: 10px; font-weight: bold; position: sticky; z-index: 10; }
         .hint-v { top: 0; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; }
         .hint-h { left: 0; display: flex; justify-content: flex-end; align-items: center; padding-right: 4px; border-right: 2px solid #636366; }
         .corner { left: 0; top: 0; z-index: 20; background: #d1d1d6; border-right: 2px solid #636366; }
         
+        /* 5マスごとの太線 */
         .v-line { border-right: 2.5px solid #636366 !important; }
         .h-line { border-bottom: 2.5px solid #636366 !important; }
+        
+        /* セルの状態 */
         .filled { background: var(--filled) !important; }
         .mark-x::after { content: "×"; color: var(--danger); font-size: 24px; position: absolute; inset: 0; display: flex; justify-content: center; align-items: center; }
 
-        /* フッター操作 */
+        /* --- [5. 操作フッター] --- */
         .controls { 
             display: flex; gap: 40px; padding: 20px; background: #fff; 
             justify-content: center; border-top: 1px solid #ddd; 
@@ -70,7 +76,7 @@
         .mode-btn { width: 65px; height: 65px; border-radius: 18px; border: 4px solid #ddd; font-size: 28px; display: flex; align-items: center; justify-content: center; }
         .active-mode { border-color: var(--accent); background: #eef7ff; }
 
-        /* クリアメッセージ */
+        /* --- [6. クリア演出・ダイアログ] --- */
         #msg { 
             position: fixed; bottom: 120px; left: 50%; transform: translateX(-50%); 
             background: white; border-radius: 20px; padding: 20px; text-align: center; 
@@ -110,7 +116,7 @@
 </div>
 
 <script>
-    // --- [CONFIG & STATE] ---
+    /* --- [A. 設定・状態管理] --- */
     const GRID_SETTING = {
         5:  { cellSize: 55, padding: 50 },
         10: { cellSize: 38, padding: 80 },
@@ -119,7 +125,7 @@
 
     let currentMode = 'fill', currentSize = 5, currentLevel = null, allLevels = null;
 
-    // --- [AUDIO] ---
+    /* --- [B. 音響処理] --- */
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     function playTone(freq, type, duration, vol) {
         const osc = audioCtx.createOscillator();
@@ -140,17 +146,18 @@
         }
     };
 
-    // --- [LOGIC] ---
+    /* --- [C. メインロジック] --- */
+    // アプリ起動時の初期化
     async function init() {
         try {
             const res = await fetch('levels.json');
             allLevels = await res.json();
-            // 前回選んだ難易度があれば復元
             const savedSize = localStorage.getItem('last_size');
             changeDifficulty(savedSize ? parseInt(savedSize) : 5);
         } catch (e) { alert("データ読み込み失敗。サーバー環境で実行してください。"); }
     }
 
+    // 難易度（サイズ）変更とメニュー表示
     function changeDifficulty(size) {
         currentSize = size;
         localStorage.setItem('last_size', size);
@@ -174,6 +181,7 @@
         });
     }
 
+    // ゲーム開始処理
     function startLevel(level) {
         currentLevel = level;
         document.getElementById('menu-screen').style.display = 'none';
@@ -183,9 +191,12 @@
     }
 
     function backToMenu() { changeDifficulty(currentSize); }
+    
+    // 塗りモード vs バツモードの切り替え
     function setMode(m) { sound.select(); currentMode = m; document.getElementById('mode-fill').classList.toggle('active-mode', m === 'fill'); document.getElementById('mode-x').classList.toggle('active-mode', m === 'x'); }
 
-    // --- [RENDER & UI CONTROL] ---
+    /* --- [D. 描画・UI制御] --- */
+    // グリッド全体の生成
     function render() {
         const container = document.getElementById('game-grid');
         const conf = GRID_SETTING[currentSize];
@@ -193,10 +204,11 @@
         container.style.gridTemplateColumns = `45px repeat(${currentSize}, ${conf.cellSize}px)`;
         container.style.paddingRight = conf.padding + "px";
 
+        // 左上の空きスペース
         const corner = document.createElement('div');
         corner.className = 'corner'; corner.style.height = '55px'; container.appendChild(corner);
 
-        // 列ヒント
+        // 縦ヒントの生成
         for(let j=0; j<currentSize; j++) {
             const h = document.createElement('div'); h.className = 'hint-v'; h.style.width = conf.cellSize + 'px';
             if((j+1)%5===0 && j!==currentSize-1) h.classList.add('v-line');
@@ -204,7 +216,7 @@
             h.innerHTML = getHints(col).join("<br>"); container.appendChild(h);
         }
 
-        // 行・セル
+        // 横ヒントとセルの生成
         for(let i=0; i<currentSize; i++) {
             const rh = document.createElement('div'); rh.className = 'hint-h'; rh.style.height = conf.cellSize + 'px';
             if((i+1)%5===0 && i!==currentSize-1) rh.classList.add('h-line');
@@ -216,7 +228,7 @@
                 if((j+1)%5===0 && j!==currentSize-1) cell.classList.add('v-line');
                 if((i+1)%5===0 && i!==currentSize-1) cell.classList.add('h-line');
                 
-                // タッチ誤爆防止ロジック（最新版）
+                // タッチ・クリック操作のハンドリング
                 let isMove = false, sX, sY;
                 cell.addEventListener('touchstart', (e) => { isMove = false; sX = e.touches[0].clientX; sY = e.touches[0].clientY; }, {passive: true});
                 cell.addEventListener('touchmove', (e) => { 
@@ -225,7 +237,6 @@
                 cell.addEventListener('touchend', (e) => { 
                     if(!isMove) { e.preventDefault(); toggleCell(cell, i, j); } 
                 });
-                // マウス操作（PC）
                 cell.onclick = (e) => { if(e.pointerType !== 'touch') toggleCell(cell, i, j); };
 
                 container.appendChild(cell);
@@ -233,6 +244,7 @@
         }
     }
 
+    // セルの塗り/バツを切り替える
     function toggleCell(cell, r, c) {
         if(document.getElementById('msg').style.display === 'block') return;
         sound.select();
@@ -241,11 +253,13 @@
         check();
     }
 
+    // 数字のヒント（連番）を算出するアルゴリズム
     function getHints(arr) {
         let h = [], c = 0; arr.forEach(v => { if(v===1) c++; else if(c>0){ h.push(c); c=0; } });
         if(c>0) h.push(c); return h.length ? h : [0];
     }
 
+    /* --- [E. 判定・クリア処理] --- */
     function check() {
         const cells = document.querySelectorAll('.cell');
         let ok = true;
@@ -254,6 +268,7 @@
             const filled = cell.classList.contains('filled');
             if((currentLevel.data[r][c]===1 && !filled) || (currentLevel.data[r][c]===0 && filled)) ok = false;
         });
+
         if(ok) {
             sound.clear();
             const clearedList = JSON.parse(localStorage.getItem('cleared_pic_levels') || '[]');
@@ -261,6 +276,8 @@
             if(!clearedList.includes(key)) { clearedList.push(key); localStorage.setItem('cleared_pic_levels', JSON.stringify(clearedList)); }
             
             document.getElementById('clear-title').innerText = `正解：${currentLevel.title}`;
+            
+            // クリア時：ドット絵をカラーで再現する
             cells.forEach((cell, idx) => {
                 const r = Math.floor(idx / currentSize), c = idx % currentSize;
                 const col = currentLevel.colorMap[r][c];
