@@ -3,119 +3,215 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ロジカル・リセット</title>
+    <title>ロジカル・リセット Title</title>
     <style>
+        /* 1. ベースの設定 */
+        * { box-sizing: border-box; }
         body {
             margin: 0;
-            background-color: #8dd3cf; /* スクショのような爽やかな水色 */
-            font-family: 'Arial Rounded MT Bold', 'Helvetica', sans-serif;
+            padding: 0;
+            background-color: #f0f9ff; /* 目に優しい極めて薄い水色 */
+            font-family: 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             overflow: hidden;
+            color: #333;
         }
 
+        /* 2. メインコンテナ */
         .container {
             text-align: center;
             position: relative;
-            width: 100%;
-            max-width: 500px;
+            width: 90%;
+            max-width: 400px;
+            z-index: 10; /* ブロック背景より上に */
         }
 
         /* バージョン表記（左上） */
         .version {
             position: absolute;
-            top: -40px;
-            left: 20px;
-            color: #555;
+            top: -50px;
+            left: 10px;
+            color: #777;
             font-size: 14px;
+            font-family: monospace;
         }
 
-        /* タイトル文字のタイルデザイン */
+        /* 3. タイトルロゴ area */
+        .logo-area {
+            margin-bottom: 50px;
+        }
+
         .title-row {
             display: flex;
             justify-content: center;
-            gap: 10px;
-            margin-bottom: 40px;
+            gap: 8px; /* 文字間の隙間 */
+            margin-bottom: 12px;
         }
 
+        /* 文字タイル */
         .tile {
-            background-color: #fff;
-            border: 4px solid #333;
+            background: #ffffff;
+            border: 4px solid #333; /* ポップな太枠 */
             border-radius: 12px;
             width: 70px;
             height: 70px;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 40px;
-            font-weight: bold;
+            font-size: 42px;
+            font-weight: 900;
             color: #333;
-            box-shadow: 0 6px 0 rgba(0,0,0,0.1);
+            box-shadow: 0 6px 0 rgba(0,0,0,0.15); /* 立体感 */
+            position: relative;
+            overflow: hidden;
         }
 
-        /* ボタンのデザイン */
+        /* 文字の中の隠しピクセルアート（オリジナリティ） */
+        .tile::before {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-image: radial-gradient(#8dd3cf 2px, transparent 2px); /* 水色のドット */
+            background-size: 5px 5px;
+            opacity: 0.3;
+            bottom: 5px;
+            right: 5px;
+        }
+
+        /* 4. アクションボタン */
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+        }
+
         .btn {
             display: block;
-            width: 250px;
-            margin: 15px auto;
-            padding: 15px;
+            width: 280px;
+            padding: 18px;
             border: none;
-            border-radius: 50px;
-            font-size: 24px;
+            border-radius: 50px; /* 完全な丸み */
+            font-size: 26px;
             font-weight: bold;
             color: #fff;
-            cursor: pointer;
             text-decoration: none;
-            box-shadow: 0 8px 0 rgba(0,0,0,0.2);
-            transition: transform 0.1s;
+            cursor: pointer;
+            box-shadow: 0 10px 0 rgba(0,0,0,0.2); /* 強い立体感 */
+            transition: all 0.1s ease;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2); /* 文字の影 */
         }
 
+        /* 押した時のアニメーション */
         .btn:active {
-            transform: translateY(4px);
+            transform: translateY(6px);
             box-shadow: 0 4px 0 rgba(0,0,0,0.2);
         }
 
-        .btn-start { background-color: #59b183; } /* 緑 */
-        .btn-other { background-color: #4c78a8; } /* 青 */
+        /* メインボタン：鮮やかな緑から青へのグラデーション */
+        .btn-start {
+            background: linear-gradient(135deg, #6ee7b7 0%, #3b82f6 100%);
+        }
 
-        /* 下の白いふわふわ（雲） */
-        .clouds {
+        /* サブボタン：落ち着いた青 */
+        .btn-other {
+            background-color: #4c78a8;
+            font-size: 20px;
+            padding: 15px;
+            width: 240px;
+        }
+
+        /* 5. 背景のデフラグ（整列）アニメーション */
+        .bg-blocks {
             position: absolute;
-            bottom: -50px;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        /* 不揃いなブロック（上部） */
+        .block-random {
+            position: absolute;
+            background-color: #d1fae5; /* 薄い緑 */
+            border-radius: 8px;
+            opacity: 0.6;
+            animation: drift 10s infinite linear;
+        }
+
+        /* 整列したブロック（下部・雲の代わり） */
+        .clouds-replacement {
+            position: absolute;
+            bottom: -30px;
             left: 0;
             width: 100%;
-            height: 100px;
-            background: #fff;
-            border-radius: 100% 100% 0 0;
-            filter: blur(2px);
+            height: 120px;
+            background-color: #fff;
+            display: flex;
+            gap: 5px;
+            padding: 10px;
+            border-radius: 40px 40px 0 0;
+            filter: blur(1px);
         }
+
+        .pixel-column {
+            flex: 1;
+            background-color: #8dd3cf; /* 整列したパズルの色 */
+            border-radius: 4px;
+            opacity: 0.8;
+        }
+
+        /* アニメーション：ランダムに漂う */
+        @keyframes drift {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(30px, 20px) rotate(10deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
+        }
+
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="version">Ver. 1.0.0</div>
-    
-    <div class="title-row">
-        <div class="tile">ロ</div>
-        <div class="tile">ジ</div>
-        <div class="tile">ッ</div>
-        <div class="tile">ク</div>
-    </div>
-    <div class="title-row">
-        <div class="tile">パ</div>
-        <div class="tile">ズ</div>
-        <div class="tile">ル</div>
+    <div class="bg-blocks">
+        <div class="block-random" style="width: 40px; height: 40px; top: 10%; left: 15%; animation-delay: 0s;"></div>
+        <div class="block-random" style="width: 60px; height: 30px; top: 20%; left: 70%; animation-delay: -2s; background-color: #dbeafe;"></div>
+        <div class="block-random" style="width: 30px; height: 50px; top: 40%; left: 80%; animation-delay: -5s;"></div>
+        <div class="block-random" style="width: 50px; height: 50px; top: 15%; left: 40%; animation-delay: -1s; border-radius: 50%;"></div> <div class="clouds-replacement">
+            <div class="pixel-column" style="height: 60%;"></div>
+            <div class="pixel-column" style="height: 80%;"></div>
+            <div class="pixel-column" style="height: 100%;"></div>
+            <div class="pixel-column" style="height: 90%;"></div>
+            <div class="pixel-column" style="height: 70%;"></div>
+            <div class="pixel-column" style="height: 95%;"></div>
+            <div class="pixel-column" style="height: 85%;"></div>
+        </div>
     </div>
 
-    <a href="#" class="btn btn-start">スタート</a>
-    <a href="#" class="btn btn-other">問題一覧</a>
-    <a href="#" class="btn btn-other" style="font-size: 18px;">セーブデータ</a>
+    <div class="container">
+        <div class="version">Ver. 1.0.0</div>
+        
+        <div class="logo-area">
+            <div class="title-row">
+                <div class="tile">ロ</div>
+                <div class="tile">ジ</div>
+                <div class="tile">ッ</div>
+                <div class="tile">ク</div>
+            </div>
+            <div class="title-row" style="gap: 15px;"> <div class="tile" style="border-color: #3b82f6;">パ</div> <div class="tile">ズ</div>
+                <div class="tile">ル</div>
+            </div>
+        </div>
 
-    <div class="clouds"></div>
-</div>
+        <div class="btn-group">
+            <a href="game.html" class="btn btn-start">スタート</a>
+            <a href="stages.html" class="btn btn-other">問題一覧</a>
+        </div>
+    </div>
 
 </body>
 </html>
