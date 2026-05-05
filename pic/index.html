@@ -31,12 +31,11 @@
         .title-desc { color: #555; font-size: 14px; margin-top: 10px; font-weight: bold; }
         .btn-group { display: flex; flex-direction: column; gap: 15px; margin-top: 30px; }
         .btn-main {
-            width: 240px; padding: 15px; border: none; border-radius: 50px;
-            font-size: 22px; font-weight: bold; color: #fff; cursor: pointer;
+            width: 240px; padding: 18px; border: none; border-radius: 50px;
+            font-size: 24px; font-weight: bold; color: #fff; cursor: pointer;
             box-shadow: 0 6px 0 rgba(0,0,0,0.2); transition: 0.1s; text-align: center;
+            background: linear-gradient(135deg, #6ee7b7, #3b82f6);
         }
-        .btn-start { background: linear-gradient(135deg, #6ee7b7, #3b82f6); }
-        .btn-list { background: #4c78a8; font-size: 16px; }
         .btn-main:active { transform: translateY(3px); box-shadow: 0 3px 0 rgba(0,0,0,0.2); }
 
         /* --- ヘッダー --- */
@@ -54,15 +53,14 @@
         #menu-screen { padding: 20px; display: none; flex-direction: column; align-items: center; }
         .level-grid {
             display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); /* 横に4〜5個並ぶ設定 */
+            grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); /* 横に並ぶ設定 */
             gap: 12px; width: 100%; max-width: 400px; margin-top: 20px;
         }
         .level-card { 
             background: var(--card); border: 2.5px solid #ddd; aspect-ratio: 1/1; 
-            border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            border-radius: 12px; display: flex; align-items: center; justify-content: center; 
             cursor: pointer; font-weight: 900; position: relative;
         }
-        /* クリアマークのスタイル */
         .level-card.cleared { border-color: var(--success); background: #f0fff4; }
         .level-card.cleared::after {
             content: "✔"; position: absolute; top: 2px; right: 4px; color: var(--success); font-size: 16px;
@@ -117,8 +115,7 @@
     </div>
     <div class="title-desc">思考を整え、脳をリセットする。</div>
     <div class="btn-group">
-        <button class="btn-main btn-start" onclick="quickStart()">スタート</button>
-        <button class="btn-main btn-list" onclick="showMenu()">問題一覧</button>
+        <button class="btn-main" onclick="showMenu()">スタート</button>
     </div>
 </div>
 
@@ -160,31 +157,6 @@
             const res = await fetch('levels.json');
             allLevels = await res.json();
         } catch (e) { console.error("Data Load Error"); }
-    }
-
-function quickStart() {
-        document.getElementById('title-screen').style.display = 'none';
-        document.getElementById('app-header').style.display = 'block';
-
-        // 1. 最新のクリアリストを取得
-        const clearedList = JSON.parse(localStorage.getItem('cleared_pic_levels') || '[]');
-        const pool = allLevels[`size${currentSize}`] || [];
-
-        // 2. 未クリアの問題（ID）を検索
-        // clearedList に "5_1" のような形式で入っているので、それと比較
-        const next = pool.find(l => {
-            const key = `${currentSize}_${l.id}`;
-            return !clearedList.includes(key);
-        });
-
-        // 3. 未クリアがあればそれを、全部クリア済みなら1問目を開始
-        if (next) {
-            startLevel(next);
-        } else {
-            // 全問クリア済みの場合は、とりあえず最初の問題へ
-            console.log("All levels cleared for this size.");
-            startLevel(pool[0]);
-        }
     }
 
     function showMenu() {
