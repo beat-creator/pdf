@@ -2,175 +2,288 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>ロジカル・リセット | タイトル</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    <title>ロジカル・リセット | プレイ</title>
     <style>
         :root {
-            --bg: #f0f9ff;
-            --text: #333333;
-            --accent: #3b82f6;
-            --sky: #8dd3cf;
-            --border: #333333;
+            --bg: #f0f9ff; --text: #333333; --accent: #3b82f6;
+            --card: #ffffff; --border: #333333; --filled: #1c1c1e;
+            --success: #59b183; --danger: #ff3b30; --sky: #8dd3cf;
         }
 
         body {
-            background: var(--bg);
-            color: var(--text);
-            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            overflow: hidden;
-            touch-action: none;
+            background: var(--bg); color: var(--text); 
+            font-family: sans-serif; margin: 0; display: flex; flex-direction: column; min-height: 100vh;
+            touch-action: manipulation;
         }
 
-        /* 背景の装飾（雲のようなグラデーション） */
-        .bg-decor {
-            position: fixed;
-            inset: 0;
-            background: radial-gradient(circle at 50% 50%, var(--sky) 0%, var(--bg) 100%);
-            z-index: -1;
+        /* --- ヘッダー --- */
+        header { 
+            padding: 10px; background: var(--card); text-align: center; 
+            border-bottom: 1px solid #ddd; position: sticky; top: 0; z-index: 1100;
+            display: flex; justify-content: space-between; align-items: center;
         }
+        .nav-btn { background: none; border: none; color: var(--accent); font-weight: bold; cursor: pointer; padding: 5px 10px; }
+        .difficulty-selector { display: flex; gap: 5px; }
+        .diff-btn { padding: 6px 12px; border-radius: 20px; border: 1px solid #ccc; background: #fff; font-size: 12px; font-weight: bold; }
+        .active-diff { background: var(--accent); color: white; border-color: var(--accent); }
 
-        /* タイトルのタイルアニメーション */
-        .title-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 40px;
+        /* --- ステージ選択 --- */
+        #menu-screen { padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .level-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); 
+            gap: 12px; width: 100%; max-width: 450px; margin-top: 10px;
         }
+        .level-card { 
+            background: var(--card); border: 2.5px solid #ddd; aspect-ratio: 1/1; 
+            border-radius: 12px; display: flex; align-items: center; justify-content: center; 
+            font-weight: 900; position: relative; font-size: 20px; cursor: pointer;
+        }
+        .level-card.cleared { border-color: var(--success); background: #f0fff4; }
+        .level-card.cleared::after { content: "✔"; position: absolute; top: 2px; right: 4px; color: var(--success); font-size: 14px; }
 
-        .title-row {
-            display: flex;
-            gap: 10px;
+        /* --- ゲーム画面 --- */
+        #game-screen { display: none; flex-direction: column; align-items: center; padding-bottom: 150px; }
+        .game-container { 
+            width: 100vw; overflow-x: auto; -webkit-overflow-scrolling: touch; padding: 20px 0;
         }
+        .grid { 
+            display: grid; background: #636366; border: 2px solid #636366; 
+            width: max-content; margin-left: auto; margin-right: auto;
+        }
+        .cell { background: #fff; border: 0.5px solid #aeaeb2; box-sizing: border-box; position: relative; }
+        .hint-v, .hint-h, .corner { background: #e5e5ea; font-size: 10px; font-weight: bold; position: sticky; z-index: 10; }
+        .hint-v { top: 0; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; }
+        .hint-h { left: 0; display: flex; justify-content: flex-end; align-items: center; padding-right: 4px; border-right: 2px solid #636366; }
+        .corner { left: 0; top: 0; z-index: 20; background: #d1d1d6; border-right: 2px solid #636366; }
+        
+        .v-line { border-right: 2.5px solid #636366 !important; }
+        .h-line { border-bottom: 2.5px solid #636366 !important; }
+        .filled { background: var(--filled) !important; }
+        .mark-x::after { content: "×"; color: var(--danger); font-size: 24px; position: absolute; inset: 0; display: flex; justify-content: center; align-items: center; }
 
-        .tile {
-            background: #fff;
-            border: 3px solid var(--border);
-            border-radius: 12px;
-            width: 65px;
-            height: 65px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 34px;
-            font-weight: 900;
-            box-shadow: 0 6px 0 rgba(0,0,0,0.1);
-            transform: rotate(-2deg);
+        /* フッター操作 */
+        .controls { 
+            display: flex; gap: 40px; padding: 20px; background: #fff; 
+            justify-content: center; border-top: 1px solid #ddd; 
+            position: fixed; bottom: 0; width: 100%; z-index: 2000; 
         }
-        .tile:nth-child(even) { transform: rotate(3deg); }
+        .mode-btn { width: 65px; height: 65px; border-radius: 18px; border: 4px solid #ddd; font-size: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .active-mode { border-color: var(--accent); background: #eef7ff; }
 
-        .title-desc {
-            color: #555;
-            font-size: 16px;
-            font-weight: bold;
-            letter-spacing: 0.05em;
-            margin-top: 10px;
-            text-align: center;
+        /* クリアメッセージ */
+        #msg { 
+            position: fixed; bottom: 120px; left: 50%; transform: translateX(-50%); 
+            background: white; border-radius: 20px; padding: 20px; text-align: center; 
+            display: none; z-index: 3000; width: 85%; max-width: 320px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2); border: 3px solid var(--success); 
         }
-
-        /* ボタン群 */
-        .btn-group {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-            z-index: 10;
-        }
-
-        .btn-main {
-            width: 260px;
-            padding: 20px;
-            border: none;
-            border-radius: 50px;
-            font-size: 26px;
-            font-weight: bold;
-            color: #fff;
-            cursor: pointer;
-            box-shadow: 0 8px 0 rgba(59, 130, 246, 0.3);
-            transition: 0.1s;
-            background: linear-gradient(135deg, #6ee7b7, #3b82f6);
-            text-decoration: none;
-            text-align: center;
-        }
-
-        .btn-main:active {
-            transform: translateY(4px);
-            box-shadow: 0 4px 0 rgba(59, 130, 246, 0.3);
-        }
-
-        .btn-sub {
-            color: #3b82f6;
-            font-size: 14px;
-            font-weight: bold;
-            text-decoration: underline;
-            background: none;
-            border: none;
-            cursor: pointer;
-        }
-
-        /* コピーライト */
-        footer {
-            position: fixed;
-            bottom: 20px;
-            font-size: 12px;
-            color: #888;
-        }
+        .back-btn { margin-top: 10px; padding: 12px; background: #333; color: white; border-radius: 12px; width: 100%; border: none; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
-<div class="bg-decor"></div>
+<header>
+    <button class="nav-btn" onclick="location.href='index.html'">◀ 戻る</button>
+    <div class="difficulty-selector">
+        <button id="btn-size5" class="diff-btn" onclick="changeDifficulty(5)">5x5</button>
+        <button id="btn-size10" class="diff-btn" onclick="changeDifficulty(10)">10x10</button>
+        <button id="btn-size15" class="diff-btn" onclick="changeDifficulty(15)">15x15</button>
+    </div>
+    <button class="nav-btn" onclick="location.href='manual.html'">ヘルプ</button>
+</header>
 
-<div class="title-container">
-    <div class="title-row">
-        <div class="tile">ロ</div><div class="tile">ジ</div><div class="tile">ッ</div><div class="tile">ク</div>
+<main id="menu-screen">
+    <div class="level-grid" id="level-list"></div>
+</main>
+
+<div id="game-screen">
+    <div class="game-container"><div id="game-grid" class="grid"></div></div>
+    <div class="controls">
+        <div id="mode-fill" class="mode-btn active-mode" onclick="setMode('fill')">⬛</div>
+        <div id="mode-x" class="mode-btn" onclick="setMode('x')">❌</div>
     </div>
-    <div class="title-row">
-        <div class="tile">パ</div><div class="tile">ズ</div><div class="tile">ル</div>
-    </div>
-    <div class="title-desc">思考を整え、脳をリセットする。</div>
 </div>
 
-<div class="btn-group">
-    <button class="btn-main" onclick="handleStart()">スタート</button>
-    <button class="btn-sub" onclick="location.href='manual.html'">遊び方を学ぶ</button>
+<div id="msg">
+    <span id="clear-title" style="font-weight:900; font-size: 1.2em;"></span><br>
+    <button class="back-btn" onclick="backToMenu()">ステージ一覧へ</button>
 </div>
-
-<footer>&copy; 2024 Logical Reset Project</footer>
 
 <script>
-    // Web Audio APIの初期化（スタート音用）
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    function playStartSound() {
+    // --- [CONFIG & STATE] ---
+    const GRID_SETTING = {
+        5:  { cellSize: 55, padding: 50 },
+        10: { cellSize: 38, padding: 80 },
+        15: { cellSize: 30, padding: 120 }
+    };
+
+    let currentMode = 'fill', currentSize = 5, currentLevel = null, allLevels = null;
+
+    // --- [AUDIO] ---
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = null;
+
+    function playTone(freq, type, duration, vol) {
+        if (!audioCtx) audioCtx = new AudioContext();
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
-        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start();
-        osc.stop(audioCtx.currentTime + 0.3);
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.start(); osc.stop(audioCtx.currentTime + duration);
+    }
+    const sound = {
+        select: () => playTone(659.25, 'sine', 0.1, 0.1),
+        clear: () => {
+            playTone(523.25, 'triangle', 0.3, 0.2);
+            setTimeout(() => playTone(659.25, 'triangle', 0.3, 0.2), 150);
+            setTimeout(() => playTone(783.99, 'triangle', 0.5, 0.2), 300);
+        }
+    };
+
+    // --- [LOGIC] ---
+    async function init() {
+        try {
+            // あなたが決めた「根幹」のファイル名: levels.json
+            const res = await fetch('levels.json');
+            allLevels = await res.json();
+            const savedSize = localStorage.getItem('last_size');
+            changeDifficulty(savedSize ? parseInt(savedSize) : 5);
+        } catch (e) { 
+            console.error(e);
+            alert("データ読み込み失敗。levels.jsonが同じフォルダにありますか？"); 
+        }
     }
 
-    function handleStart() {
-        // 音を鳴らす（ユーザーインタラクションの起点を記録）
-        if (audioCtx.state === 'suspended') audioCtx.resume();
-        playStartSound();
+    function changeDifficulty(size) {
+        currentSize = size;
+        localStorage.setItem('last_size', size);
+        document.getElementById('msg').style.display = 'none';
+        document.getElementById('game-screen').style.display = 'none';
+        document.getElementById('menu-screen').style.display = 'flex';
+        document.querySelectorAll('.diff-btn').forEach(btn => btn.classList.toggle('active-diff', btn.id === `btn-size${size}`));
 
-        // 0.3秒後にゲーム本体へ遷移（音を聞かせるため）
-        setTimeout(() => {
-            window.location.href = 'game.html';
-        }, 300);
+        const list = document.getElementById('level-list');
+        list.innerHTML = '';
+        const pool = allLevels ? (allLevels[`size${size}`] || []) : [];
+        const clearedList = JSON.parse(localStorage.getItem('cleared_pic_levels') || '[]');
+
+        pool.forEach((level, index) => {
+            const isCleared = clearedList.includes(`${size}_${level.id}`);
+            const card = document.createElement('div');
+            card.className = `level-card ${isCleared ? 'cleared' : ''}`;
+            card.innerHTML = `<span>${index + 1}</span>`;
+            card.onclick = () => { sound.select(); startLevel(level); };
+            list.appendChild(card);
+        });
     }
+
+    function startLevel(level) {
+        currentLevel = level;
+        document.getElementById('menu-screen').style.display = 'none';
+        document.getElementById('game-screen').style.display = 'flex';
+        window.scrollTo(0,0);
+        render();
+    }
+
+    function backToMenu() { changeDifficulty(currentSize); }
+    function setMode(m) { sound.select(); currentMode = m; document.getElementById('mode-fill').classList.toggle('active-mode', m === 'fill'); document.getElementById('mode-x').classList.toggle('active-mode', m === 'x'); }
+
+    // --- [RENDER & UI] ---
+    function render() {
+        const container = document.getElementById('game-grid');
+        const conf = GRID_SETTING[currentSize];
+        container.innerHTML = '';
+        container.style.gridTemplateColumns = `45px repeat(${currentSize}, ${conf.cellSize}px)`;
+        
+        // 角の空白
+        const corner = document.createElement('div');
+        corner.className = 'corner'; corner.style.height = '55px'; container.appendChild(corner);
+
+        // 列ヒント生成
+        for(let j=0; j<currentSize; j++) {
+            const h = document.createElement('div'); h.className = 'hint-v'; h.style.width = conf.cellSize + 'px';
+            if((j+1)%5===0 && j!==currentSize-1) h.classList.add('v-line');
+            let colData = []; for(let i=0; i<currentSize; i++) colData.push(currentLevel.data[i][j]);
+            h.innerHTML = getHints(colData).join("<br>"); container.appendChild(h);
+        }
+
+        // 行・セル生成
+        for(let i=0; i<currentSize; i++) {
+            const rh = document.createElement('div'); rh.className = 'hint-h'; rh.style.height = conf.cellSize + 'px';
+            if((i+1)%5===0 && i!==currentSize-1) rh.classList.add('h-line');
+            rh.innerText = getHints(currentLevel.data[i]).join(" "); container.appendChild(rh);
+
+            for(let j=0; j<currentSize; j++) {
+                const cell = document.createElement('div'); cell.className = 'cell';
+                cell.style.width = conf.cellSize + 'px'; cell.style.height = conf.cellSize + 'px';
+                if((j+1)%5===0 && j!==currentSize-1) cell.classList.add('v-line');
+                if((i+1)%5===0 && i!==currentSize-1) cell.classList.add('h-line');
+                
+                // タッチ・クリック操作
+                let isMove = false, sX, sY;
+                cell.addEventListener('touchstart', (e) => { isMove = false; sX = e.touches[0].clientX; sY = e.touches[0].clientY; }, {passive: true});
+                cell.addEventListener('touchmove', (e) => { 
+                    if(Math.abs(e.touches[0].clientX - sX) > 10 || Math.abs(e.touches[0].clientY - sY) > 10) isMove = true; 
+                }, {passive: true});
+                cell.addEventListener('touchend', (e) => { 
+                    if(!isMove) { e.preventDefault(); toggleCell(cell, i, j); } 
+                });
+                cell.onclick = (e) => { if(e.pointerType !== 'touch') toggleCell(cell, i, j); };
+
+                container.appendChild(cell);
+            }
+        }
+    }
+
+    function toggleCell(cell, r, c) {
+        if(document.getElementById('msg').style.display === 'block') return;
+        sound.select();
+        if(currentMode === 'fill') { cell.classList.remove('mark-x'); cell.classList.toggle('filled'); }
+        else { cell.classList.remove('filled'); cell.classList.toggle('mark-x'); }
+        check();
+    }
+
+    function getHints(arr) {
+        let h = [], count = 0; 
+        arr.forEach(v => { if(v===1) count++; else if(count>0){ h.push(count); count=0; } });
+        if(count>0) h.push(count); return h.length ? h : [0];
+    }
+
+    function check() {
+        const cells = document.querySelectorAll('.cell');
+        let isCorrect = true;
+        cells.forEach((cell, idx) => {
+            const r = Math.floor(idx / currentSize), c = idx % currentSize;
+            const filled = cell.classList.contains('filled');
+            if((currentLevel.data[r][c]===1 && !filled) || (currentLevel.data[r][c]===0 && filled)) isCorrect = false;
+        });
+
+        if(isCorrect) {
+            sound.clear();
+            const clearedList = JSON.parse(localStorage.getItem('cleared_pic_levels') || '[]');
+            const key = `${currentSize}_${currentLevel.id}`;
+            if(!clearedList.includes(key)) { clearedList.push(key); localStorage.setItem('cleared_pic_levels', JSON.stringify(clearedList)); }
+            
+            document.getElementById('clear-title').innerText = `正解：${currentLevel.title}`;
+            cells.forEach((cell, idx) => {
+                const r = Math.floor(idx / currentSize), c = idx % currentSize;
+                const col = currentLevel.colorMap[r][c];
+                if(col !== 0) { 
+                    cell.style.setProperty('background-color', col, 'important'); 
+                    cell.style.borderColor = "transparent"; 
+                } else { 
+                    cell.style.opacity = "0.1"; cell.classList.remove('mark-x'); 
+                }
+            });
+            setTimeout(() => { document.getElementById('msg').style.display = 'block'; }, 500);
+        }
+    }
+
+    init();
 </script>
-
 </body>
 </html>
