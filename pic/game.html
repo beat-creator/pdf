@@ -2,103 +2,122 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Brain Puzzle V2.1</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    <title>ロジカル・リセット | プレイ</title>
     <style>
-        body { margin: 0; font-family: sans-serif; background: #f0f2f5; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
-        #header { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #2c3e50; color: white; }
-        #timer { color: #34d399; font-family: monospace; font-size: 1.2rem; font-weight: bold; }
-        
-        /* サイズ選択ボタン */
-        #controls { display: flex; justify-content: center; gap: 10px; padding: 10px; background: #fff; border-bottom: 1px solid #ddd; }
-        .size-btn { padding: 5px 15px; border: 1px solid #2c3e50; border-radius: 20px; background: white; cursor: pointer; }
-        .size-btn.active { background: #2c3e50; color: white; }
-
-        #game-area { flex: 1; display: flex; align-items: center; justify-content: center; position: relative; }
-        canvas { max-width: 95vw; max-height: 60vh; background: white; box-shadow: 0 5px 15px rgba(0,0,0,0.1); touch-action: none; }
-        
-        #overlay { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 85%; background: rgba(0,0,0,0.85); color: white; padding: 15px; border-radius: 10px; text-align: center; display: none; z-index: 100; }
+        :root { --bg: #f0f9ff; --text: #333333; --accent: #3b82f6; --card: #ffffff; --filled: #1c1c1e; --success: #59b183; --danger: #ff3b30; }
+        body { background: var(--bg); color: var(--text); font-family: sans-serif; margin: 0; display: flex; flex-direction: column; min-height: 100vh; touch-action: manipulation; }
+        header { padding: 10px; background: var(--card); border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1100; }
+        .nav-btn { background: none; border: none; color: var(--accent); font-weight: bold; }
+        .timer { font-family: monospace; font-size: 16px; font-weight: bold; background: #eee; padding: 2px 8px; border-radius: 4px; }
+        #menu-screen { padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .level-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); gap: 12px; width: 100%; max-width: 450px; }
+        .level-card { background: var(--card); border: 2.5px solid #ddd; aspect-ratio: 1/1; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 900; position: relative; }
+        .level-card.cleared { border-color: var(--success); background: #f0fff4; }
+        #game-screen { display: none; flex-direction: column; align-items: center; padding-bottom: 150px; }
+        .grid { display: grid; background: #636366; border: 2px solid #636366; width: max-content; margin: 0 auto; transition: all 0.3s; }
+        .cell { background: #fff; border: 0.5px solid #aeaeb2; box-sizing: border-box; position: relative; }
+        .hint-v, .hint-h, .corner { background: #e5e5ea; font-size: 10px; font-weight: bold; position: sticky; transition: opacity 0.3s; }
+        .hint-v { top: 0; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; }
+        .hint-h { left: 0; display: flex; justify-content: flex-end; align-items: center; padding-right: 4px; border-right: 2px solid #636366; }
+        .corner { left: 0; top: 0; z-index: 20; background: #d1d1d6; border-right: 2px solid #636366; height: 55px; }
+        .v-line { border-right: 2.5px solid #636366 !important; }
+        .h-line { border-bottom: 2.5px solid #636366 !important; }
+        .filled { background: var(--filled) !important; }
+        .mark-x::after { content: "×"; color: var(--danger); font-size: 24px; position: absolute; inset: 0; display: flex; justify-content: center; align-items: center; }
+        .controls { display: flex; gap: 40px; padding: 20px; background: #fff; justify-content: center; border-top: 1px solid #ddd; position: fixed; bottom: 0; width: 100%; z-index: 2000; }
+        .mode-btn { width: 65px; height: 65px; border-radius: 18px; border: 4px solid #ddd; font-size: 28px; display: flex; align-items: center; justify-content: center; }
+        .active-mode { border-color: var(--accent); background: #eef7ff; }
+        #msg { position: fixed; bottom: 120px; left: 50%; transform: translateX(-50%); background: white; border-radius: 20px; padding: 20px; text-align: center; display: none; z-index: 3000; width: 85%; box-shadow: 0 10px 30px rgba(0,0,0,0.2); border: 3px solid var(--success); }
+        .back-btn { margin-top: 10px; padding: 12px; background: #333; color: white; border-radius: 12px; width: 100%; border: none; font-weight: bold; }
     </style>
 </head>
 <body>
-
-<div id="header">
-    <button onclick="location.href='index.html'">戻る</button>
-    <div id="timer">00:00</div>
-    <div>Level: 1-1</div>
+<header>
+    <button class="nav-btn" onclick="backToMenu()">◀ 戻る</button>
+    <div id="game-timer" class="timer">00:00</div>
+    <button class="nav-btn" onclick="location.href='manual.html'">ヘルプ</button>
+</header>
+<main id="menu-screen"><div class="level-grid" id="level-list"></div></main>
+<div id="game-screen">
+    <div class="game-container" style="padding: 20px 0; overflow-x: auto;"><div id="game-grid" class="grid"></div></div>
+    <div class="controls"><div id="mode-fill" class="mode-btn active-mode" onclick="setMode('fill')">⬛</div><div id="mode-x" class="mode-btn" onclick="setMode('x')">❌</div></div>
 </div>
-
-<div id="controls">
-    <button class="size-btn" onclick="changeSize(5)">5x5</button>
-    <button class="size-btn active" onclick="changeSize(10)">10x10</button>
-    <button class="size-btn" onclick="changeSize(15)">15x15</button>
-</div>
-
-<div id="game-area">
-    <canvas id="puzzleCanvas"></canvas>
-</div>
-
-<div id="overlay">
-    <h2 style="margin:0">正解！</h2>
-    <p id="stats"></p>
-    <button onclick="location.reload()" style="background:#34d399; border:none; padding:10px 20px; font-weight:bold; border-radius:5px;">次へ</button>
-</div>
-
+<div id="msg"><span id="clear-title" style="font-weight:900;"></span><br><span id="clear-time"></span><br><button class="back-btn" onclick="backToMenu()">戻る</button></div>
 <script>
-    const canvas = document.getElementById('puzzleCanvas');
-    const ctx = canvas.getContext('2d');
-    let startTime, timerId, isPlaying = false;
-    let currentSize = 10;
+    const GRID = { 5: {cs:55}, 10: {cs:38}, 15: {cs:30} };
+    let curMode = 'fill', curSize = 5, curLv = null, allLvs = null, startTime, timerInt;
+    const audio = new (window.AudioContext || window.webkitAudioContext)();
+    function beep(f, d) { const o=audio.createOscillator(), g=audio.createGain(); o.frequency.value=f; g.gain.exponentialRampToValueAtTime(0.01, audio.currentTime+d); o.connect(g); g.connect(audio.destination); o.start(); o.stop(audio.currentTime+d); }
 
-    function init() {
-        const dpr = window.devicePixelRatio || 1;
-        const displaySize = Math.min(window.innerWidth * 0.95, window.innerHeight * 0.6);
-        canvas.style.width = displaySize + 'px';
-        canvas.style.height = displaySize + 'px';
-        canvas.width = displaySize * dpr;
-        canvas.height = displaySize * dpr;
-        ctx.scale(dpr, dpr);
-
-        if(!isPlaying) startTimer();
-        isPlaying = true;
-        drawGrid(); // 盤面を描画
+    async function init() {
+        const res = await fetch('levels.json'); allLvs = await res.json();
+        changeDifficulty(parseInt(localStorage.getItem('last_size')) || 5);
     }
-
-    function changeSize(size) {
-        currentSize = size;
-        document.querySelectorAll('.size-btn').forEach(btn => {
-            btn.classList.toggle('active', btn.innerText.includes(size));
+    function changeDifficulty(s) {
+        curSize = s; localStorage.setItem('last_size', s);
+        document.getElementById('msg').style.display = 'none'; document.getElementById('game-screen').style.display = 'none';
+        document.getElementById('menu-screen').style.display = 'flex';
+        const list = document.getElementById('level-list'); list.innerHTML = '';
+        const cleared = JSON.parse(localStorage.getItem('cleared_pic_levels') || '[]');
+        (allLvs[`size${s}`] || []).forEach((l, i) => {
+            const card = document.createElement('div'); card.className = `level-card ${cleared.includes(`${s}_${l.id}`) ? 'cleared' : ''}`;
+            card.innerHTML = `<span>${i+1}</span>`; card.onclick = () => startLevel(l); list.appendChild(card);
         });
-        init(); // サイズを変えて再描画
     }
-
-    function startTimer() {
-        startTime = Date.now();
-        timerId = setInterval(() => {
-            const diff = Math.floor((Date.now() - startTime) / 1000);
-            const m = String(Math.floor(diff / 60)).padStart(2, '0');
-            const s = String(diff % 60).padStart(2, '0');
-            document.getElementById('timer').innerText = `${m}:${s}`;
+    function startLevel(l) {
+        curLv = l; document.getElementById('menu-screen').style.display = 'none'; document.getElementById('game-screen').style.display = 'flex';
+        startTime = Date.now(); timerInt = setInterval(() => {
+            const s = Math.floor((Date.now()-startTime)/1000);
+            document.getElementById('game-timer').innerText = `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
         }, 1000);
+        render();
     }
-
-    function drawGrid() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        const cellSize = canvas.width / (window.devicePixelRatio * currentSize);
-        ctx.strokeStyle = "#ccc";
-        for (let i = 0; i <= currentSize; i++) {
-            ctx.beginPath(); ctx.moveTo(i * cellSize, 0); ctx.lineTo(i * cellSize, currentSize * cellSize); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(0, i * cellSize); ctx.lineTo(currentSize * cellSize, i * cellSize); ctx.stroke();
+    function backToMenu() { clearInterval(timerInt); changeDifficulty(curSize); }
+    function setMode(m) { curMode = m; document.getElementById('mode-fill').classList.toggle('active-mode', m === 'fill'); document.getElementById('mode-x').classList.toggle('active-mode', m === 'x'); }
+    function render() {
+        const g = document.getElementById('game-grid'), c = GRID[curSize];
+        g.innerHTML = ''; g.style.gridTemplateColumns = `45px repeat(${curSize}, ${c.cs}px)`;
+        const cor = document.createElement('div'); cor.className = 'corner'; g.appendChild(cor);
+        for(let j=0; j<curSize; j++) {
+            const h = document.createElement('div'); h.className='hint-v'; h.style.width=c.cs+'px';
+            if((j+1)%5===0 && j!==curSize-1) h.classList.add('v-line');
+            h.innerHTML = getH(curLv.data.map(r => r[j])).join("<br>"); g.appendChild(h);
         }
-        // ここにパズルの問題データを読み込んで描画するロジックが続きます
+        for(let i=0; i<curSize; i++) {
+            const rh = document.createElement('div'); rh.className='hint-h'; rh.style.height=c.cs+'px';
+            if((i+1)%5===0 && i!==curSize-1) rh.classList.add('h-line');
+            rh.innerText = getH(curLv.data[i]).join(" "); g.appendChild(rh);
+            for(let j=0; j<curSize; j++) {
+                const cl = document.createElement('div'); cl.className='cell'; cl.style.width=cl.style.height=c.cs+'px';
+                if((j+1)%5===0 && j!==curSize-1) cl.classList.add('v-line');
+                if((i+1)%5===0 && i!==curSize-1) cl.classList.add('h-line');
+                cl.onclick = () => { cl.classList.remove(curMode==='fill'?'mark-x':'filled'); cl.classList.toggle(curMode==='fill'?'filled':'mark-x'); check(); };
+                g.appendChild(cl);
+            }
+        }
     }
-
-    canvas.addEventListener('pointerup', (e) => {
-        if (!isPlaying) return;
-        // タップ判定のロジック
-    });
-
-    window.onload = init;
+    function getH(a) { let h=[], c=0; a.forEach(v=>{ if(v===1)c++; else if(c>0){h.push(c);c=0;} }); if(c>0)h.push(c); return h.length?h:[0]; }
+    function check() {
+        const cls = document.querySelectorAll('.cell');
+        if([...cls].every((cl, idx) => (curLv.data[Math.floor(idx/curSize)][idx%curSize]===1) === cl.classList.contains('filled'))) {
+            clearInterval(timerInt); beep(523, 0.3);
+            const cleared = JSON.parse(localStorage.getItem('cleared_pic_levels') || '[]');
+            if(!cleared.includes(`${curSize}_${curLv.id}`)) { cleared.push(`${curSize}_${curLv.id}`); localStorage.setItem('cleared_pic_levels', JSON.stringify(cleared)); }
+            document.getElementById('clear-title').innerText = `正解：${curLv.title}`;
+            document.getElementById('clear-time').innerText = `Time: ${document.getElementById('game-timer').innerText}`;
+            // 完成図の全表示（ヒントを隠して色を塗る）
+            document.querySelectorAll('.hint-v, .hint-h, .corner').forEach(el => el.style.opacity = '0');
+            document.getElementById('game-grid').style.border = 'none';
+            cls.forEach((cl, idx) => {
+                const col = curLv.colorMap[Math.floor(idx/curSize)][idx%curSize];
+                cl.style.setProperty('background-color', col !== 0 ? col : 'transparent', 'important');
+                cl.style.opacity = col !== 0 ? '1' : '0'; cl.classList.remove('mark-x', 'v-line', 'h-line'); cl.style.border='none';
+            });
+            setTimeout(() => document.getElementById('msg').style.display='block', 800);
+        }
+    }
+    init();
 </script>
 </body>
 </html>
