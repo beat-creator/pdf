@@ -162,13 +162,29 @@
         } catch (e) { console.error("Data Load Error"); }
     }
 
-    function quickStart() {
+function quickStart() {
         document.getElementById('title-screen').style.display = 'none';
         document.getElementById('app-header').style.display = 'block';
+
+        // 1. 最新のクリアリストを取得
         const clearedList = JSON.parse(localStorage.getItem('cleared_pic_levels') || '[]');
         const pool = allLevels[`size${currentSize}`] || [];
-        const next = pool.find(l => !clearedList.includes(`${currentSize}_${l.id}`)) || pool[0];
-        startLevel(next);
+
+        // 2. 未クリアの問題（ID）を検索
+        // clearedList に "5_1" のような形式で入っているので、それと比較
+        const next = pool.find(l => {
+            const key = `${currentSize}_${l.id}`;
+            return !clearedList.includes(key);
+        });
+
+        // 3. 未クリアがあればそれを、全部クリア済みなら1問目を開始
+        if (next) {
+            startLevel(next);
+        } else {
+            // 全問クリア済みの場合は、とりあえず最初の問題へ
+            console.log("All levels cleared for this size.");
+            startLevel(pool[0]);
+        }
     }
 
     function showMenu() {
