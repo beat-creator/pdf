@@ -10,14 +10,16 @@
         header { padding: 10px; background: var(--card); border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1100; }
         .nav-btn { background: none; border: none; color: var(--accent); font-weight: bold; }
         .timer { font-family: monospace; font-size: 16px; font-weight: bold; background: #eee; padding: 2px 8px; border-radius: 4px; }
+        .diff-btn { padding: 6px 12px; border-radius: 20px; border: 1px solid #ccc; background: #fff; font-size: 12px; font-weight: bold; }
+        .active-diff { background: var(--accent); color: white; border-color: var(--accent); }
         #menu-screen { padding: 20px; display: flex; flex-direction: column; align-items: center; }
         .level-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); gap: 12px; width: 100%; max-width: 450px; }
         .level-card { background: var(--card); border: 2.5px solid #ddd; aspect-ratio: 1/1; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 900; position: relative; }
         .level-card.cleared { border-color: var(--success); background: #f0fff4; }
         #game-screen { display: none; flex-direction: column; align-items: center; padding-bottom: 150px; }
-        .grid { display: grid; background: #636366; border: 2px solid #636366; width: max-content; margin: 0 auto; transition: all 0.3s; }
+        .grid { display: grid; background: #636366; border: 2px solid #636366; width: max-content; margin: 0 auto; }
         .cell { background: #fff; border: 0.5px solid #aeaeb2; box-sizing: border-box; position: relative; }
-        .hint-v, .hint-h, .corner { background: #e5e5ea; font-size: 10px; font-weight: bold; position: sticky; transition: opacity 0.3s; }
+        .hint-v, .hint-h, .corner { background: #e5e5ea; font-size: 10px; font-weight: bold; position: sticky; }
         .hint-v { top: 0; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; }
         .hint-h { left: 0; display: flex; justify-content: flex-end; align-items: center; padding-right: 4px; border-right: 2px solid #636366; }
         .corner { left: 0; top: 0; z-index: 20; background: #d1d1d6; border-right: 2px solid #636366; height: 55px; }
@@ -35,8 +37,12 @@
 <body>
 <header>
     <button class="nav-btn" onclick="backToMenu()">◀ 戻る</button>
+    <div class="difficulty-selector">
+        <button id="btn-size5" class="diff-btn" onclick="changeDifficulty(5)">5x5</button>
+        <button id="btn-size10" class="diff-btn" onclick="changeDifficulty(10)">10x10</button>
+        <button id="btn-size15" class="diff-btn" onclick="changeDifficulty(15)">15x15</button>
+    </div>
     <div id="game-timer" class="timer">00:00</div>
-    <button class="nav-btn" onclick="location.href='manual.html'">ヘルプ</button>
 </header>
 <main id="menu-screen"><div class="level-grid" id="level-list"></div></main>
 <div id="game-screen">
@@ -58,6 +64,7 @@
         curSize = s; localStorage.setItem('last_size', s);
         document.getElementById('msg').style.display = 'none'; document.getElementById('game-screen').style.display = 'none';
         document.getElementById('menu-screen').style.display = 'flex';
+        document.querySelectorAll('.diff-btn').forEach(b => b.classList.toggle('active-diff', b.id === `btn-size${s}`));
         const list = document.getElementById('level-list'); list.innerHTML = '';
         const cleared = JSON.parse(localStorage.getItem('cleared_pic_levels') || '[]');
         (allLvs[`size${s}`] || []).forEach((l, i) => {
@@ -78,7 +85,7 @@
     function render() {
         const g = document.getElementById('game-grid'), c = GRID[curSize];
         g.innerHTML = ''; g.style.gridTemplateColumns = `45px repeat(${curSize}, ${c.cs}px)`;
-        const cor = document.createElement('div'); cor.className = 'corner'; g.appendChild(cor);
+        const cor = document.createElement('div'); cor.className = 'corner'; cor.style.height='55px'; g.appendChild(cor);
         for(let j=0; j<curSize; j++) {
             const h = document.createElement('div'); h.className='hint-v'; h.style.width=c.cs+'px';
             if((j+1)%5===0 && j!==curSize-1) h.classList.add('v-line');
@@ -106,9 +113,7 @@
             if(!cleared.includes(`${curSize}_${curLv.id}`)) { cleared.push(`${curSize}_${curLv.id}`); localStorage.setItem('cleared_pic_levels', JSON.stringify(cleared)); }
             document.getElementById('clear-title').innerText = `正解：${curLv.title}`;
             document.getElementById('clear-time').innerText = `Time: ${document.getElementById('game-timer').innerText}`;
-            // 完成図の全表示（ヒントを隠して色を塗る）
             document.querySelectorAll('.hint-v, .hint-h, .corner').forEach(el => el.style.opacity = '0');
-            document.getElementById('game-grid').style.border = 'none';
             cls.forEach((cl, idx) => {
                 const col = curLv.colorMap[Math.floor(idx/curSize)][idx%curSize];
                 cl.style.setProperty('background-color', col !== 0 ? col : 'transparent', 'important');
