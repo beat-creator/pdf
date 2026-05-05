@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>ロジカル・リセット | タイトル</title>
+    <style>
+        :root {
+            --bg: #f0f9ff;
+            --text: #333333;
+            --accent: #3b82f6;
+            --sky: #8dd3cf;
+            --border: #333333;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        /* 背景の装飾（雲のようなグラデーション） */
+        .bg-decor {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at 50% 50%, var(--sky) 0%, var(--bg) 100%);
+            z-index: -1;
+        }
+
+        /* タイトルのタイルアニメーション */
+        .title-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+
+        .title-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .tile {
+            background: #fff;
+            border: 3px solid var(--border);
+            border-radius: 12px;
+            width: 65px;
+            height: 65px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 34px;
+            font-weight: 900;
+            box-shadow: 0 6px 0 rgba(0,0,0,0.1);
+            transform: rotate(-2deg);
+        }
+        .tile:nth-child(even) { transform: rotate(3deg); }
+
+        .title-desc {
+            color: #555;
+            font-size: 16px;
+            font-weight: bold;
+            letter-spacing: 0.05em;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        /* ボタン群 */
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            z-index: 10;
+        }
+
+        .btn-main {
+            width: 260px;
+            padding: 20px;
+            border: none;
+            border-radius: 50px;
+            font-size: 26px;
+            font-weight: bold;
+            color: #fff;
+            cursor: pointer;
+            box-shadow: 0 8px 0 rgba(59, 130, 246, 0.3);
+            transition: 0.1s;
+            background: linear-gradient(135deg, #6ee7b7, #3b82f6);
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .btn-main:active {
+            transform: translateY(4px);
+            box-shadow: 0 4px 0 rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-sub {
+            color: #3b82f6;
+            font-size: 14px;
+            font-weight: bold;
+            text-decoration: underline;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        /* コピーライト */
+        footer {
+            position: fixed;
+            bottom: 20px;
+            font-size: 12px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+
+<div class="bg-decor"></div>
+
+<div class="title-container">
+    <div class="title-row">
+        <div class="tile">ロ</div><div class="tile">ジ</div><div class="tile">ッ</div><div class="tile">ク</div>
+    </div>
+    <div class="title-row">
+        <div class="tile">パ</div><div class="tile">ズ</div><div class="tile">ル</div>
+    </div>
+    <div class="title-desc">思考を整え、脳をリセットする。</div>
+</div>
+
+<div class="btn-group">
+    <button class="btn-main" onclick="handleStart()">スタート</button>
+    <button class="btn-sub" onclick="location.href='manual.html'">遊び方を学ぶ</button>
+</div>
+
+<footer>&copy; 2024 Logical Reset Project</footer>
+
+<script>
+    // Web Audio APIの初期化（スタート音用）
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playStartSound() {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.3);
+    }
+
+    function handleStart() {
+        // 音を鳴らす（ユーザーインタラクションの起点を記録）
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        playStartSound();
+
+        // 0.3秒後にゲーム本体へ遷移（音を聞かせるため）
+        setTimeout(() => {
+            window.location.href = 'game.html';
+        }, 300);
+    }
+</script>
+
+</body>
+</html>
