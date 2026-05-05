@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>ロジカル・リセット | 遊び方</title>
+    <style>
+        :root {
+            --bg: #f0f9ff; --text: #333333; --accent: #3b82f6;
+            --card: #ffffff; --border: #333333; --sky: #8dd3cf;
+        }
+
+        body {
+            background: var(--bg); color: var(--text);
+            font-family: "Helvetica Neue", Arial, sans-serif;
+            margin: 0; padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container { max-width: 600px; margin: 0 auto; background: var(--card); border-radius: 20px; padding: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+
+        h1 { color: var(--accent); font-size: 24px; text-align: center; margin-bottom: 30px; border-bottom: 2px solid var(--sky); padding-bottom: 10px; }
+        h2 { font-size: 18px; margin-top: 25px; display: flex; align-items: center; gap: 8px; }
+        h2::before { content: ""; display: inline-block; width: 6px; height: 18px; background: var(--accent); border-radius: 3px; }
+
+        .step-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 15px; margin: 15px 0; }
+        .icon { font-size: 20px; margin-right: 5px; }
+
+        .visual-tip { display: flex; align-items: center; gap: 15px; margin: 10px 0; font-size: 14px; }
+        .demo-cell { width: 30px; height: 30px; border: 1px solid #ccc; display: flex; align-items: center; justify-content: center; font-weight: bold; background: #fff; }
+        .demo-filled { background: #1c1c1e; }
+        .demo-x { color: #ff3b30; font-size: 20px; }
+
+        .btn-back {
+            display: block; width: 100%; padding: 15px; background: var(--accent); color: white;
+            text-align: center; text-decoration: none; border-radius: 12px; font-weight: bold;
+            margin-top: 40px; box-shadow: 0 4px 0 rgba(0,0,0,0.1);
+        }
+        .btn-back:active { transform: translateY(2px); box-shadow: none; }
+
+        footer { text-align: center; margin-top: 30px; font-size: 12px; color: #888; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>遊び方の基本</h1>
+
+    <section>
+        <h2>ロジックパズルとは？</h2>
+        <p>上と左に書かれた数字をヒントに、マスを塗りつぶして隠された絵を完成させるパズルです。思考を整理し、脳をリフレッシュ（リセット）しましょう。</p>
+    </section>
+
+    <section>
+        <h2>基本ルール</h2>
+        <div class="step-box">
+            <span class="icon">①</span> <strong>数字の意味</strong><br>
+            数字は「その列（または行）で連続して塗るマスの数」を表しています。
+        </div>
+        <div class="step-box">
+            <span class="icon">②</span> <strong>複数の数字</strong><br>
+            「3 1」とあれば、まず3マス連続で塗り、1マス以上空けてから、さらに1マス塗るという意味です。
+        </div>
+    </section>
+
+    <section>
+        <h2>操作方法</h2>
+        <div class="visual-tip">
+            <div class="demo-cell demo-filled"></div>
+            <span><strong>塗りつぶしモード：</strong> タップしてマスを黒く塗ります。</span>
+        </div>
+        <div class="visual-tip">
+            <div class="demo-cell demo-x">×</div>
+            <span><strong>バツ印モード：</strong> 塗らないことが確実な場所に印をつけます。</span>
+        </div>
+        <p style="font-size: 13px; color: #666; background: #fff3cd; padding: 10px; border-radius: 8px;">
+            <strong>Tip:</strong> 画面をスワイプ（スクロール）しても、マスが誤って塗られることはありません。安心して盤面を動かしてください。
+        </p>
+    </section>
+
+    <a href="index.html" class="btn-back">タイトルへ戻る</a>
+</div>
+
+<footer>&copy; 2024 Logical Reset Project</footer>
+
+</body>
+</html>
